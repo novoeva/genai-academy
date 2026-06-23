@@ -3,7 +3,7 @@ import TopNav from "../components/TopNav.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import { modules } from "../data/curriculum.js";
 
-const neuralBg = "https://www.figma.com/api/mcp/asset/9cd5a7f7-51fe-41d0-9472-38e10546244e";
+import neuralBg from "../assets/hero.png";
 
 export default function Dashboard() {
   const navigate = useNavigate();
