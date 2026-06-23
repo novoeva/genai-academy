@@ -1,0 +1,65 @@
+{
+  "chapter": 4,
+  "title": "From Model to Agent",
+  "lessons": [
+    {
+      "id": "01-introduction",
+      "title": "Introduction",
+      "file": "01-introduction.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": false,
+        "simulation": false
+      }
+    },
+    {
+      "id": "02-what-makes-something-an-agent",
+      "title": "What makes something an agent?",
+      "file": "02-what-makes-something-an-agent.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "02-what-makes-something-an-agent.sim.html"
+      }
+    },
+    {
+      "id": "03-the-agent-loop",
+      "title": "The agent loop: perceive, plan, act, observe",
+      "file": "03-the-agent-loop.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "03-the-agent-loop.sim.html"
+      }
+    },
+    {
+      "id": "04-tools-and-function-calling",
+      "title": "Tools and function calling",
+      "file": "04-tools-and-function-calling.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "04-tools-and-function-calling.sim.html"
+      }
+    },
+    {
+      "id": "05-where-new-failure-modes-come-in",
+      "title": "Where new failure modes come in",
+      "file": "05-where-new-failure-modes-come-in.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "05-where-new-failure-modes-come-in.sim.html"
+      }
+    }
+  ]
+}

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Matrix - Agentic AI Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f7f9fb;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3437;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #596064;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .matrix-container {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 32px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .matrix-table th {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 2px solid #eef2ff;
+            font-weight: 600;
+            color: #2c3437;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .matrix-table td {
+            padding: 16px;
+            border-bottom: 1px solid rgba(44, 52, 55, 0.08);
+        }
+
+        .matrix-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tool-name {
+            font-weight: 600;
+            color: #2c3437;
+            min-width: 150px;
+        }
+
+        .control-cell {
+            min-width: 180px;
+        }
+
+        select, input[type="checkbox"] {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13px;
+            padding: 8px 12px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        select {
+            width: 100%;
+            color: #2c3437;
+            background: white;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .risk-score {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+
+        .risk-low {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .risk-medium {
+            background: #fffbeb;
+            color: #f59e0b;
+        }
+
+        .risk-high {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 32px;
+            margin-top: 24px;
+        }
+
+        .results-section.hidden {
+            display: none;
+        }
+
+        .results-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2c3437;
+            margin-bottom: 20px;
+        }
+
+        .tool-result {
+            background: #f7f9fb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid #4f46e5;
+        }
+
+        .tool-result-name {
+            font-weight: 600;
+            color: #2c3437;
+            margin-bottom: 12px;
+        }
+
+        .control-result {
+            font-size: 13px;
+            color: #596064;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .control-result strong {
+            color: #2c3437;
+        }
+
+        .recommendation {
+            background: white;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .recommendation.correct {
+            border-left: 4px solid #10b981;
+            background: #ecfdf5;
+        }
+
+        .recommendation.incorrect {
+            border-left: 4px solid #ef4444;
+            background: #fef2f2;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #6f68f7);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e7ff;
+        }
+
+        .matrix-note {
+            background: #eef2ff;
+            border-left: 4px solid #4f46e5;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #2c3437;
+            line-height: 1.6;
+        }
+
+        .matrix-note strong {
+            color: #4f46e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Access Matrix</h1>
+            <p class="subtitle">Tool access enforces scope. For each of Karel's tools, configure 4 controls: who can trigger it, confirmation requirement, reversibility, and call limits per session.</p>
+        </header>
+
+        <div class="matrix-note">
+            <strong>Your task:</strong> Set the controls for each tool based on safety and scope principles. Risk score increases with permissive settings on irreversible actions.
+        </div>
+
+        <div class="matrix-container">
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Who Can Trigger?</th>
+                        <th>Requires Confirmation?</th>
+                        <th>Reversible?</th>
+                        <th>Max Calls/Session</th>
+                        <th>Risk Score</th>
+                    </tr>
+                </thead>
+                <tbody id="matrixBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="controls">
+            <button class="btn-primary" onclick="checkConfiguration()">Check Configuration</button>
+        </div>
+
+        <div class="results-section hidden" id="resultsSection">
+            <div class="results-title">Configuration Analysis</div>
+            <div id="resultsContent"></div>
+            <div class="controls">
+                <button class="btn-secondary" onclick="location.reload()">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tools = [
+            {
+                name: 'read_transaction_history',
+                description: 'Retrieve customer transaction data',
+                controls: {
+                    whoCanTrigger: 'user_or_karel',
+                    requiresConfirmation: false,
+                    reversible: true,
+                    maxCalls: 'unlimited'
+                }
+            },
+            {
+                name: 'flag_transaction',
+                description: 'Mark a transaction as suspicious',
+                controls: {
+                    whoCanTrigger: 'karel',
+                    requiresConfirmation: false,
+                    reversible: true,
+                    maxCalls: '3'
+                }
+            },
+            {
+                name: 'freeze_card',
+                description: 'Block all transactions on a card',
+                controls: {
+                    whoCanTrigger: 'karel_with_user_awareness',
+                    requiresConfirmation: true,
+                    reversible: false,
+                    maxCalls: '1'
+                }
+            },
+            {
+                name: 'create_fraud_report',
+                description: 'Generate and file fraud documentation',
+                controls: {
+                    whoCanTrigger: 'karel_with_user_awareness',
+                    requiresConfirmation: true,
+                    reversible: false,
+                    maxCalls: '1'
+                }
+            }
+        ];
+
+        const triggerOptions = {
+            'user_initiated': 'User-initiated only',
+            'karel': 'Karel can trigger autonomously',
+            'user_or_karel': 'Both user and Karel can trigger',
+            'karel_with_user_awareness': 'Karel with user awareness'
+        };
+
+        const callLimitOptions = {
+            '1': '1 per session',
+            '3': '3 per session',
+            'unlimited': 'Unlimited'
+        };
+
+        const recommendations = {
+            'read_transaction_history': {
+                whoCanTrigger: 'user_or_karel',
+                requiresConfirmation: false,
+                reversible: true,
+                maxCalls: 'unlimited',
+                reason: 'Read-only operation. No confirmation needed. No impact limit.'
+            },
+            'flag_transaction': {
+                whoCanTrigger: 'karel',
+                requiresConfirmation: false,
+                reversible: true,
+                maxCalls: '3',
+                reason: 'Can be undone if wrong. But limit to 3 per session to prevent spam. Karel can auto-trigger.'
+            },
+            'freeze_card': {
+                whoCanTrigger: 'karel_with_user_awareness',
+                requiresConfirmation: true,
+                reversible: false,
+                maxCalls: '1',
+                reason: 'IRREVERSIBLE. Customer must call to unfreeze. Requires confirmation of details. Max 1 per session.'
+            },
+            'create_fraud_report': {
+                whoCanTrigger: 'karel_with_user_awareness',
+                requiresConfirmation: true,
+                reversible: false,
+                maxCalls: '1',
+                reason: 'IRREVERSIBLE. Report exists permanently. Requires confirmation. Max 1 per session.'
+            }
+        };
+
+        let userConfig = {};
+
+        function initializeMatrix() {
+            const tbody = document.getElementById('matrixBody');
+            tbody.innerHTML = '';
+
+            tools.forEach((tool, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="tool-name">${tool.name}</td>
+                    <td class="control-cell">
+                        <select id="trigger-${index}" onchange="updateRiskScore(${index})">
+                            ${Object.entries(triggerOptions).map(([key, label]) =>
+                                `<option value="${key}">${label}</option>`
+                            ).join('')}
+                        </select>
+                    </td>
+                    <td class="control-cell">
+                        <select id="confirmation-${index}" onchange="updateRiskScore(${index})">
+                            <option value="no">Not required</option>
+                            <option value="yes">Required</option>
+                        </select>
+                    </td>
+                    <td class="control-cell">
+                        <select id="reversible-${index}" onchange="updateRiskScore(${index})">
+                            <option value="yes">Yes</option>
+                            <option value="no">No (Irreversible)</option>
+                        </select>
+                    </td>
+                    <td class="control-cell">
+                        <select id="maxcalls-${index}" onchange="updateRiskScore(${index})">
+                            ${Object.entries(callLimitOptions).map(([key, label]) =>
+                                `<option value="${key}">${label}</option>`
+                            ).join('')}
+                        </select>
+                    </td>
+                    <td>
+                        <div class="risk-score" id="risk-${index}">
+                            <span id="risk-text-${index}">—</span>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Initialize with defaults
+            tools.forEach((tool, index) => {
+                document.getElementById(`trigger-${index}`).value = tool.controls.whoCanTrigger;
+                document.getElementById(`confirmation-${index}`).value = tool.controls.requiresConfirmation ? 'yes' : 'no';
+                document.getElementById(`reversible-${index}`).value = tool.controls.reversible ? 'yes' : 'no';
+                document.getElementById(`maxcalls-${index}`).value = tool.controls.maxCalls;
+                updateRiskScore(index);
+            });
+        }
+
+        function calculateRiskScore(toolIndex) {
+            const trigger = document.getElementById(`trigger-${toolIndex}`).value;
+            const confirmation = document.getElementById(`confirmation-${toolIndex}`).value === 'yes';
+            const reversible = document.getElementById(`reversible-${toolIndex}`).value === 'yes';
+            const maxCalls = document.getElementById(`maxcalls-${toolIndex}`).value;
+
+            let risk = 0;
+
+            // Reversibility is the biggest factor
+            if (!reversible) {
+                risk += 3; // Irreversible = high risk base
+                if (!confirmation) risk += 2; // No confirmation on irreversible = very risky
+            }
+
+            // Autonomy on irreversible actions
+            if (!reversible && (trigger === 'karel' || trigger === 'user_or_karel')) {
+                risk += 1;
+            }
+
+            // Call limits
+            if (maxCalls === 'unlimited') {
+                risk += 1;
+            } else if (maxCalls === '3') {
+                risk += 0.5;
+            }
+
+            if (risk > 5) return 'high';
+            if (risk > 2) return 'medium';
+            return 'low';
+        }
+
+        function updateRiskScore(index) {
+            const riskLevel = calculateRiskScore(index);
+            const riskEl = document.getElementById(`risk-${index}`);
+            const riskText = document.getElementById(`risk-text-${index}`);
+
+            riskEl.className = `risk-score risk-${riskLevel}`;
+            riskText.textContent = riskLevel.toUpperCase();
+
+            // Capture user's current config
+            userConfig[tools[index].name] = {
+                whoCanTrigger: document.getElementById(`trigger-${index}`).value,
+                requiresConfirmation: document.getElementById(`confirmation-${index}`).value === 'yes',
+                reversible: document.getElementById(`reversible-${index}`).value === 'yes',
+                maxCalls: document.getElementById(`maxcalls-${index}`).value
+            };
+        }
+
+        function checkConfiguration() {
+            // Capture final config
+            tools.forEach((tool, index) => {
+                userConfig[tool.name] = {
+                    whoCanTrigger: document.getElementById(`trigger-${index}`).value,
+                    requiresConfirmation: document.getElementById(`confirmation-${index}`).value === 'yes',
+                    reversible: document.getElementById(`reversible-${index}`).value === 'yes',
+                    maxCalls: document.getElementById(`maxcalls-${index}`).value
+                };
+            });
+
+            displayResults();
+        }
+
+        function displayResults() {
+            document.querySelector('.matrix-container').style.display = 'none';
+            document.querySelector('.controls').style.display = 'none';
+            document.getElementById('resultsSection').classList.remove('hidden');
+
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.innerHTML = '';
+
+            let correctCount = 0;
+
+            tools.forEach(tool => {
+                const recommended = recommendations[tool.name];
+                const userSettings = userConfig[tool.name];
+                const isCorrect = userSettings.whoCanTrigger === recommended.whoCanTrigger &&
+                    userSettings.requiresConfirmation === recommended.requiresConfirmation &&
+                    userSettings.reversible === recommended.reversible &&
+                    userSettings.maxCalls === recommended.maxCalls;
+
+                if (isCorrect) correctCount++;
+
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'tool-result';
+                resultDiv.innerHTML = `
+                    <div class="tool-result-name">${tool.name}</div>
+                    <div class="control-result"><strong>Who triggers:</strong> ${triggerOptions[userSettings.whoCanTrigger]}</div>
+                    <div class="control-result"><strong>Confirmation:</strong> ${userSettings.requiresConfirmation ? 'Required' : 'Not required'}</div>
+                    <div class="control-result"><strong>Reversible:</strong> ${userSettings.reversible ? 'Yes' : 'No (Irreversible)'}</div>
+                    <div class="control-result"><strong>Max calls:</strong> ${callLimitOptions[userSettings.maxCalls]}</div>
+                    <div class="recommendation ${isCorrect ? 'correct' : 'incorrect'}">
+                        <strong>${isCorrect ? '✓ Correct' : '✗ Different recommendation'}</strong>
+                        ${!isCorrect ? `
+                            <div style="margin-top: 8px;">
+                                <strong>Recommended:</strong> Who triggers: ${triggerOptions[recommended.whoCanTrigger]}, Confirmation: ${recommended.requiresConfirmation ? 'Required' : 'Not required'}, Reversible: ${recommended.reversible ? 'Yes' : 'No'}, Max: ${callLimitOptions[recommended.maxCalls]}<br>
+                                <strong>Why:</strong> ${recommended.reason}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                resultsContent.appendChild(resultDiv);
+            });
+
+            const scoreDiv = document.createElement('div');
+            scoreDiv.style.cssText = 'background: #eef2ff; border-radius: 12px; padding: 20px; margin-top: 20px; text-align: center;';
+            scoreDiv.innerHTML = `
+                <div style="font-size: 24px; font-weight: 700; color: #4f46e5; margin-bottom: 8px;">${correctCount}/4 Correct</div>
+                <div style="color: #596064; font-size: 14px;">
+                    ${correctCount === 4 ? 'Perfect! You understand tool restriction principles.' :
+                      correctCount === 3 ? 'Great! You grasp the concept. Review the one mismatch.' :
+                      correctCount >= 2 ? 'Good start. Key principle: irreversible actions need confirmation and low call limits.' :
+                      'Keep practicing. Focus on reversibility as the main risk factor.'}
+                </div>
+            `;
+            resultsContent.appendChild(scoreDiv);
+        }
+
+        initializeMatrix();
+    </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+    window.parent.postMessage({ type: 'resize', height: height + 40 }, '*');
+  }
+  
+  // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

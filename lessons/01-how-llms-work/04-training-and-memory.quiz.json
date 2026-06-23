@@ -1,0 +1,54 @@
+{
+  "lesson": "04-training-and-memory",
+  "title": "Training, parameters, and why the model has no memory",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Your company launches a new product in January 2025. An LLM with a knowledge cutoff of October 2024 is asked about it. What is the most likely outcome?",
+      "options": [
+        "The model will say it doesn't know, because it was trained to admit knowledge gaps",
+        "The model will search the web automatically to find current information",
+        "The model may hallucinate a plausible-sounding but incorrect answer",
+        "The model will refuse to answer questions about products it hasn't seen"
+      ],
+      "correct": 2,
+      "explanation": "The model has no knowledge of events after its training cutoff, but it doesn't 'know' it doesn't know. It will generate a statistically plausible response, which may be wrong. This is why providing current information in the prompt (RAG) matters."
+    },
+    {
+      "id": 2,
+      "question": "A user closes a conversation with an AI assistant and starts a new one the next day. What does the model remember from the previous conversation?",
+      "options": [
+        "Everything, models retain a persistent memory of all conversations",
+        "Only the last few messages, due to context window compression",
+        "Nothing, each conversation starts fresh with no memory of previous sessions",
+        "Only things the user explicitly flagged as important"
+      ],
+      "correct": 2,
+      "explanation": "LLMs have no memory between conversations. The context window is cleared when a session ends. If you want an app to remember users across sessions, you need to build that memory layer yourself, it doesn't come built-in."
+    },
+    {
+      "id": 3,
+      "question": "After training, a developer corrects Karel every day for a month, pointing out mistakes. How does this affect Karel's underlying parameters?",
+      "options": [
+        "The parameters update gradually based on correction frequency",
+        "It has no effect, parameters are frozen after training",
+        "Karel learns from corrections but only within each session",
+        "Corrections update a separate patch layer on top of the main model"
+      ],
+      "correct": 1,
+      "explanation": "After training, parameters are frozen. Chatting with Karel does not update the model. His fundamental knowledge can only change through retraining or fine-tuning, not through in-conversation corrections."
+    },
+    {
+      "id": 4,
+      "question": "A customer reported fraud to Karel on Monday. On Wednesday they return to follow up. Karel has no memory of the Monday conversation. What does this mean for the product team?",
+      "options": [
+        "Nothing; Karel will piece together the context from the customer's new message",
+        "The team must build a memory layer that loads the prior case into Karel's context at session start",
+        "The customer must always start a new fraud report from scratch, this is expected behavior",
+        "Karel should be retrained on previous conversations to remember returning customers"
+      ],
+      "correct": 1,
+      "explanation": "Memory between sessions doesn't come free, it must be deliberately designed. The product team needs to build a system that retrieves the customer's previous case and loads it into Karel's context window at the start of each new conversation."
+    }
+  ]
+}

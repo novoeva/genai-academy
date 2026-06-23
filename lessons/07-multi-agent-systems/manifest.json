@@ -1,0 +1,65 @@
+{
+  "chapter": 7,
+  "title": "Multi-Agent Systems",
+  "lessons": [
+    {
+      "id": "01-introduction",
+      "title": "Introduction",
+      "file": "01-introduction.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": false,
+        "simulation": false
+      }
+    },
+    {
+      "id": "02-orchestrators-and-subagents",
+      "title": "Orchestrators and subagents",
+      "file": "02-orchestrators-and-subagents.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "02-orchestrators-and-subagents.sim.html"
+      }
+    },
+    {
+      "id": "03-trust-between-agents",
+      "title": "Trust between agents",
+      "file": "03-trust-between-agents.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "03-trust-between-agents.sim.html"
+      }
+    },
+    {
+      "id": "04-real-world-examples",
+      "title": "Real-world multi-agent examples",
+      "file": "04-real-world-examples.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "04-real-world-examples.sim.html"
+      }
+    },
+    {
+      "id": "05-when-not-to-use-multi-agent",
+      "title": "When not to use multi-agent",
+      "file": "05-when-not-to-use-multi-agent.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "05-when-not-to-use-multi-agent.sim.html"
+      }
+    }
+  ]
+}

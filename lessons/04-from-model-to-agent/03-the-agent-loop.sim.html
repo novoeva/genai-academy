@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loop Stepper | Agentic AI Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4f46e5;
+            --primary-gradient: linear-gradient(135deg, #4f46e5, #6f68f7);
+            --bg: #f7f9fb;
+            --card-bg: white;
+            --card-border: rgba(44, 52, 55, 0.12);
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --text-primary: #2c3437;
+            --text-secondary: #596064;
+            --accent-light: #eef2ff;
+            --success: #10b981;
+            --error: #ef4444;
+            --border-radius-card: 24px;
+            --border-radius-btn: 12px;
+        }
+    html { overflow: hidden; }
+
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loop-diagram {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-card);
+            padding: 40px 30px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .step-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-card);
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .step-number {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .step-phase {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            padding: 8px 12px;
+            background: var(--accent-light);
+            border-radius: 6px;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .step-content {
+            margin-top: 20px;
+            margin-bottom: 30px;
+            flex: 1;
+        }
+
+        .step-section {
+            margin-bottom: 16px;
+        }
+
+        .step-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .step-code {
+            background: #f5f3ff;
+            border-left: 3px solid var(--primary);
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            color: var(--text-primary);
+            overflow-x: auto;
+        }
+
+        .trace-panel {
+            background: var(--accent-light);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-btn);
+            padding: 16px;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .trace-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .trace-item {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .trace-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .trace-action {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius-btn);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-light);
+        }
+
+        .step-counter {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .completion-message {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--border-radius-btn);
+            display: none;
+        }
+
+        .completion-message.active {
+            display: block;
+        }
+
+        .completion-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Loop Stepper</h1>
+            <p class="subtitle">Step through Karel's agent loop: Perceive → Plan → Act → Observe → Repeat</p>
+        </header>
+
+        <div class="main-grid">
+            <div class="loop-diagram">
+                <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <style>
+                            .phase-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 600; }
+                            .phase-active { fill: white; }
+                            .phase-inactive { fill: #596064; opacity: 0.4; }
+                        </style>
+                    </defs>
+                    <!-- Circle background -->
+                    <circle cx="140" cy="140" r="130" fill="none" stroke="#e5e7eb" stroke-width="2"/>
+
+                    <!-- PERCEIVE (top) -->
+                    <rect x="100" y="20" width="80" height="60" rx="8" fill="#4f46e5" id="phase-perceive"/>
+                    <text x="140" y="55" text-anchor="middle" class="phase-text phase-active">PERCEIVE</text>
+
+                    <!-- PLAN (right) -->
+                    <rect x="200" y="110" width="60" height="60" rx="8" fill="#9f9f9f" id="phase-plan"/>
+                    <text x="230" y="142" text-anchor="middle" class="phase-text phase-inactive">PLAN</text>
+
+                    <!-- ACT (bottom right) -->
+                    <rect x="160" y="210" width="60" height="60" rx="8" fill="#9f9f9f" id="phase-act"/>
+                    <text x="190" y="242" text-anchor="middle" class="phase-text phase-inactive">ACT</text>
+
+                    <!-- OBSERVE (bottom left) -->
+                    <rect x="60" y="210" width="60" height="60" rx="8" fill="#9f9f9f" id="phase-observe"/>
+                    <text x="90" y="242" text-anchor="middle" class="phase-text phase-inactive">OBSERVE</text>
+
+                    <!-- PLAN (left) -->
+                    <rect x="20" y="110" width="60" height="60" rx="8" fill="#9f9f9f" id="phase-plan2"/>
+                    <text x="50" y="142" text-anchor="middle" class="phase-text phase-inactive">PLAN</text>
+
+                    <!-- Arrows -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#2c3437"/>
+                        </marker>
+                    </defs>
+                    <path d="M 140 80 Q 170 110 200 110" stroke="#2c3437" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M 210 170 Q 200 190 160 210" stroke="#2c3437" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M 90 270 Q 50 250 50 170" stroke="#2c3437" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M 50 110 Q 80 90 100 80" stroke="#2c3437" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                </svg>
+            </div>
+
+            <div class="step-panel">
+                <div class="step-counter"><span id="stepCounter">Step 1 of 8</span></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 12.5%;"></div>
+                </div>
+
+                <div class="step-number" id="stepNum">Step 1</div>
+                <div class="step-phase" id="stepPhase">PERCEIVE</div>
+
+                <div class="step-content" id="stepContent">
+                    <div class="step-section">
+                        <div class="step-label">What Karel sees</div>
+                        <div class="step-text" id="stepText"></div>
+                    </div>
+                </div>
+
+                <div class="trace-panel">
+                    <div class="trace-title">Agent Trace</div>
+                    <div id="traceLog"></div>
+                </div>
+
+                <div class="completion-message" id="completionMsg">
+                    <div class="completion-text">Loop complete! Karel helped the customer resolve their fraud concern.</div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-secondary" id="resetBtn">Reset</button>
+                    <button class="btn-primary" id="nextBtn">Next Step</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const steps = [
+            {
+                phase: 'PERCEIVE',
+                label: 'What Karel sees',
+                content: 'Customer message arrives in the system.',
+                text: '"Hi, I see a charge of €340 at \'ElectroMart\' that I don\'t recognize."',
+                trace: 'Customer message received'
+            },
+            {
+                phase: 'PLAN',
+                label: 'Karel decides',
+                content: 'What to do next?',
+                text: 'Karel reasons: "I should check the transaction history before responding. This will help me understand if the charge matches the account\'s normal pattern. Tool needed: read_transaction_history."',
+                trace: 'Decision: Retrieve transaction history'
+            },
+            {
+                phase: 'ACT',
+                label: 'Karel calls a tool',
+                content: 'Tool call',
+                text: 'read_transaction_history(account_id="KB-447821", days=30)',
+                trace: 'Tool called: read_transaction_history',
+                code: 'read_transaction_history(\n  account_id="KB-447821",\n  days=30\n)'
+            },
+            {
+                phase: 'OBSERVE',
+                label: 'Tool returns data',
+                content: 'Result',
+                text: 'A transaction from ElectroMart appears: €340, Berlin, 2026-04-18, status approved. The customer has no other transactions in Germany in the past 30 days.',
+                trace: 'Tool returned: 1 transaction at ElectroMart',
+                code: '[{\n  merchant: "ElectroMart",\n  amount: 340.00,\n  date: "2026-04-18",\n  location: "Berlin, DE",\n  status: "approved"\n}]'
+            },
+            {
+                phase: 'PLAN',
+                label: 'Karel reassesses',
+                content: 'What now?',
+                text: 'Karel reasons: "The customer doesn\'t recognize this charge, and it\'s an unusual location for them. This warrants investigation. I should flag it as potential fraud. Tool needed: flag_transaction."',
+                trace: 'Decision: Flag transaction for fraud review'
+            },
+            {
+                phase: 'ACT',
+                label: 'Karel calls another tool',
+                content: 'Tool call',
+                text: 'flag_transaction(transaction_id="TX-9921", reason="customer_dispute")',
+                trace: 'Tool called: flag_transaction',
+                code: 'flag_transaction(\n  transaction_id="TX-9921",\n  reason="customer_dispute"\n)'
+            },
+            {
+                phase: 'OBSERVE',
+                label: 'Confirmation received',
+                content: 'Result',
+                text: 'The transaction is now flagged. A case (FR-2847) has been created for investigation. Status: investigation_pending.',
+                trace: 'Tool returned: Case #FR-2847 created',
+                code: '{\n  status: "flagged",\n  case_id: "FR-2847",\n  next_steps: "investigation_pending"\n}'
+            },
+            {
+                phase: 'RESPOND',
+                label: 'Karel replies to customer',
+                content: 'Agent response',
+                text: '"I can see that charge of €340 at ElectroMart in Berlin on April 18th. I\'ve flagged it for review (case #FR-2847). Would you like me to freeze your card while the investigation runs?"',
+                trace: 'Response sent to customer'
+            }
+        ];
+
+        let currentStep = 0;
+
+        function phaseColor(phase) {
+            const colors = {
+                PERCEIVE: '#4f46e5',
+                PLAN: '#f59e0b',
+                ACT: '#ef4444',
+                OBSERVE: '#10b981',
+                RESPOND: '#8b5cf6'
+            };
+            return colors[phase] || '#4f46e5';
+        }
+
+        function updatePhaseHighlight(phase) {
+            const phaseIds = ['phase-perceive', 'phase-plan', 'phase-act', 'phase-observe', 'phase-plan2'];
+            document.querySelectorAll('#phase-perceive, #phase-plan, #phase-act, #phase-observe, #phase-plan2').forEach(el => {
+                el.style.fill = '#9f9f9f';
+                el.style.opacity = '0.4';
+            });
+
+            let targetId = '';
+            if (phase === 'PERCEIVE') targetId = 'phase-perceive';
+            else if (phase === 'PLAN' && currentStep < 5) targetId = 'phase-plan';
+            else if (phase === 'PLAN' && currentStep >= 5) targetId = 'phase-plan2';
+            else if (phase === 'ACT') targetId = 'phase-act';
+            else if (phase === 'OBSERVE') targetId = 'phase-observe';
+
+            if (targetId) {
+                const el = document.getElementById(targetId);
+                if (el) {
+                    el.style.fill = phaseColor(phase);
+                    el.style.opacity = '1';
+                }
+            }
+        }
+
+        function render() {
+            const step = steps[currentStep];
+            document.getElementById('stepNum').textContent = `Step ${currentStep + 1}`;
+            document.getElementById('stepCounter').textContent = `Step ${currentStep + 1} of ${steps.length}`;
+            document.getElementById('stepPhase').textContent = step.phase;
+            document.getElementById('stepPhase').style.background = phaseColor(step.phase) + '20';
+            document.getElementById('progressFill').style.width = ((currentStep + 1) / steps.length * 100) + '%';
+
+            let content = `<div class="step-section">
+                <div class="step-label">${step.label}</div>
+                <div class="step-text">${step.text}</div>`;
+
+            if (step.code) {
+                content += `<div class="step-code">${step.code}</div>`;
+            }
+            content += `</div>`;
+
+            document.getElementById('stepContent').innerHTML = content;
+
+            updateTrace();
+            updatePhaseHighlight(step.phase);
+
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('nextBtn').textContent = currentStep === steps.length - 1 ? 'Complete' : 'Next Step';
+
+            if (currentStep === steps.length - 1) {
+                document.getElementById('completionMsg').classList.add('active');
+            } else {
+                document.getElementById('completionMsg').classList.remove('active');
+            }
+        }
+
+        function updateTrace() {
+            const trace = document.getElementById('traceLog');
+            trace.innerHTML = steps.slice(0, currentStep + 1).map((step, idx) =>
+                `<div class="trace-item"><span class="trace-action">${step.phase}:</span> ${step.trace}</div>`
+            ).join('');
+        }
+
+        document.getElementById('nextBtn').onclick = () => {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                render();
+            }
+        };
+
+        document.getElementById('resetBtn').onclick = () => {
+            currentStep = 0;
+            render();
+        };
+
+        render();
+    </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.body.offsetHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+      window.parent.postMessage({ type: "resize", height: height }, "*");
+    }
+  }
+     // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

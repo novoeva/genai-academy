@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Next-Token Prediction</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow: hidden; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: transparent;
+      color: #191c1e;
+      padding: 28px 28px 32px;
+    }
+
+    /* --- Hint text --- */
+    .hint {
+      font-size: 13px;
+      color: #777586;
+      margin-bottom: 22px;
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    /* --- Temperature slider section --- */
+    .temp-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px 18px;
+    }
+
+    .temp-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #777586;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    .temp-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 5px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #382ac0 0%, #a78bfa 100%);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .temp-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border: 3px solid #382ac0;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(56, 42, 192, 0.25);
+    }
+
+    .temp-badge {
+      font-size: 13px;
+      font-weight: 700;
+      color: #382ac0;
+      background: #eef2ff;
+      border-radius: 8px;
+      padding: 4px 10px;
+      white-space: nowrap;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    /* --- Input token row --- */
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .input-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #777586;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+
+    .token {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 13px;
+      background: #fff;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #191c1e;
+      transition: all 0.3s;
+    }
+
+    .token.just-added {
+      background: #eef2ff;
+      border-color: #382ac0;
+      color: #382ac0;
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .token.predicting {
+      border: 2px dashed #382ac0;
+      color: #382ac0;
+      background: rgba(56, 42, 192, 0.04);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.5; }
+    }
+
+    /* --- Candidate cards --- */
+    .candidates-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .candidate-card {
+      background: #fff;
+      border: 2px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 16px 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: default;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .candidate-card.top {
+      border-color: #382ac0;
+      background: linear-gradient(135deg, #f5f3ff 0%, #fff 100%);
+    }
+
+    .candidate-card.selected {
+      animation: cardPick 0.4s ease forwards;
+    }
+
+    @keyframes cardPick {
+      0%   { transform: scale(1);    box-shadow: none; }
+      40%  { transform: scale(1.06); box-shadow: 0 6px 20px rgba(56,42,192,0.2); }
+      100% { transform: scale(1);    box-shadow: none; }
+    }
+
+    .card-word {
+      font-size: 22px;
+      font-weight: 700;
+      color: #191c1e;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .candidate-card.top .card-word {
+      color: #382ac0;
+    }
+
+    .card-pct {
+      font-size: 12px;
+      font-weight: 600;
+      color: #9ca3af;
+    }
+
+    .candidate-card.top .card-pct {
+      color: #4f46e5;
+    }
+
+    .card-bar-bg {
+      height: 3px;
+      background: #f1f5f9;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .card-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: #e2e8f0;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .candidate-card.top .card-bar-fill {
+      background: #382ac0;
+    }
+
+    /* --- Run button --- */
+    .btn-run {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #382ac0;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-run:hover:not(:disabled) { background: #2c21a0; }
+    .btn-run:active:not(:disabled) { transform: scale(0.97); }
+    .btn-run:disabled { opacity: 0.55; cursor: default; }
+
+    .btn-reset {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      color: #777586;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-reset:hover { border-color: #382ac0; color: #382ac0; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* --- Completion message --- */
+    .completion-msg {
+      display: none;
+      font-size: 13px;
+      color: #059669;
+      font-weight: 600;
+      padding: 10px 16px;
+      background: #ecfdf5;
+      border: 1px solid #6ee7b7;
+      border-radius: 10px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .completion-msg.visible {
+      display: inline-flex;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="hint">Adjust the temperature slider to see how it changes the probability distribution, then step through the prediction one token at a time.</p>
+
+  <!-- Temperature slider -->
+  <div class="temp-section">
+    <span class="temp-label">Temperature</span>
+    <input
+      type="range"
+      class="temp-slider"
+      id="temp-slider"
+      min="0.1"
+      max="2.0"
+      step="0.1"
+      value="0.7"
+      oninput="onTempChange(this.value)"
+    />
+    <span class="temp-badge" id="temp-badge">0.7 — Balanced</span>
+  </div>
+
+  <!-- Token chips -->
+  <div class="input-row">
+    <span class="input-label">Input:</span>
+    <div id="token-chips"></div>
+  </div>
+
+  <!-- Candidate cards -->
+  <div class="candidates-grid" id="candidates-grid"></div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn-run" id="btn-run" onclick="runStep()">▶ Run Prediction Step</button>
+    <button class="btn-reset" onclick="reset()">↺ Reset</button>
+    <span class="completion-msg" id="completion-msg">✓ Sentence complete — hit Reset to start again</span>
+  </div>
+
+  <script>
+    // ── Prediction data ──────────────────────────────────────────────
+    // Each step: tokens so far + the base candidate distribution (at temp 1.0)
+    const STEPS = [
+      {
+        tokens: ["Once", "upon", "a"],
+        candidates: [
+          { word: "time",     basePct: 94.2 },
+          { word: "midnight", basePct:  3.1 },
+          { word: "planet",   basePct:  0.4 },
+        ]
+      },
+      {
+        tokens: ["Once", "upon", "a", "time"],
+        candidates: [
+          { word: "there", basePct: 71.3 },
+          { word: "a",     basePct: 18.4 },
+          { word: "the",   basePct:  8.2 },
+        ]
+      },
+      {
+        tokens: ["Once", "upon", "a", "time", "there"],
+        candidates: [
+          { word: "was",   basePct: 83.1 },
+          { word: "lived", basePct: 10.2 },
+          { word: "stood", basePct:  5.9 },
+        ]
+      },
+      {
+        tokens: ["Once", "upon", "a", "time", "there", "was"],
+        candidates: [
+          { word: "a",  basePct: 62.4 },
+          { word: "an", basePct: 22.8 },
+          { word: "no", basePct:  9.3 },
+        ]
+      },
+      {
+        tokens: ["Once", "upon", "a", "time", "there", "was", "a"],
+        candidates: [
+          { word: "young",  basePct: 41.2 },
+          { word: "small",  basePct: 28.7 },
+          { word: "brave",  basePct: 24.6 },
+        ]
+      },
+    ];
+
+    // ── State ────────────────────────────────────────────────────────
+    let stepIndex = 0;
+    let temperature = 0.7;
+    let lastAddedIndex = -1;   // which token index was just added
+    let running = false;
+
+    // ── Temperature helpers ──────────────────────────────────────────
+    function applyTemperature(basePcts, temp) {
+      // Convert percentages → logits (log), scale by 1/temp, softmax back
+      const logits = basePcts.map(p => Math.log(Math.max(p, 0.01)));
+      const scaled = logits.map(l => l / temp);
+      const maxS   = Math.max(...scaled);
+      const exps   = scaled.map(s => Math.exp(s - maxS));
+      const sum    = exps.reduce((a, b) => a + b, 0);
+      return exps.map(e => (e / sum) * 100);
+    }
+
+    function tempDescription(t) {
+      if (t <= 0.3) return "Deterministic";
+      if (t <= 0.6) return "Focused";
+      if (t <= 1.1) return "Balanced";
+      if (t <= 1.5) return "Creative";
+      return "Chaotic";
+    }
+
+    // ── Sample from distribution ─────────────────────────────────────
+    function sampleIndex(pcts) {
+      const r = Math.random() * 100;
+      let acc = 0;
+      for (let i = 0; i < pcts.length; i++) {
+        acc += pcts[i];
+        if (r < acc) return i;
+      }
+      return pcts.length - 1;
+    }
+
+    // ── Render helpers ───────────────────────────────────────────────
+    function renderTokens(tokens, justAdded) {
+      const container = document.getElementById('token-chips');
+      container.innerHTML = '';
+
+      tokens.forEach((t, i) => {
+        const chip = document.createElement('span');
+        chip.className = 'token' + (i === justAdded ? ' just-added' : '');
+        chip.textContent = t;
+        container.appendChild(chip);
+      });
+
+      // "Predicting..." chip only when there are more steps
+      if (stepIndex < STEPS.length) {
+        const pred = document.createElement('span');
+        pred.className = 'token predicting';
+        pred.textContent = 'Predicting…';
+        container.appendChild(pred);
+      }
+    }
+
+    function renderCandidates(candidates) {
+      const pcts = applyTemperature(candidates.map(c => c.basePct), temperature);
+      const grid = document.getElementById('candidates-grid');
+      grid.innerHTML = '';
+
+      candidates.forEach((c, i) => {
+        const pct = pcts[i];
+        const isTop = i === 0;
+        const card = document.createElement('div');
+        card.className = 'candidate-card' + (isTop ? ' top' : '');
+        card.id = 'card-' + i;
+        card.innerHTML = `
+          <div class="card-word">${c.word}</div>
+          <div class="card-pct">${pct.toFixed(1)}%</div>
+          <div class="card-bar-bg">
+            <div class="card-bar-fill" id="bar-${i}" style="width: 0%"></div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      // Animate bars in on next frame
+      requestAnimationFrame(() => {
+        candidates.forEach((_, i) => {
+          const bar = document.getElementById('bar-' + i);
+          if (bar) bar.style.width = pcts[i].toFixed(1) + '%';
+        });
+      });
+    }
+
+    function refreshCandidatePcts() {
+      if (stepIndex >= STEPS.length) return;
+      const candidates = STEPS[stepIndex].candidates;
+      const pcts = applyTemperature(candidates.map(c => c.basePct), temperature);
+      candidates.forEach((_, i) => {
+        const pctEl = document.querySelector('#card-' + i + ' .card-pct');
+        const barEl = document.getElementById('bar-' + i);
+        if (pctEl) pctEl.textContent = pcts[i].toFixed(1) + '%';
+        if (barEl)  barEl.style.width = pcts[i].toFixed(1) + '%';
+      });
+    }
+
+    function render() {
+      const isDone = stepIndex >= STEPS.length;
+
+      if (isDone) {
+        // Show completed sentence
+        const allTokens = STEPS[STEPS.length - 1].tokens.concat(
+          /* the final word picked in the last step — stored in finalToken */ [window._finalToken].filter(Boolean)
+        );
+        renderTokens(allTokens, lastAddedIndex);
+        document.getElementById('candidates-grid').innerHTML = '';
+        document.getElementById('btn-run').disabled = true;
+        document.getElementById('completion-msg').classList.add('visible');
+      } else {
+        renderTokens(STEPS[stepIndex].tokens, lastAddedIndex);
+        renderCandidates(STEPS[stepIndex].candidates);
+        document.getElementById('btn-run').disabled = false;
+        document.getElementById('completion-msg').classList.remove('visible');
+      }
+
+      sendResize();
+    }
+
+    // ── Interactions ─────────────────────────────────────────────────
+    function onTempChange(val) {
+      temperature = parseFloat(val);
+      document.getElementById('temp-badge').textContent =
+        temperature.toFixed(1) + ' — ' + tempDescription(temperature);
+      refreshCandidatePcts();
+    }
+
+    function runStep() {
+      if (running || stepIndex >= STEPS.length) return;
+      running = true;
+
+      const candidates = STEPS[stepIndex].candidates;
+      const pcts = applyTemperature(candidates.map(c => c.basePct), temperature);
+      const picked = sampleIndex(pcts);
+
+      // Animate the selected card
+      const card = document.getElementById('card-' + picked);
+      if (card) card.classList.add('selected');
+
+      setTimeout(() => {
+        // Advance to next step
+        const pickedWord = candidates[picked].word;
+
+        if (stepIndex + 1 < STEPS.length) {
+          stepIndex++;
+          lastAddedIndex = STEPS[stepIndex].tokens.length - 1;
+        } else {
+          // Last step — mark complete
+          window._finalToken = pickedWord;
+          lastAddedIndex = STEPS[stepIndex].tokens.length; // index of newly appended word
+          stepIndex = STEPS.length; // mark done
+        }
+
+        running = false;
+        render();
+      }, 450);
+    }
+
+    function reset() {
+      stepIndex = 0;
+      lastAddedIndex = -1;
+      running = false;
+      window._finalToken = null;
+      render();
+    }
+
+    // ── Resize messaging ─────────────────────────────────────────────
+    function sendResize() {
+      const h = document.body.offsetHeight;
+      window.parent.postMessage({ type: 'resize', height: h }, '*');
+    }
+
+    // ── Init ─────────────────────────────────────────────────────────
+    render();
+    // Send resize after fonts/layout settle
+    setTimeout(sendResize, 200);
+    window.addEventListener('resize', sendResize);
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+{
+  "lesson": "05-when-not-to-use-multi-agent",
+  "title": "When not to use multi-agent",
+  "questions": [
+    {
+      "id": 1,
+      "question": "An engineering team proposes splitting Karel into three agents, one to read transactions, one to flag and freeze, one to file reports, to make the system 'more scalable.' Each agent's system prompt is nearly identical. What is the best response to this proposal?",
+      "options": [
+        "Accept it, more agents always leads to more reliable behavior",
+        "Push back, if the agents' scopes and prompts are nearly identical, there's no meaningful specialization benefit. The architecture adds complexity without improving quality. A single well-designed Karel is the right answer.",
+        "Accept it if the team can add parallelism between the three agents",
+        "Reject it; Karel should never be split into multiple agents under any circumstances"
+      ],
+      "correct": 1,
+      "explanation": "Multi-agent earns its cost through meaningful specialization or genuine parallelism. If three agents have nearly identical system prompts and the tasks are sequential (you can't freeze before reading transactions, can't file before freezing), the split adds complexity and failure points without adding capability. The right question is: 'what specifically gets better with three agents?' If the answer is vague, the architecture isn't justified."
+    },
+    {
+      "id": 2,
+      "question": "Karel is producing inconsistent outputs, sometimes too formal, sometimes too casual. The team proposes adding a 'consistency checker' agent that reviews Karel's responses before they're sent. What is the better approach?",
+      "options": [
+        "Build the consistency checker agent, two agents reviewing the same output is always better than one",
+        "Fix the root cause in Karel's system prompt with clearer tone instructions and few-shot examples, adding another agent to fix a prompt engineering problem compounds the complexity without addressing the issue",
+        "Add a third agent to break the tie when Karel and the checker disagree",
+        "Use output validation to flag inconsistent responses for human review, while also building the checker agent"
+      ],
+      "correct": 1,
+      "explanation": "Adding an agent to check for problems that exist because of a poor system prompt doesn't fix the problem, it adds a layer on top of it. The checker agent inherits the same inconsistency problem (it also needs to judge tone using an LLM), and now there are two agents to maintain instead of one. The fix is prompt engineering: better tone instructions, few-shot examples, and specific negative instructions for what to avoid."
+    },
+    {
+      "id": 3,
+      "question": "Which of the following tasks would most benefit from a multi-agent architecture over a single agent?",
+      "options": [
+        "Karel handling a single customer's fraud report, one customer, one transaction, one sequential process",
+        "A banking system that needs to simultaneously screen new transactions for fraud, handle inbound customer reports, manage ongoing cases, and route compliance flags, with each workflow genuinely specialized and partially parallelizable",
+        "A customer FAQ bot that answers questions about the bank's services",
+        "An agent that generates a weekly summary of Karel's performance metrics"
+      ],
+      "correct": 1,
+      "explanation": "The full banking fraud management system has the properties that justify multi-agent: genuinely distinct domains (detection vs. reporting vs. case management vs. compliance), meaningful specialization for each (different tools, different prompts, different success criteria), and partial parallelism (detection runs continuously while individual cases are handled independently). The other options are narrow, sequential, or simple enough for a single well-designed agent."
+    },
+    {
+      "id": 4,
+      "question": "Before deciding to build a multi-agent system, a product team should answer several questions. Which answer most strongly suggests a single-agent approach is better?",
+      "options": [
+        "The task involves three distinct subtasks that each require different tools",
+        "Two of the three subtasks could potentially run in parallel",
+        "The team cannot clearly define what each agent would receive as input or return as output, the interfaces between agents are vague",
+        "The task is high-volume, handling thousands of interactions per day"
+      ],
+      "correct": 2,
+      "explanation": "If the team can't articulate the interfaces between agents, what each agent receives and returns, the architecture is not well-understood enough to build. Vague interfaces between agents are the most reliable predictor of multi-agent failure. High volume, parallel tasks, and distinct subtasks can all justify multi-agent when the interfaces are clear. But without clear interfaces, the architecture is not ready."
+    }
+  ]
+}

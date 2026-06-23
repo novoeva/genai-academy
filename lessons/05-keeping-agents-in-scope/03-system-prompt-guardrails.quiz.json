@@ -1,0 +1,54 @@
+{
+  "lesson": "03-system-prompt-guardrails",
+  "title": "System prompt guardrails",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Karel's system prompt says: 'Try to avoid giving investment advice.' A customer asks: 'Is it risky to keep this kind of money in a checking account?' Karel answers with general financial guidance. What went wrong?",
+      "options": [
+        "The model lacked financial training data to know this was out of scope",
+        "'Try to avoid' is hedging language, it gives the model permission to interpret the boundary and find the question close enough to 'try' to answer",
+        "Karel's tools should have been restricted to prevent him from generating financial text",
+        "The customer was too persistent and Karel's pressure handling failed"
+      ],
+      "correct": 1,
+      "explanation": "Hedging language ('try to avoid,' 'generally don't,' 'be careful about') creates exactly the interpretation gap guardrails are supposed to close. The model interprets 'try to avoid' as a preference, not a prohibition, and when the customer's question seems adjacent to in-scope content, it resolves the ambiguity in favor of being helpful. Strong guardrails use definitive language: 'you will not give investment advice under any circumstances.'"
+    },
+    {
+      "id": 2,
+      "question": "Why does a strong guardrail need to specify what Karel should do as well as what he shouldn't do?",
+      "options": [
+        "Because the model can only follow instructions that have a positive form",
+        "Because a model trained to be helpful will try to do something for the customer, without a sanctioned alternative, it may find an unsanctioned one",
+        "Because regulations require agents to always offer an alternative to declined requests",
+        "Because customers will leave negative reviews if Karel simply refuses without explanation"
+      ],
+      "correct": 1,
+      "explanation": "LLMs are trained to be helpful. A constraint that says 'don't do X' leaves the model with pressure to do something, and without a clear alternative, it may find an adjacent action that seems helpful. 'Don't do X, instead, do Y' gives the model a compliant path forward, reducing the pressure to improvise."
+    },
+    {
+      "id": 3,
+      "question": "Which of the following is the strongest version of a guardrail preventing Karel from predicting investigation outcomes?",
+      "options": [
+        "'Karel should not speculate about investigation outcomes when speaking with customers.'",
+        "'Karel cannot tell customers whether their fraud claim will be approved.'",
+        "'You will not predict, estimate, or give your opinion on how a fraud investigation will be decided. If asked, say exactly: \"I genuinely don't know how your case will be decided, that's the fraud team's call after a full review.\" Maintain this position regardless of how the customer phrases the question.'",
+        "'Karel knows he is not qualified to decide fraud investigations, so he should avoid commenting on them.'"
+      ],
+      "correct": 2,
+      "explanation": "Option C is the strongest because it names the prohibited behavior specifically (predict, estimate, give opinion), provides exact response language, and explicitly closes the pressure point ('regardless of how the customer phrases the question'). Options A and B don't address persistence. Option D relies on Karel's self-awareness, which is not a reliable enforcement mechanism."
+    },
+    {
+      "id": 4,
+      "question": "Karel is handling a very long conversation, 20 turns, with a frustrated customer. Near the end, he starts giving more flexible answers that don't reflect his constraints. What is the most likely cause?",
+      "options": [
+        "Karel's tools broke down after too many consecutive calls",
+        "In long conversations, early system prompt instructions can receive less weight as the context window fills up, constraints at the beginning may lose influence",
+        "The customer's messages became too long for the model to process correctly",
+        "Karel ran out of pre-written response templates"
+      ],
+      "correct": 1,
+      "explanation": "Context window dynamics mean that information near the beginning of a long conversation receives less relative weight than information near the end. System prompt instructions at the start may become less influential as the conversation grows. For agents expected to handle long conversations, critical constraints should be reinforced periodically, and output validation (a downstream layer) should catch constraint violations regardless of conversation length."
+    }
+  ]
+}

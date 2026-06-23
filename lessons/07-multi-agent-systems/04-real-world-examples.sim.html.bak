@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Match - Agentic AI Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f7f9fb;
+            color: #2c3437;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #596064;
+            font-weight: 400;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #2c3437;
+        }
+
+        .problems-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .problem-card {
+            border: 2px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            background: #f7f9fb;
+            transition: all 0.3s ease;
+        }
+
+        .problem-card:hover {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .problem-number {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #6f68f7);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .problem-text {
+            font-size: 14px;
+            color: #2c3437;
+            margin-bottom: 16px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .pattern-btn {
+            padding: 10px;
+            border: 2px solid rgba(79, 70, 229, 0.3);
+            border-radius: 8px;
+            background: white;
+            color: #4f46e5;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .pattern-btn:hover {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .pattern-btn.selected {
+            background: linear-gradient(135deg, #4f46e5, #6f68f7);
+            color: white;
+            border-color: #4f46e5;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+        }
+
+        .pattern-btn.correct {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+
+        .pattern-btn.incorrect {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+
+        .pattern-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .feedback {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            display: none;
+            border-left: 3px solid transparent;
+        }
+
+        .feedback.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border-left-color: #10b981;
+            display: block;
+        }
+
+        .feedback.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-left-color: #ef4444;
+            display: block;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #6f68f7);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .summary-section {
+            display: none;
+        }
+
+        .summary-section.active {
+            display: block;
+        }
+
+        .pattern-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .pattern-box {
+            background: #f7f9fb;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #4f46e5;
+        }
+
+        .pattern-box h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-bottom: 8px;
+        }
+
+        .pattern-box p {
+            font-size: 12px;
+            color: #596064;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .pattern-diagram {
+            background: white;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #2c3437;
+            text-align: center;
+        }
+
+        .pattern-example {
+            background: white;
+            border-left: 2px solid #4f46e5;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #596064;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, #eef2ff, #f7f9fb);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .score-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: #4f46e5;
+            margin-bottom: 8px;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: #596064;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .button-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pattern-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pattern Match</h1>
+            <p class="subtitle">Match business problems to multi-agent architecture patterns</p>
+        </header>
+
+        <div id="gameSection">
+            <div class="card">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress"></div>
+                </div>
+
+                <h2>Match the Pattern</h2>
+                <p style="font-size: 13px; color: #596064; margin-bottom: 24px;">Read each problem and select which multi-agent pattern fits best.</p>
+
+                <div class="problems-grid" id="problemsGrid"></div>
+            </div>
+        </div>
+
+        <div id="summarySection" class="summary-section">
+            <div class="card">
+                <h2>All Patterns at a Glance</h2>
+                <div class="pattern-summary" id="summaryPatterns"></div>
+
+                <div class="score-card">
+                    <div class="score-value" id="scoreValue">0%</div>
+                    <div class="score-label">Accuracy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const patterns = [
+            {
+                name: 'Sequential Pipeline',
+                icon: '→',
+                description: 'Agent A → Agent B → Agent C. Each step depends on the previous output.',
+                whenUse: 'Tasks must happen in order, where output of one is input to the next.',
+                example: 'Extract complaint type → look up policy → draft response'
+            },
+            {
+                name: 'Parallel Fanout',
+                icon: '⟳',
+                description: 'One agent delegates to multiple agents simultaneously, then combines results.',
+                whenUse: 'Multiple independent analyses needed, all at the same time.',
+                example: 'Fraud check + medical validity + coverage check all run in parallel'
+            },
+            {
+                name: 'Hierarchical',
+                icon: '⬇',
+                description: 'Top orchestrator → mid-level agents → specialist agents. Tiered authority.',
+                whenUse: 'Complex cases route to higher-level agents with access to specialists.',
+                example: 'Karel → Senior Analyst → specialists (card fraud, account takeover)'
+            },
+            {
+                name: 'Peer Network',
+                icon: '◈',
+                description: 'Agents consult each other without fixed hierarchy. Cross-check work.',
+                whenUse: 'Agents need to verify each other, no single orchestrator.',
+                example: 'Research agents ask each other to validate findings'
+            }
+        ];
+
+        const problems = [
+            {
+                text: 'We need to analyze customer complaints: first extract the complaint type, then look up relevant policy, then draft a response.',
+                answer: 0, // Sequential Pipeline
+                reason: 'Each step depends on the previous. The policy lookup needs the complaint type; the response needs the policy.'
+            },
+            {
+                text: 'We\'re processing insurance claims: we need to run fraud check, medical validity check, and coverage eligibility check — all at the same time, then combine results.',
+                answer: 1, // Parallel Fanout
+                reason: 'All three checks are independent and can run simultaneously. Results must be combined at the end.'
+            },
+            {
+                text: 'Karel handles fraud, but complex cases get routed to a Senior Fraud Analyst agent, who can summon specialists for specific fraud types (card fraud, account takeover, wire fraud).',
+                answer: 2, // Hierarchical
+                reason: 'Clear hierarchy: Karel → Senior Analyst → specialists. Authority and expertise tiers.'
+            },
+            {
+                text: 'Our research agents: when one finds something uncertain, it asks another research agent to verify. They cross-check each other\'s work.',
+                answer: 3, // Peer Network
+                reason: 'No fixed hierarchy. Agents consult each other laterally to validate findings.'
+            }
+        ];
+
+        let currentProblem = 0;
+        let correctAnswers = 0;
+        let answered = [];
+
+        function renderProblems() {
+            const grid = document.getElementById('problemsGrid');
+            grid.innerHTML = '';
+
+            problems.forEach((problem, idx) => {
+                const card = document.createElement('div');
+                card.className = 'problem-card';
+
+                const number = document.createElement('div');
+                number.className = 'problem-number';
+                number.textContent = idx + 1;
+
+                const text = document.createElement('div');
+                text.className = 'problem-text';
+                text.textContent = problem.text;
+
+                const buttons = document.createElement('div');
+                buttons.className = 'button-group';
+
+                patterns.forEach((pattern, pIdx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'pattern-btn';
+                    btn.textContent = pattern.name;
+                    btn.dataset.problem = idx;
+                    btn.dataset.pattern = pIdx;
+
+                    btn.addEventListener('click', () => selectAnswer(idx, pIdx, btn));
+                    buttons.appendChild(btn);
+                });
+
+                const feedback = document.createElement('div');
+                feedback.className = 'feedback';
+                feedback.id = 'feedback-' + idx;
+
+                card.appendChild(number);
+                card.appendChild(text);
+                card.appendChild(buttons);
+                card.appendChild(feedback);
+
+                grid.appendChild(card);
+            });
+        }
+
+        function selectAnswer(problemIdx, patternIdx, button) {
+            const problem = problems[problemIdx];
+            const feedback = document.getElementById('feedback-' + problemIdx);
+            const buttons = button.parentElement.querySelectorAll('.pattern-btn');
+
+            // Disable all buttons for this problem
+            buttons.forEach(b => b.disabled = true);
+
+            if (patternIdx === problem.answer) {
+                feedback.className = 'feedback success';
+                feedback.textContent = '✓ Correct! ' + problem.reason;
+                button.classList.add('correct');
+                correctAnswers++;
+            } else {
+                feedback.className = 'feedback error';
+                const correctPattern = patterns[problem.answer].name;
+                feedback.textContent = '✗ Not quite. This is ' + correctPattern + '. ' + problem.reason;
+                button.classList.add('incorrect');
+                buttons[problem.answer].classList.add('correct');
+            }
+
+            answered.push(problemIdx);
+            updateProgress();
+
+            if (answered.length === problems.length) {
+                setTimeout(showSummary, 800);
+            }
+        }
+
+        function updateProgress() {
+            document.getElementById('progress').style.width = (answered.length / problems.length * 100) + '%';
+        }
+
+        function showSummary() {
+            document.getElementById('gameSection').style.display = 'none';
+            document.getElementById('summarySection').classList.add('active');
+
+            const summary = document.getElementById('summaryPatterns');
+            summary.innerHTML = '';
+
+            patterns.forEach(pattern => {
+                const box = document.createElement('div');
+                box.className = 'pattern-box';
+
+                const diagram = document.createElement('div');
+                diagram.className = 'pattern-diagram';
+                diagram.textContent = pattern.icon + ' ' + pattern.name;
+
+                const h3 = document.createElement('h3');
+                h3.textContent = pattern.name;
+
+                const desc = document.createElement('p');
+                desc.textContent = pattern.description;
+
+                const whenLabel = document.createElement('p');
+                whenLabel.style.marginBottom = '4px';
+                whenLabel.style.fontWeight = '600';
+                whenLabel.textContent = 'When to use:';
+
+                const when = document.createElement('p');
+                when.style.marginBottom = '12px';
+                when.textContent = pattern.whenUse;
+
+                const exampleLabel = document.createElement('p');
+                exampleLabel.style.marginBottom = '4px';
+                exampleLabel.style.fontWeight = '600';
+                exampleLabel.textContent = 'Example:';
+
+                const example = document.createElement('div');
+                example.className = 'pattern-example';
+                example.textContent = pattern.example;
+
+                box.appendChild(diagram);
+                box.appendChild(h3);
+                box.appendChild(desc);
+                box.appendChild(whenLabel);
+                box.appendChild(when);
+                box.appendChild(exampleLabel);
+                box.appendChild(example);
+
+                summary.appendChild(box);
+            });
+
+            const accuracy = Math.round((correctAnswers / problems.length) * 100);
+            document.getElementById('scoreValue').textContent = accuracy + '%';
+        }
+
+        renderProblems();
+    </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+    window.parent.postMessage({ type: 'resize', height: height + 40 }, '*');
+  }
+  
+  // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

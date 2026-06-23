@@ -1,0 +1,77 @@
+{
+  "chapter": 3,
+  "title": "Prompt Engineering",
+  "lessons": [
+    {
+      "id": "01-introduction",
+      "title": "Introduction",
+      "file": "01-introduction.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": false,
+        "simulation": false
+      }
+    },
+    {
+      "id": "02-what-is-a-prompt",
+      "title": "What is a prompt, really?",
+      "file": "02-what-is-a-prompt.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "02-what-is-a-prompt.sim.html"
+      }
+    },
+    {
+      "id": "03-system-vs-user-prompts",
+      "title": "System prompts vs. user prompts",
+      "file": "03-system-vs-user-prompts.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "03-system-vs-user-prompts.sim.html"
+      }
+    },
+    {
+      "id": "04-how-to-write-clear-instructions",
+      "title": "How to write clear instructions",
+      "file": "04-how-to-write-clear-instructions.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "04-how-to-write-clear-instructions.sim.html"
+      }
+    },
+    {
+      "id": "05-few-shot-prompting",
+      "title": "Few-shot prompting: teaching by example",
+      "file": "05-few-shot-prompting.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "05-few-shot-prompting.sim.html"
+      }
+    },
+    {
+      "id": "06-common-mistakes",
+      "title": "Common prompt engineering mistakes",
+      "file": "06-common-mistakes.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "06-common-mistakes.sim.html"
+      }
+    }
+  ]
+}

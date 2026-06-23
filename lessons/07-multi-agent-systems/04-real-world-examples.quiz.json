@@ -1,0 +1,54 @@
+{
+  "lesson": "04-real-world-examples",
+  "title": "Real-world multi-agent examples",
+  "questions": [
+    {
+      "id": 1,
+      "question": "In the e-commerce customer support example, why does a multi-agent system outperform a single generalist agent?",
+      "options": [
+        "Multi-agent systems are always more accurate than single agents because they have more models running",
+        "Each specialist agent has a narrow scope and a well-crafted system prompt for one domain, making it more reliably expert than a generalist agent trying to balance all domains with one unwieldy prompt",
+        "Multi-agent systems can run on cheaper models, reducing cost",
+        "A single agent would need too many tools to handle all the different domains"
+      ],
+      "correct": 1,
+      "explanation": "Specialization is the key benefit. A generalist agent's system prompt becomes bloated and contradictory when trying to handle many domains. A specialist agent with a tight scope and a clean system prompt, only fraud, only returns, only billing, can be designed, tested, and tuned to be genuinely good at its specific domain."
+    },
+    {
+      "id": 2,
+      "question": "In the insurance claims example, the Fraud Screening Agent runs after the Document Collector Agent, while the Policy Verification Agent runs in parallel with Document Collection. What determines whether two agents should run in parallel vs. sequentially?",
+      "options": [
+        "Agents with larger system prompts should run sequentially to avoid overwhelming the system",
+        "Agents run in parallel when their tasks are independent, when neither needs the other's output to proceed. Agents run sequentially when one needs the other's result as input.",
+        "All agents in a pipeline should run sequentially for reliability",
+        "Agents run in parallel only when they use different tools"
+      ],
+      "correct": 1,
+      "explanation": "The decision rule is dependency. Policy Verification only needs the claim information (available at the start), it doesn't need the documents the collector is gathering. So it can run in parallel. The Fraud Screening Agent needs the documents to analyze patterns, it must wait for the Document Collector to finish. Task independence determines parallelism; dependencies determine sequencing."
+    },
+    {
+      "id": 3,
+      "question": "In the financial research report example, the Report Writer Agent receives structured JSON from the other agents rather than free-text summaries. Why does this matter?",
+      "options": [
+        "JSON is faster to process than text, reducing latency",
+        "Structured interfaces make the Report Writer's behavior more predictable and the full system easier to debug, free-text outputs from agents are harder to parse reliably and can introduce unexpected variation",
+        "The Report Writer agent can't process natural language, only structured data",
+        "JSON prevents prompt injection attacks between agents"
+      ],
+      "correct": 1,
+      "explanation": "Structured interfaces between agents serve the same purpose as structured interfaces with users: predictability and debuggability. When the Report Writer receives trend findings as a defined JSON schema, it processes them consistently. When it receives free-text summaries, small variations in wording can produce large variations in output. Structured agent-to-agent communication is a design principle that applies across all multi-agent systems."
+    },
+    {
+      "id": 4,
+      "question": "In all four multi-agent examples, humans appear at a specific stage rather than throughout the process. What is the underlying principle this reflects?",
+      "options": [
+        "Humans are only involved when agents fail, as a fallback mechanism",
+        "Agents handle information gathering and processing, the work that doesn't require judgment. Humans handle the consequential decisions, the work that does. Keeping humans at decision points rather than throughout the process uses human attention where it matters most.",
+        "Humans are involved at the beginning to set up the workflow, and agents handle everything afterward",
+        "Multi-agent systems are designed to eliminate human involvement entirely over time"
+      ],
+      "correct": 1,
+      "explanation": "The principle is human-in-the-loop at the right step. Information gathering, document collection, preliminary screening, and data synthesis are well-suited to agents, they're repeatable, rule-followable, and high-volume. Judgment calls, approving a claim, deciding whether to escalate, assessing fraud evidence, require human discernment. Effective human-AI collaboration puts humans where their judgment is genuinely needed, not throughout the routine work."
+    }
+  ]
+}

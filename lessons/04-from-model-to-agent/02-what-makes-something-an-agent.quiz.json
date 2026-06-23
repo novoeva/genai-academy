@@ -1,0 +1,54 @@
+{
+  "lesson": "02-what-makes-something-an-agent",
+  "title": "What makes something an agent?",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Which of the following best describes what makes a system an 'agent' rather than just a model?",
+      "options": [
+        "It uses a more powerful LLM than a standard chatbot",
+        "It can perceive its environment, take actions that affect the world outside the conversation, and use the results of those actions to decide what to do next",
+        "It has a system prompt that defines its role and constraints",
+        "It is connected to the internet and can browse websites"
+      ],
+      "correct": 1,
+      "explanation": "Agenticness is defined by the combination of perception, real-world action, and a feedback loop. A system prompt alone doesn't make something an agent, you need tools that take real actions, and the results of those actions need to feed back into the agent's decision-making."
+    },
+    {
+      "id": 2,
+      "question": "Karel can read transaction history, flag transactions, freeze cards, and file fraud reports. Which of his capabilities is most responsible for making him a genuine agent rather than a chatbot?",
+      "options": [
+        "His ability to speak with empathy to distressed customers",
+        "His ability to take real-world actions (flag, freeze, file) whose results feed back into his decision-making in the same conversation",
+        "His system prompt, which defines clear constraints on what he can and cannot do",
+        "His access to the bank's fraud knowledge base"
+      ],
+      "correct": 1,
+      "explanation": "The defining characteristic of an agent is the feedback loop: taking an action, seeing the result, and using that result to decide what to do next. Karel reads transaction history (perception), flags a transaction (action), receives confirmation the flag was set (result), and then asks if the customer also wants to freeze their card (next decision). That's the agent loop in action."
+    },
+    {
+      "id": 3,
+      "question": "A bank is evaluating two systems: System A summarizes fraud policies and answers customer questions. System B reads a customer's transactions, flags suspicious ones, and files formal reports. From an agentic AI perspective, what is the most important difference?",
+      "options": [
+        "System B uses a more expensive model, so it requires more budget",
+        "System B takes real-world actions with real consequences, so its failure modes need to be explicitly designed for, not just its outputs",
+        "System A is safer because it cannot take any actions",
+        "System B requires more training data to work reliably"
+      ],
+      "correct": 1,
+      "explanation": "The shift to real-world actions raises the stakes in every dimension: a wrong answer in System A is correctable; a wrong action in System B (filing a false report, freezing the wrong card) has real consequences for real customers. This changes how you design, test, and monitor the system, treating System B like System A is one of the most common and costly mistakes in agent deployment."
+    },
+    {
+      "id": 4,
+      "question": "Your team is testing Karel by reading conversation transcripts and checking that his answers sound correct. What is the critical gap in this testing approach?",
+      "options": [
+        "Transcripts are not a reliable record of what Karel said",
+        "Reading transcripts only checks what Karel said, not what he actually did, tool calls, their arguments, and their results need to be verified separately",
+        "The team should use automated testing rather than reading transcripts manually",
+        "Karel's tone and empathy cannot be assessed through transcripts"
+      ],
+      "correct": 1,
+      "explanation": "With an agent, what it says and what it does are two separate things. Karel could say 'I've frozen your card' without the freeze tool actually succeeding. Testing by reading transcripts only catches output failures. Effective agent testing requires inspecting the tool calls: which tools were called, with what arguments, in what order, and what the system state was afterward."
+    }
+  ]
+}

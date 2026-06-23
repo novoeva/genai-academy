@@ -1,0 +1,54 @@
+{
+  "lesson": "04-tool-restrictions",
+  "title": "Tool restrictions",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Karel's system prompt says he cannot reverse transactions. A `reverse_transaction` tool exists in the system for human agents but Karel doesn't have access to it. Why is the architectural restriction more reliable than the system prompt instruction alone?",
+      "options": [
+        "System prompts are read by the model but tools are read by the server, so tools are technically faster",
+        "System prompt instructions can be softened under pressure, misinterpreted in edge cases, or affected by prompt injection, architectural restrictions apply unconditionally, regardless of model behavior",
+        "System prompts are not encrypted, so they could be read by attackers",
+        "Tools are tested more thoroughly than system prompts in production"
+      ],
+      "correct": 1,
+      "explanation": "Instructions tell the model what to do, but model behavior is probabilistic and can drift under adversarial conditions. Architectural restrictions (tool absence, access control) don't depend on the model following instructions correctly, they enforce scope regardless. This is why defense in depth uses both: instructions guide normal behavior, architecture enforces hard limits."
+    },
+    {
+      "id": 2,
+      "question": "Karel calls `freeze_card(account_id: 'CUS-00999')`, but the authenticated customer's account ID is 'CUS-00888'. What should the tool do?",
+      "options": [
+        "Execute the freeze on CUS-00999 because Karel requested it",
+        "Ask Karel to confirm which account he meant",
+        "Reject the call, parameter validation should check that the account_id matches the authenticated session before executing any action",
+        "Freeze both accounts as a precaution"
+      ],
+      "correct": 2,
+      "explanation": "Parameter validation is a critical safety layer for agent tools. Every write action should validate that the arguments match the authorized context, in this case, that the account being acted on belongs to the authenticated customer. A mismatch should return an error, not execute. This prevents a class of errors where the model generates plausible but incorrect arguments."
+    },
+    {
+      "id": 3,
+      "question": "When Karel calls `create_fraud_report`, the system shows the report details to the customer and requires them to click 'Submit' before filing. What type of restriction is this?",
+      "options": [
+        "Parameter validation, the tool is checking that the report content is well-formed",
+        "A confirmation gate, the tool accepts the model's request but holds execution until a human explicitly approves it",
+        "Access control, restricting which agents can file reports",
+        "Rate limiting, preventing Karel from filing too many reports in one session"
+      ],
+      "correct": 1,
+      "explanation": "A confirmation gate is a pattern where irreversible actions require explicit human approval before the system executes them. The model can initiate the action, but a human must confirm. This provides the strongest scope enforcement for consequential actions, even if the model's reasoning were somehow compromised, a human explicitly signs off before anything permanent happens."
+    },
+    {
+      "id": 4,
+      "question": "Karel's audit log shows he called `read_transaction_history` 47 times in a single 10-minute session. What does this most likely indicate, and why does audit logging matter for scope enforcement?",
+      "options": [
+        "The customer had a lot of transactions to review, this is expected behavior for complex fraud cases",
+        "An infinite loop or prompt injection attempt, unusual call patterns are a signal of agent misbehavior that would be invisible without logging",
+        "Karel's tool calling efficiency is low, he should retrieve all data in a single call",
+        "The bank's backend is slow, causing Karel to retry the call repeatedly"
+      ],
+      "correct": 1,
+      "explanation": "Audit logging serves two purposes: accountability (every action is recorded with agent, arguments, timestamp, and result) and anomaly detection (unusual patterns signal problems). 47 calls to the same read tool in 10 minutes suggests either an infinite loop or a prompt injection attack causing Karel to behave unexpectedly. Without logging, this would be invisible until a customer noticed something wrong."
+    }
+  ]
+}

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Router - External Memory Types</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html { overflow: hidden; }
+
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #f7f9fb;
+      color: #2c3437;
+      line-height: 1.6;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #596064;
+      font-weight: 500;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(44, 52, 55, 0.12);
+      border-radius: 3px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #4f46e5, #6f68f7);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .routing-game {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+
+    .info-card {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 24px;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .info-number {
+      font-size: 24px;
+      font-weight: 800;
+      color: #4f46e5;
+      margin-bottom: 8px;
+    }
+
+    .info-text {
+      font-size: 15px;
+      color: #2c3437;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .route-btn {
+      padding: 10px 12px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      border-radius: 12px;
+      background: white;
+      color: #2c3437;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .route-btn:hover:not(:disabled) {
+      border-color: #4f46e5;
+      background: #eef2ff;
+    }
+
+    .route-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .route-btn.selected {
+      border-color: #4f46e5;
+      background: linear-gradient(135deg, #4f46e5, #6f68f7);
+      color: white;
+    }
+
+    .route-btn.correct {
+      border-color: #10b981;
+      background: #ecfdf5;
+      color: #065f46;
+    }
+
+    .route-btn.incorrect {
+      border-color: #ef4444;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .feedback {
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+      min-height: 18px;
+    }
+
+    .feedback.success {
+      color: #10b981;
+    }
+
+    .feedback.error {
+      color: #ef4444;
+    }
+
+    .game-over {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 32px;
+      text-align: center;
+      margin: 32px 0;
+    }
+
+    .score-display {
+      font-size: 48px;
+      font-weight: 800;
+      color: #4f46e5;
+      margin-bottom: 8px;
+    }
+
+    .score-label {
+      font-size: 16px;
+      color: #596064;
+      margin-bottom: 24px;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+      text-align: left;
+    }
+
+    .result-item {
+      background: #f3f4f6;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 14px;
+    }
+
+    .result-item .question {
+      font-weight: 600;
+      color: #2c3437;
+      margin-bottom: 4px;
+    }
+
+    .result-item .answer {
+      font-size: 13px;
+      color: #596064;
+    }
+
+    .result-item.correct {
+      border-left: 4px solid #10b981;
+    }
+
+    .result-item.incorrect {
+      border-left: 4px solid #ef4444;
+    }
+
+    .restart-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #4f46e5, #6f68f7);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin-top: 24px;
+    }
+
+    .restart-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(79, 70, 229, 0.2);
+    }
+
+    .insight-box {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 24px;
+      margin-top: 24px;
+      border-left: 4px solid #4f46e5;
+    }
+
+    .insight-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #4f46e5;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .insight-text {
+      font-size: 15px;
+      color: #2c3437;
+      line-height: 1.6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .storage-diagram {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .storage-bucket {
+      background: #f3f4f6;
+      border-radius: 12px;
+      padding: 16px;
+      border: 2px solid rgba(44, 52, 55, 0.12);
+    }
+
+    .bucket-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #2c3437;
+      margin-bottom: 12px;
+    }
+
+    .bucket-items {
+      font-size: 12px;
+      color: #596064;
+      line-height: 1.8;
+    }
+
+    .bucket-items div {
+      padding: 4px 0;
+    }
+
+    @media (max-width: 768px) {
+      .routing-game {
+        grid-template-columns: 1fr;
+      }
+
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .storage-diagram {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Memory Router</h1>
+      <p class="subtitle">Route information to the right storage system</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </header>
+
+    <div id="gameContainer"></div>
+
+    <div id="resultsContainer" class="hidden"></div>
+
+    <div class="insight-box">
+      <div class="insight-title">Key Insight</div>
+      <div class="insight-text">
+        Vector stores don't return exact matches like databases do. They return the most similar things based on semantic meaning. Use them when "close enough" is useful for finding related patterns, similar past incidents, or behavioral trends. Use structured databases when you need exact, retrievable values.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const gameData = [
+      {
+        text: "Case number: FR-2847",
+        correct: "Structured Database",
+        explanation: "This is an exact identifier that needs to be retrieved by ID."
+      },
+      {
+        text: "Customer said they were worried about identity theft",
+        correct: "Vector Store",
+        explanation: "This is semantic information about customer concern. Vector stores help find similar worries or patterns."
+      },
+      {
+        text: "Card frozen at 14:23 on April 18th",
+        correct: "Structured Database",
+        explanation: "Exact timestamp requires precise storage and retrieval."
+      },
+      {
+        text: "Customer seemed confused about the process",
+        correct: "Vector Store",
+        explanation: "This is qualitative observation. Vector stores find similar customer experience patterns."
+      },
+      {
+        text: "Customer's account number: KB-447821",
+        correct: "Structured Database",
+        explanation: "Exact identifiers belong in databases for reliable lookup."
+      },
+      {
+        text: "This complaint sounds like the merchant dispute pattern we saw in Q1",
+        correct: "Vector Store",
+        explanation: "Semantic similarity, vector stores excel at finding related patterns."
+      },
+      {
+        text: "Fraud report filed: yes/no flag",
+        correct: "Structured Database",
+        explanation: "Boolean flags are exact and structured."
+      },
+      {
+        text: "The customer asked about chargebacks three different ways",
+        correct: "Vector Store",
+        explanation: "This is a behavioral pattern, vector stores find similar communication styles and concerns."
+      },
+      {
+        text: "Transaction amount: €340.00",
+        correct: "Structured Database",
+        explanation: "Exact numeric values need structured storage."
+      },
+      {
+        text: "The customer's tone shifted when we mentioned police reports",
+        correct: "Vector Store",
+        explanation: "Qualitative observation about emotional shifts, useful for vector-based pattern matching."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answers = [];
+
+    const gameContainerEl = document.getElementById('gameContainer');
+    const resultsContainerEl = document.getElementById('resultsContainer');
+    const progressFillEl = document.getElementById('progressFill');
+
+    function renderQuestion() {
+      const q = gameData[currentQuestion];
+      const num = currentQuestion + 1;
+
+      gameContainerEl.innerHTML = `
+        <div class="routing-game">
+          <div class="info-card">
+            <div class="info-number">Question ${num} of ${gameData.length}</div>
+            <div class="info-text">${q.text}</div>
+            <div class="button-group">
+              <button class="route-btn" data-route="Structured Database">📊 Structured Database</button>
+              <button class="route-btn" data-route="Vector Store">🎯 Vector Store</button>
+              <button class="route-btn" data-route="In-Context Window">💬 In-Context Window</button>
+            </div>
+            <div class="feedback" id="feedback"></div>
+          </div>
+        </div>
+      `;
+
+      const buttons = document.querySelectorAll('.route-btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => handleRoute(btn.dataset.route, q.correct));
+      });
+
+      updateProgress();
+    }
+
+    function handleRoute(chosen, correct) {
+      const isCorrect = chosen === correct;
+      const buttons = document.querySelectorAll('.route-btn');
+      const feedbackEl = document.getElementById('feedback');
+      const q = gameData[currentQuestion];
+
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.route === correct) {
+          btn.classList.add('correct');
+        } else if (btn.dataset.route === chosen && !isCorrect) {
+          btn.classList.add('incorrect');
+        }
+      });
+
+      answers.push({
+        question: q.text,
+        chosen,
+        correct,
+        isCorrect,
+        explanation: q.explanation
+      });
+
+      if (isCorrect) {
+        score++;
+        feedbackEl.textContent = '✓ Correct!';
+        feedbackEl.className = 'feedback success';
+      } else {
+        feedbackEl.textContent = `✗ Not quite. ${q.explanation}`;
+        feedbackEl.className = 'feedback error';
+      }
+
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < gameData.length) {
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      }, 1500);
+    }
+
+    function updateProgress() {
+      const percent = (currentQuestion / gameData.length) * 100;
+      progressFillEl.style.width = percent + '%';
+    }
+
+    function showResults() {
+      const dbCount = answers.filter(a => a.correct === 'Structured Database').length;
+      const vectorCount = answers.filter(a => a.correct === 'Vector Store').length;
+      const correctCount = answers.filter(a => a.isCorrect).length;
+
+      let storageHTML = `
+        <div class="storage-diagram">
+          <div class="storage-bucket">
+            <div class="bucket-title">📊 Structured Database</div>
+            <div class="bucket-items">
+              <div>Case numbers, IDs</div>
+              <div>Timestamps, amounts</div>
+              <div>Booleans, flags</div>
+              <div>Account numbers</div>
+              <div>(${dbCount} items routed here)</div>
+            </div>
+          </div>
+          <div class="storage-bucket">
+            <div class="bucket-title">🎯 Vector Store</div>
+            <div class="bucket-items">
+              <div>Customer concerns</div>
+              <div>Behavioral patterns</div>
+              <div>Qualitative observations</div>
+              <div>Similar past incidents</div>
+              <div>(${vectorCount} items routed here)</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      let resultsHTML = `
+        <div class="game-over">
+          <div class="score-display">${correctCount}/${gameData.length}</div>
+          <div class="score-label">Correct Routings</div>
+          ${storageHTML}
+          <div class="results-grid">
+      `;
+
+      answers.forEach(a => {
+        const className = a.isCorrect ? 'correct' : 'incorrect';
+        resultsHTML += `
+          <div class="result-item ${className}">
+            <div class="question">${a.isCorrect ? '✓' : '✗'} ${a.question.substring(0, 40)}...</div>
+            <div class="answer">Routed to: <strong>${a.chosen}</strong></div>
+          </div>
+        `;
+      });
+
+      resultsHTML += `
+          </div>
+          <button class="restart-btn">Try Again</button>
+        </div>
+      `;
+
+      gameContainerEl.innerHTML = '';
+      resultsContainerEl.innerHTML = resultsHTML;
+      resultsContainerEl.classList.remove('hidden');
+      progressFillEl.style.width = '100%';
+
+      document.querySelector('.restart-btn').addEventListener('click', restart);
+    }
+
+    function restart() {
+      currentQuestion = 0;
+      score = 0;
+      answers = [];
+      resultsContainerEl.classList.add('hidden');
+      resultsContainerEl.innerHTML = '';
+      renderQuestion();
+    }
+
+    renderQuestion();
+  </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.body.offsetHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+      window.parent.postMessage({ type: "resize", height: height }, "*");
+    }
+  }
+     // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

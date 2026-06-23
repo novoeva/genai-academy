@@ -1,0 +1,65 @@
+{
+  "chapter": 6,
+  "title": "Memory and State",
+  "lessons": [
+    {
+      "id": "01-introduction",
+      "title": "Introduction",
+      "file": "01-introduction.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": false,
+        "simulation": false
+      }
+    },
+    {
+      "id": "02-in-context-memory",
+      "title": "In-context memory",
+      "file": "02-in-context-memory.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "02-in-context-memory.sim.html"
+      }
+    },
+    {
+      "id": "03-external-memory",
+      "title": "External memory: vector stores and databases",
+      "file": "03-external-memory.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "03-external-memory.sim.html"
+      }
+    },
+    {
+      "id": "04-fine-tuning-as-memory",
+      "title": "Fine-tuning as procedural memory",
+      "file": "04-fine-tuning-as-memory.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "04-fine-tuning-as-memory.sim.html"
+      }
+    },
+    {
+      "id": "05-designing-memory-for-your-agent",
+      "title": "Designing memory for your agent",
+      "file": "05-designing-memory-for-your-agent.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "05-designing-memory-for-your-agent.sim.html"
+      }
+    }
+  ]
+}

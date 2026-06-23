@@ -1,0 +1,54 @@
+{
+  "lesson": "02-what-is-a-prompt",
+  "title": "What is a prompt, really?",
+  "questions": [
+    {
+      "id": 1,
+      "question": "From the model's perspective, what counts as part of the prompt?",
+      "options": [
+        "Only the message the user just typed",
+        "The system prompt and the current user message, but not conversation history",
+        "All text the model receives before generating its response: system prompt, conversation history, user message, and injected data",
+        "Only the system prompt written by the developer"
+      ],
+      "correct": 2,
+      "explanation": "The model sees everything as one continuous token sequence. The system prompt, all conversation history, any injected data from databases or APIs, and the user's message are all treated as context. Everything shapes the response equally."
+    },
+    {
+      "id": 2,
+      "question": "Why is injected data (like transaction history or customer records) critical for agents like Karel?",
+      "options": [
+        "It makes the model run faster",
+        "The model cannot access databases directly. Without real data in the prompt, it will generate plausible-sounding but potentially fabricated information",
+        "It is required by law in financial applications",
+        "It allows the system prompt to be shorter"
+      ],
+      "correct": 1,
+      "explanation": "An LLM is not connected to databases by default. If Karel needs to reference a customer's transactions, those transactions must be explicitly included in the prompt each time. Without them, Karel will pattern-match to his training data and make up transactions that sound realistic."
+    },
+    {
+      "id": 3,
+      "question": "Karel's system prompt says he can reverse fraudulent transactions, but the bank's system actually doesn't allow this. What will likely happen?",
+      "options": [
+        "Karel will refuse to reverse transactions and instead suggest going to a human",
+        "Karel will confidently tell the customer he has reversed the transaction, even though he hasn't",
+        "The prompt will automatically correct itself at runtime",
+        "Karel will ask the bank's system for permission and wait for approval"
+      ],
+      "correct": 1,
+      "explanation": "The model generates its response based on the prompt you gave it. If the prompt says Karel can do something, he will confidently offer to do it, regardless of whether the underlying system actually supports it. The prompt is the source of truth the model uses, not the actual system capabilities."
+    },
+    {
+      "id": 4,
+      "question": "A developer forgets to include Karel's conversation history in the prompt. What is most likely to happen?",
+      "options": [
+        "Karel will automatically pull the history from a database",
+        "Karel will ask the customer to repeat everything they said previously",
+        "Karel will not remember what was discussed before and may repeat questions or contradict earlier answers",
+        "The system will raise an error and refuse to continue"
+      ],
+      "correct": 2,
+      "explanation": "LLMs have no persistent memory. Each prompt is independent. If the conversation history isn't included in the current prompt, the model has no way to know what was said before. It will only respond based on the current message and system prompt, likely causing inconsistency or confusion."
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "lesson": "05-designing-memory-for-your-agent",
+  "title": "Designing memory for your agent",
+  "questions": [
+    {
+      "id": 1,
+      "question": "A product team is designing memory for Karel. They decide to store every message from every session in a long-term database indefinitely. What is the main problem with this approach?",
+      "options": [
+        "Storing too many messages will slow down Karel's response time",
+        "Indefinite retention of full conversation content creates compliance risk, privacy exposure, and data bloat, memory design requires a deletion and expiry policy as much as a storage policy",
+        "Long-term databases can't store conversation text, only structured records",
+        "Karel won't be able to distinguish which sessions are relevant to the current customer"
+      ],
+      "correct": 1,
+      "explanation": "Memory design must include deletion and expiry, not just storage. Retaining full conversation transcripts indefinitely raises data privacy regulations, creates liability if a breach occurs, and accumulates data that has no ongoing use. Good memory design stores the minimum necessary for the agent's function, with clear policies for when data is deleted or anonymized."
+    },
+    {
+      "id": 2,
+      "question": "When a new Karel session starts, which of the following should be retrieved from external memory and injected into context, and why?",
+      "options": [
+        "The full transcript of every previous session the customer has had",
+        "A structured summary of the customer's relevant history (prior fraud cases, actions taken, current investigation status), compact enough to fit in context without crowding out the current conversation",
+        "All bank fraud policies, so Karel has complete knowledge for any question",
+        "Nothing; Karel should start fresh each session to avoid bias from previous interactions"
+      ],
+      "correct": 1,
+      "explanation": "Session continuity requires retrieving and injecting a summary of relevant history, not the full transcript (too long) and not nothing (customer has to repeat themselves). The summary should be structured, compact, and scoped to what's actually relevant to the current session. All policies don't need to be injected upfront, they can be retrieved on demand when a specific policy question arises."
+    },
+    {
+      "id": 3,
+      "question": "A fraud agent team is debating whether to use a vector store or a transactional database to store customer case records. Which is the right choice, and why?",
+      "options": [
+        "Vector store, because case records contain narrative text that benefits from semantic search",
+        "Transactional database, because case records are structured data retrieved by exact identifiers (account ID, case ID), not by semantic similarity",
+        "Both, vector store for the narrative text in the case and database for the structured fields",
+        "Neither, case records should be stored in the model's fine-tuning data"
+      ],
+      "correct": 1,
+      "explanation": "Case records are structured: account ID, case ID, transaction IDs, dates, status, actions taken. They're retrieved by exact identifiers ('give me all cases for account CUS-00841923'), not by semantic similarity ('find cases that are similar to this one'). A transactional database is purpose-built for this pattern. A vector store would be appropriate for unstructured documents like policy text or FAQs."
+    },
+    {
+      "id": 4,
+      "question": "Karel is performing well on simple fraud cases but struggles with complex, multi-session cases that involve multiple transactions across several weeks. He often loses track of what was decided in earlier sessions. Which memory design change would most directly address this?",
+      "options": [
+        "Increase Karel's context window to hold more conversation history",
+        "Write structured case state (decisions made, transactions flagged, actions taken, outstanding questions) to the case management database after each session, and retrieve it at the start of each new session",
+        "Fine-tune Karel on examples of complex multi-session fraud cases",
+        "Add a vector store with summaries of all previous sessions for semantic retrieval"
+      ],
+      "correct": 1,
+      "explanation": "Complex multi-session continuity requires session state persistence, writing structured case state to an external database after each session and retrieving it at the start of the next. The context window resets between sessions, so in-context memory alone can't provide this continuity. A structured case record (what was flagged, what was decided, what's pending) injected at session start gives Karel the cross-session continuity he needs."
+    }
+  ]
+}

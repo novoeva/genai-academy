@@ -1,0 +1,54 @@
+{
+  "lesson": "05-output-validation",
+  "title": "Output validation",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Karel says: 'Based on what you've described, I'd expect this to qualify as fraud and you should receive a full refund.' No tool was called to produce this statement. Why can't tool restrictions catch this scope violation?",
+      "options": [
+        "Tool restrictions only apply to write operations, not read operations",
+        "Tool restrictions enforce what the agent does, but this is a text-level violation. Karel generated a prediction and a promise using only language, with no tool call. Only output validation can catch this.",
+        "The tool restrictions are misconfigured, they should block Karel from generating refund-related text",
+        "This statement doesn't violate scope; Karel was just being helpful"
+      ],
+      "correct": 1,
+      "explanation": "Tool restrictions operate on actions. They prevent unauthorized tool calls but have no visibility into the text Karel generates. A response that predicts investigation outcomes or promises refunds is a scope violation that happens entirely in language, no tools involved. Output validation is the layer specifically designed to catch what the model says, not just what it does."
+    },
+    {
+      "id": 2,
+      "question": "Output validation is blocking 35% of Karel's responses before they're shown to users. What does this most likely indicate?",
+      "options": [
+        "The output validation rules are too strict and should be relaxed",
+        "The system prompt has significant gaps; Karel is routinely generating out-of-scope content that output validation has to catch",
+        "Karel's model needs to be retrained on more in-scope examples",
+        "This is a normal rate for production AI agents in financial services"
+      ],
+      "correct": 1,
+      "explanation": "Output validation should be a rare last-resort catch, not a routine filter. A 35% block rate means Karel is generating out-of-scope content constantly, which points to a system prompt that isn't doing its job. Using output validation as a substitute for fixing the prompt means every response costs extra latency and compute, and the root problem remains. Fix the prompt first."
+    },
+    {
+      "id": 3,
+      "question": "Karel's fraud report confirmation message is missing the 24-hour review timeline the product team promised customers. Which output validation approach would most reliably catch this?",
+      "options": [
+        "A pattern-based classifier looking for prohibited phrases",
+        "A structural check verifying that all required elements (flagged transaction, fraud team notification, review timeline) are present in confirmation messages",
+        "A data protection scan for PII in the response",
+        "Rate limiting on how often Karel sends confirmation messages"
+      ],
+      "correct": 1,
+      "explanation": "Required-element checking validates that structured responses include all mandatory components. A classifier looking for prohibited phrases won't notice a missing element, it only catches what's present. For confirmation messages where completeness is the requirement, structural validation (does this response contain all required fields?) is the right approach."
+    },
+    {
+      "id": 4,
+      "question": "Karel's output validation layer flags a response where Karel wrote: 'I'm not quite sure if I'm the right person to help with this, but I'll try.' What should the system do with this response, and why?",
+      "options": [
+        "Show it to the customer; Karel's uncertainty is a sign of appropriate humility",
+        "Block and regenerate, the model expressing uncertainty often means the system prompt didn't handle this scenario",
+        "Modify it to remove the uncertainty language and show the rest",
+        "Lower Karel's temperature to prevent uncertain responses in the future"
+      ],
+      "correct": 1,
+      "explanation": "When the model expresses uncertainty about whether it should be helping, that's a signal that the system prompt didn't cover this scenario well enough. Showing the uncertain response to the customer means leaving a poorly-handled edge case visible. The right response is to hold the message, escalate for human review, and use the incident to improve the system prompt, this is what turns edge cases into better prompts over time."
+    }
+  ]
+}

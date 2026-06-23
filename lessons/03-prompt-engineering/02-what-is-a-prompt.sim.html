@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Anatomy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html { overflow: hidden; }
+
+
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: #f7f9fb;
+      color: #2c3437;
+      padding: 40px 20px;
+      
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #596064;
+      font-weight: 400;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .prompt-display {
+      background: #f0f4f8;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      font-family: "Courier New", monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #2c3437;
+    }
+
+    .highlight-section {
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin: 8px 0;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .section-instruction {
+      background: rgba(79, 70, 229, 0.1);
+      border-left: 4px solid #4f46e5;
+    }
+
+    .section-context {
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 4px solid #3b82f6;
+    }
+
+    .section-example {
+      background: rgba(34, 197, 94, 0.1);
+      border-left: 4px solid #22c55e;
+    }
+
+    .section-format {
+      background: rgba(251, 146, 60, 0.1);
+      border-left: 4px solid #fb923c;
+    }
+
+    .labels-section {
+      margin-top: 32px;
+      margin-bottom: 32px;
+    }
+
+    .labels-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: #2c3437;
+    }
+
+    .labels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .label {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+      background: white;
+      cursor: grab;
+      user-select: none;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .label:hover {
+      border-color: #4f46e5;
+      background: #eef2ff;
+    }
+
+    .label.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .matches {
+      display: grid;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .match-item {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .match-label {
+      font-weight: 600;
+      font-size: 14px;
+      min-width: 120px;
+    }
+
+    .match-result {
+      text-align: right;
+    }
+
+    .match-text {
+      font-size: 13px;
+      color: #596064;
+      margin-top: 4px;
+    }
+
+    .matched {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .not-matched {
+      color: #ef4444;
+      font-weight: 600;
+    }
+
+    .explanation-panel {
+      background: #eef2ff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 32px;
+      border-left: 4px solid #4f46e5;
+      display: none;
+    }
+
+    .explanation-panel.visible {
+      display: block;
+    }
+
+    .explanation-panel h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #2c3437;
+    }
+
+    .explanation-item {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(79, 70, 229, 0.2);
+    }
+
+    .explanation-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .explanation-label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #4f46e5;
+      margin-bottom: 4px;
+    }
+
+    .explanation-text {
+      font-size: 14px;
+      color: #596064;
+      line-height: 1.5;
+    }
+
+    .button {
+      background: linear-gradient(135deg, #4f46e5, #6f68f7);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-right: 12px;
+      margin-top: 24px;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+    }
+
+    .button:active {
+      transform: translateY(0);
+    }
+
+    .button.secondary {
+      background: white;
+      color: #4f46e5;
+      border: 2px solid #4f46e5;
+    }
+
+    .button.secondary:hover {
+      background: #eef2ff;
+    }
+
+    .progress {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .progress-text {
+      font-size: 14px;
+      color: #596064;
+      font-weight: 500;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4f46e5, #6f68f7);
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Prompt Anatomy</h1>
+      <p class="subtitle">A prompt has structure. Learn to recognize the parts.</p>
+    </header>
+
+    <div class="card">
+      <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 20px;">Karel's System Prompt</h2>
+
+      <div class="prompt-display">
+        <div class="highlight-section section-instruction" onclick="highlightSection(0)">
+          You are Karel, a fraud reporting assistant for Komercni Banka.
+        </div>
+        <br>
+        <div class="highlight-section section-context" onclick="highlightSection(1)">
+          The customer has been verified and their account number is KB-447821. Their last 3 transactions are available in the tool response above.
+        </div>
+        <br>
+        <div class="highlight-section section-example" onclick="highlightSection(2)">
+          Example: If a customer says "there's a weird charge," respond with: "I can see [transaction]. Would you like me to flag this for review?"
+        </div>
+        <br>
+        <div class="highlight-section section-format" onclick="highlightSection(3)">
+          Always respond in 2-3 sentences. End with a clear next step the customer can take.
+        </div>
+      </div>
+
+      <div class="labels-section">
+        <div class="labels-title">Match these labels to the sections above:</div>
+        <div class="labels-grid">
+          <div class="label" draggable="true" data-label="What Karel should do">What Karel should do</div>
+          <div class="label" draggable="true" data-label="Background information">Background information</div>
+          <div class="label" draggable="true" data-label="How to respond">How to respond</div>
+          <div class="label" draggable="true" data-label="What the output looks like">What the output looks like</div>
+        </div>
+      </div>
+
+      <div class="matches">
+        <div class="match-item">
+          <div>
+            <div class="match-label" style="color: #4f46e5;">Instruction Section</div>
+            <div class="match-text">Define who Karel is and what he does</div>
+          </div>
+          <div class="match-result" id="match-0"></div>
+        </div>
+
+        <div class="match-item">
+          <div>
+            <div class="match-label" style="color: #3b82f6;">Context Section</div>
+            <div class="match-text">Provide specific information for this conversation</div>
+          </div>
+          <div class="match-result" id="match-1"></div>
+        </div>
+
+        <div class="match-item">
+          <div>
+            <div class="match-label" style="color: #22c55e;">Example Section</div>
+            <div class="match-text">Show how Karel should respond to similar inputs</div>
+          </div>
+          <div class="match-result" id="match-2"></div>
+        </div>
+
+        <div class="match-item">
+          <div>
+            <div class="match-label" style="color: #fb923c;">Output Format Section</div>
+            <div class="match-text">Specify constraints on response style and length</div>
+          </div>
+          <div class="match-result" id="match-3"></div>
+        </div>
+      </div>
+
+      <button class="button" onclick="checkMatches()">Check Matches</button>
+      <button class="button secondary" onclick="resetMatches()">Reset</button>
+
+      <div class="explanation-panel" id="explanationPanel">
+        <h3>Why Each Part Matters</h3>
+
+        <div class="explanation-item">
+          <div class="explanation-label">Instruction Section (Who is Karel?)</div>
+          <div class="explanation-text">
+            This is your agent's core identity. It answers "What role does this AI play?" Without this, Karel doesn't know if he's a customer service helper, a fraud investigator, or a general assistant. The instruction sets the entire tone.
+          </div>
+        </div>
+
+        <div class="explanation-item">
+          <div class="explanation-label">Context Section (What's the current situation?)</div>
+          <div class="explanation-text">
+            Real conversations have details. This section feeds Karel the specific facts: which customer, which account, which transactions. Context prevents Karel from operating blind.
+          </div>
+        </div>
+
+        <div class="explanation-item">
+          <div class="explanation-label">Example Section (How should Karel respond?)</div>
+          <div class="explanation-text">
+            Examples teach by showing, not telling. Instead of saying "be helpful," you show what helpful looks like. This is one of the most powerful parts of prompt engineering.
+          </div>
+        </div>
+
+        <div class="explanation-item">
+          <div class="explanation-label">Output Format Section (What constraints apply?)</div>
+          <div class="explanation-text">
+            Length limits, tone, structure, these constraints make Karel's responses predictable and consistent. "2-3 sentences" is measurable. "Be concise" is not.
+          </div>
+        </div>
+      </div>
+
+      <div class="progress">
+        <div class="progress-text">Progress: <span id="progressCount">0</span>/4 matched</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const correctMatches = {
+      "What Karel should do": "match-0",
+      "Background information": "match-1",
+      "How to respond": "match-2",
+      "What the output looks like": "match-3"
+    };
+
+    const userMatches = {};
+    let draggedLabel = null;
+
+    document.querySelectorAll('.label').forEach(label => {
+      label.addEventListener('dragstart', (e) => {
+        draggedLabel = e.target;
+        e.target.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      label.addEventListener('dragend', () => {
+        draggedLabel.classList.remove('dragging');
+      });
+    });
+
+    document.querySelectorAll('.match-result').forEach((result, index) => {
+      result.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        result.style.background = '#eef2ff';
+      });
+
+      result.addEventListener('dragleave', () => {
+        result.style.background = '';
+      });
+
+      result.addEventListener('drop', (e) => {
+        e.preventDefault();
+        result.style.background = '';
+
+        if (draggedLabel) {
+          const labelText = draggedLabel.textContent.trim();
+          const matchId = result.id;
+
+          userMatches[labelText] = matchId;
+
+          result.innerHTML = `<div class="match-text">${labelText}</div>`;
+          result.style.background = '#f0fdf4';
+          result.style.borderColor = '#d1fae5';
+
+          updateProgress();
+        }
+      });
+    });
+
+    function updateProgress() {
+      const matched = Object.keys(userMatches).length;
+      document.getElementById('progressCount').textContent = matched;
+      document.getElementById('progressFill').style.width = (matched / 4) * 100 + '%';
+    }
+
+    function checkMatches() {
+      let allCorrect = true;
+
+      for (const [label, matchId] of Object.entries(userMatches)) {
+        if (correctMatches[label] !== matchId) {
+          allCorrect = false;
+        }
+      }
+
+      if (Object.keys(userMatches).length !== 4) {
+        alert('Complete all 4 matches first!');
+        return;
+      }
+
+      if (allCorrect) {
+        document.getElementById('explanationPanel').classList.add('visible');
+        alert('Perfect! You matched all sections correctly. Scroll down to see why each part matters.');
+      } else {
+        alert('Some matches aren\'t quite right. Check them and try again!');
+      }
+    }
+
+    function resetMatches() {
+      document.querySelectorAll('.match-result').forEach(result => {
+        result.innerHTML = '';
+        result.style.background = '';
+        result.style.borderColor = '';
+      });
+
+      Object.keys(userMatches).forEach(key => delete userMatches[key]);
+      updateProgress();
+      document.getElementById('explanationPanel').classList.remove('visible');
+    }
+
+    function highlightSection(index) {
+      const sections = document.querySelectorAll('.highlight-section');
+      sections.forEach(s => s.style.background = '');
+
+      const colors = ['rgba(79, 70, 229, 0.2)', 'rgba(59, 130, 246, 0.2)', 'rgba(34, 197, 94, 0.2)', 'rgba(251, 146, 60, 0.2)'];
+      sections[index].style.background = colors[index];
+
+      setTimeout(() => {
+        sections[index].style.background = '';
+      }, 800);
+    }
+  </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.body.offsetHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+      window.parent.postMessage({ type: "resize", height: height }, "*");
+    }
+  }
+     // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

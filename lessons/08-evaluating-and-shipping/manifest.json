@@ -1,0 +1,65 @@
+{
+  "chapter": 8,
+  "title": "Evaluating and Shipping Agents",
+  "lessons": [
+    {
+      "id": "01-introduction",
+      "title": "Introduction",
+      "file": "01-introduction.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": false,
+        "simulation": false
+      }
+    },
+    {
+      "id": "02-what-does-working-mean",
+      "title": "What does 'working' mean for an agent?",
+      "file": "02-what-does-working-mean.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "02-what-does-working-mean.sim.html"
+      }
+    },
+    {
+      "id": "03-evals-and-tracing",
+      "title": "Evals and tracing",
+      "file": "03-evals-and-tracing.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "03-evals-and-tracing.sim.html"
+      }
+    },
+    {
+      "id": "04-observability-in-production",
+      "title": "Observability in production",
+      "file": "04-observability-in-production.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "04-observability-in-production.sim.html"
+      }
+    },
+    {
+      "id": "05-the-pm-checklist",
+      "title": "The PM's checklist before shipping",
+      "file": "05-the-pm-checklist.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "05-the-pm-checklist.sim.html"
+      }
+    }
+  ]
+}

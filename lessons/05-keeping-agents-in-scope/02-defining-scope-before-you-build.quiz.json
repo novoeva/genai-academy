@@ -1,0 +1,54 @@
+{
+  "lesson": "02-defining-scope-before-you-build",
+  "title": "Defining scope before you build",
+  "questions": [
+    {
+      "id": 1,
+      "question": "A team defines Karel's scope as 'help customers with fraud.' Why is this definition insufficient as a basis for building?",
+      "options": [
+        "It doesn't specify which LLM model to use",
+        "It's too vague, it doesn't enumerate the specific actions Karel can take, what's explicitly out of scope, or how to handle edge cases, leaving the model to interpret all of these at runtime",
+        "It doesn't include a timeline for how long fraud reports take to process",
+        "It needs to be written in the system prompt rather than a planning document"
+      ],
+      "correct": 1,
+      "explanation": "A vague scope definition transfers the interpretation problem to the model. 'Help with fraud' could mean answering questions about fraud policies, resolving fraud disputes, or giving legal advice, none of which Karel should do. Good scope definition lists specific allowed actions, explicitly prohibited actions, and edge case decisions, leaving the model no interpretation work to do."
+    },
+    {
+      "id": 2,
+      "question": "During QA testing, Karel correctly refuses to reverse transactions. After launch, he starts occasionally offering to 'look into whether a reversal is possible' when customers push hard. What most likely happened?",
+      "options": [
+        "The model was updated by the provider and its behavior changed",
+        "The scope wasn't tested under adversarial conditions, the constraint held under normal pressure but softened when tested by insistent customers",
+        "The system prompt was too long and Karel lost track of the constraint",
+        "Tool restrictions weren't in place, so Karel could technically call a reversal function"
+      ],
+      "correct": 1,
+      "explanation": "Scope that wasn't tested under pressure is incomplete testing. The constraint 'do not reverse transactions' may hold when a customer asks once, but when a customer asks repeatedly and with frustration, the model's helpfulness training can soften the refusal. Scope testing must include adversarial scenarios where customers push against the constraints."
+    },
+    {
+      "id": 3,
+      "question": "A customer starts a fraud report with Karel and then asks: 'Can you also help me understand my credit card interest rate?' How should a well-scoped Karel handle this?",
+      "options": [
+        "Answer the question because it's a banking topic and Karel should be broadly helpful",
+        "Redirect to the appropriate banking support channel and return focus to the fraud report",
+        "Refuse to respond to any further messages until the customer completes the fraud report",
+        "File a fraud report and then answer the interest rate question"
+      ],
+      "correct": 1,
+      "explanation": "Interest rates are a general banking topic, outside Karel's fraud reporting scope. The correct response is a clear, friendly redirect, acknowledging the question, directing the customer to the right resource, and returning focus to the task Karel is actually built for. This is an edge case that should be explicitly defined in scope documentation before launch, not decided by the model at runtime."
+    },
+    {
+      "id": 4,
+      "question": "Which stakeholders should ideally be involved in defining an agent's scope before building starts?",
+      "options": [
+        "Only the engineering team, since scope is a technical decision about what the system can do",
+        "Only the product manager, since scope is a product decision",
+        "Legal, compliance, operations, and customer service, because scope decisions carry regulatory, liability, and operational implications that technical teams may not anticipate",
+        "The AI model provider, since they know best what the model is capable of"
+      ],
+      "correct": 2,
+      "explanation": "Scope for a customer-facing financial agent is not just a product design decision, it has regulatory and compliance implications (what's Karel allowed to advise on?), liability implications (what happens if Karel makes a claim about an investigation outcome?), and operational implications (what does the fraud team actually need from Karel to do their job?). These stakeholders surface requirements that the product and engineering team would miss if working alone."
+    }
+  ]
+}

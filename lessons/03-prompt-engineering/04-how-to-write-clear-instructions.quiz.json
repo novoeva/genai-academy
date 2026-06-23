@@ -1,0 +1,54 @@
+{
+  "lesson": "04-how-to-write-clear-instructions",
+  "title": "How to write clear instructions",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Karel's system prompt says 'handle out-of-scope requests appropriately.' A customer asks him to reverse a charge. What is most likely to happen?",
+      "options": [
+        "Karel will refuse the request because he knows reversals are out of scope",
+        "Karel will guess at what 'appropriately' means and may try to reverse the charge or make a vague promise",
+        "Karel will ask the developer to define 'appropriately' before responding",
+        "Karel will say nothing and wait for the customer to rephrase"
+      ],
+      "correct": 1,
+      "explanation": "'Handle appropriately' is vague, the model has to guess what appropriate means in this context. Without explicit instructions like 'tell the customer you cannot reverse charges and direct them to dispute resolution,' Karel will pattern-match to what seems plausible, which could include attempting the action or making a promise he can't keep."
+    },
+    {
+      "id": 2,
+      "question": "Which system prompt instruction most effectively prevents Karel from freezing a card without explicit customer consent?",
+      "options": [
+        "'Be careful when making changes to the customer's account.'",
+        "'Consider the customer's needs before taking any action.'",
+        "'Do not freeze the customer's card unless they explicitly ask you to. If unsure, ask: Would you like me to freeze your card as a precaution?'",
+        "'Always confirm with the customer before proceeding.'"
+      ],
+      "correct": 2,
+      "explanation": "Option C is specific (a concrete prohibition), actionable (tells Karel what to do instead), and gives him the exact language to use when in doubt. The other options are too vague, 'be careful,' 'consider,' and 'always confirm' all require the model to interpret what those mean, which leads to inconsistent behavior."
+    },
+    {
+      "id": 3,
+      "question": "You're writing Karel's system prompt and want him to end every conversation with three specific pieces of information. What's the most effective approach?",
+      "options": [
+        "Add a general instruction: 'Make sure the customer is fully informed before ending the conversation.'",
+        "List the three pieces explicitly and instruct Karel to verify he has communicated all three before closing",
+        "Trust that Karel will naturally cover the important points if the rest of the prompt is good",
+        "Add the information as a footer in the user interface rather than in the prompt"
+      ],
+      "correct": 1,
+      "explanation": "Giving the model an explicit checklist it can verify against is far more reliable than vague 'make sure they're informed' instructions. When you define what success looks like concretely, the model can self-check before responding, reducing the risk of conversations that close without critical information being shared."
+    },
+    {
+      "id": 4,
+      "question": "During QA testing, Karel sometimes says 'the fraud report has been filed' before the fraud team actually receives it. Which type of instruction was most likely missing from the system prompt?",
+      "options": [
+        "A positive instruction about what Karel should say when fraud is reported",
+        "A negative instruction: do not confirm an action is complete until you have received a successful tool response",
+        "An instruction about Karel's tone and empathy",
+        "A list of the tools Karel has access to"
+      ],
+      "correct": 1,
+      "explanation": "This is a hallucinated confirmation; Karel is predicting what a successful interaction looks like rather than waiting for actual tool confirmation. The fix is a specific negative instruction: 'Never tell the customer an action has been completed unless you have received a successful response from the relevant tool.' This is one of the most important negative instructions for any transactional agent."
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "deprecated": true,
+  "note": "This file has been replaced by per-lesson quiz files. See manifest.json for the full structure.",
+  "quiz_files": [
+    "02-what-is-an-llm.quiz.json",
+    "03-next-token-prediction.quiz.json",
+    "04-training-and-memory.quiz.json"
+  ]
+}

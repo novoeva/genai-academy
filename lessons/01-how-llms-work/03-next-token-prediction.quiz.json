@@ -1,0 +1,42 @@
+{
+  "lesson": "03-next-token-prediction",
+  "title": "Next-token prediction",
+  "questions": [
+    {
+      "id": 1,
+      "question": "You're building a customer support bot and want consistent, predictable responses. Which temperature setting makes the most sense?",
+      "options": [
+        "High temperature, so the bot can get creative with its answers",
+        "Low temperature, to reduce randomness and keep responses stable",
+        "Temperature doesn't affect customer support bots, only creative tools",
+        "Maximum temperature, so no two responses are ever the same"
+      ],
+      "correct": 1,
+      "explanation": "Low temperature makes the model sample from a narrower range of likely tokens, producing more consistent and predictable responses. High temperature is better for creative tasks where variety is desirable."
+    },
+    {
+      "id": 2,
+      "question": "A language model is generating a response token by token. Which statement is true?",
+      "options": [
+        "Each token is chosen independently with no influence from previous tokens",
+        "The entire response is generated at once and then broken into tokens",
+        "Each token is chosen based on all the tokens that came before it",
+        "Tokens are retrieved from a database of pre-approved responses"
+      ],
+      "correct": 2,
+      "explanation": "This is the core mechanism: each token is predicted based on all previous tokens in the sequence. The response builds up word by word, each choice informed by everything that came before."
+    },
+    {
+      "id": 3,
+      "question": "Karel is a fraud reporting agent. A colleague suggests setting Karel's temperature to 1.5 to make him 'more natural and conversational'. What is the main risk?",
+      "options": [
+        "Karel will respond too slowly due to higher computational load",
+        "Karel may produce inconsistent or unpredictable responses to distressed customers",
+        "Karel will refuse to answer questions outside his training data",
+        "Karel will start using informal language that confuses the bank's systems"
+      ],
+      "correct": 1,
+      "explanation": "High temperature introduces sampling randomness, the same question may get very different responses on different runs. For a fraud agent handling distressed customers, you need calm, consistent, predictable language every time. Low temperature is the right call."
+    }
+  ]
+}

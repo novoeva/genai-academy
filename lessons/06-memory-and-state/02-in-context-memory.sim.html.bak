@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session Reset - In-Context Memory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #f7f9fb;
+      color: #2c3437;
+      line-height: 1.6;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #596064;
+      font-weight: 500;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .chat-container {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+    }
+
+    .chat-header {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #2c3437;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(44, 52, 55, 0.12);
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 85%;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #4f46e5, #6f68f7);
+      color: white;
+      border-radius: 12px 12px 4px 12px;
+    }
+
+    .message.karel {
+      align-self: flex-start;
+      background: #f3f4f6;
+      color: #2c3437;
+      border-radius: 12px 12px 12px 4px;
+    }
+
+    .message-label {
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .quick-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .quick-btn {
+      padding: 10px 12px;
+      background: white;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      border-radius: 12px;
+      font-size: 13px;
+      color: #2c3437;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    .quick-btn:hover {
+      border-color: #4f46e5;
+      background: #eef2ff;
+    }
+
+    .quick-btn:active {
+      transform: scale(0.98);
+    }
+
+    .reset-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #4f46e5, #6f68f7);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .reset-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(79, 70, 229, 0.2);
+    }
+
+    .reset-btn:active {
+      transform: translateY(0);
+    }
+
+    .sidebar {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 20px;
+      height: fit-content;
+    }
+
+    .sidebar-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #2c3437;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .memory-box {
+      background: #eef2ff;
+      border: 1px solid rgba(79, 70, 229, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 13px;
+      color: #2c3437;
+      line-height: 1.5;
+    }
+
+    .empty-state {
+      color: #596064;
+      font-style: italic;
+      padding: 12px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .insight-box {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 24px;
+      margin-top: 24px;
+      border-left: 4px solid #4f46e5;
+    }
+
+    .insight-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #4f46e5;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .insight-text {
+      font-size: 15px;
+      color: #2c3437;
+      line-height: 1.6;
+    }
+
+    .session-indicator {
+      display: inline-block;
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chat-container {
+        height: 500px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Session Reset</h1>
+      <p class="subtitle">Understanding in-context memory and session boundaries</p>
+    </header>
+
+    <div class="main-grid">
+      <div class="chat-container">
+        <div class="session-indicator" id="sessionIndicator">Session 1</div>
+        <div class="chat-header">Conversation with Karel</div>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="quick-buttons">
+          <button class="quick-btn" id="msg1Btn">📋 "I need to report a suspicious charge at ElectroMart for €340."</button>
+          <button class="quick-btn" id="msg2Btn">🔒 "Also, I want to freeze my card while you investigate."</button>
+          <button class="quick-btn" id="msg3Btn">🔍 "What's the case number again?"</button>
+        </div>
+
+        <button class="reset-btn" id="resetBtn">Start New Session</button>
+      </div>
+
+      <div class="sidebar">
+        <div class="sidebar-title">Karel's Memory</div>
+        <div class="memory-box" id="memoryBox">
+          <div class="empty-state">Nothing yet — start the conversation</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <div class="insight-title">Key Insight</div>
+      <div class="insight-text">
+        In-context memory only exists within the current conversation window. When a session ends, everything Karel "knew" disappears. This is why production agents need external storage for information that must persist across sessions.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById('messages');
+    const memoryBoxEl = document.getElementById('memoryBox');
+    const sessionIndicatorEl = document.getElementById('sessionIndicator');
+    const resetBtnEl = document.getElementById('resetBtn');
+    const msg1BtnEl = document.getElementById('msg1Btn');
+    const msg2BtnEl = document.getElementById('msg2Btn');
+    const msg3BtnEl = document.getElementById('msg3Btn');
+
+    let sessionNumber = 1;
+    let messagesShown = 0;
+    let isNewSession = true;
+
+    const conversation = [
+      {
+        user: "I need to report a suspicious charge at ElectroMart for €340.",
+        karel: "I can see that transaction. I'll flag it for review. Case #FR-2847 is now open.",
+        memory: "ElectroMart transaction (€340), Case #FR-2847 opened"
+      },
+      {
+        user: "Also, I want to freeze my card while you investigate.",
+        karel: "Done — your card ending in 4471 is now frozen. I've added a note to case #FR-2847.",
+        memory: "ElectroMart transaction (€340), Card freeze requested, Case #FR-2847"
+      },
+      {
+        user: "What's the case number again?",
+        karel: "The fraud case number is #FR-2847.",
+        memory: "ElectroMart transaction (€340), Card freeze requested, Case #FR-2847"
+      }
+    ];
+
+    const newSessionResponse = {
+      user: "What happened to my fraud case?",
+      karel: "I don't have any record of a previous fraud case in this conversation. Could you share the case number or transaction details so I can look it up?",
+      memory: "Nothing — this session just started"
+    };
+
+    function addMessage(text, isUser, memory = null) {
+      const msgEl = document.createElement('div');
+      msgEl.className = `message ${isUser ? 'user' : 'karel'}`;
+      msgEl.innerHTML = `<div class="message-label">${isUser ? 'You' : 'Karel'}</div>${text}`;
+      messagesEl.appendChild(msgEl);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+
+      if (memory) {
+        updateMemory(memory);
+      }
+    }
+
+    function updateMemory(memory) {
+      memoryBoxEl.innerHTML = `<div>${memory}</div>`;
+    }
+
+    function clearChat() {
+      messagesEl.innerHTML = '';
+      memoryBoxEl.innerHTML = '<div class="empty-state">Nothing yet — start the conversation</div>';
+      messagesShown = 0;
+      isNewSession = false;
+    }
+
+    function disableMessageButtons() {
+      msg1BtnEl.disabled = true;
+      msg2BtnEl.disabled = true;
+      msg3BtnEl.disabled = true;
+      msg1BtnEl.style.opacity = '0.5';
+      msg2BtnEl.style.opacity = '0.5';
+      msg3BtnEl.style.opacity = '0.5';
+    }
+
+    function enableMessageButtons() {
+      msg1BtnEl.disabled = false;
+      msg2BtnEl.disabled = false;
+      msg3BtnEl.disabled = false;
+      msg1BtnEl.style.opacity = '1';
+      msg2BtnEl.style.opacity = '1';
+      msg3BtnEl.style.opacity = '1';
+    }
+
+    msg1BtnEl.addEventListener('click', () => {
+      if (messagesShown === 0) {
+        addMessage(conversation[0].user, true);
+        setTimeout(() => {
+          addMessage(conversation[0].karel, false, conversation[0].memory);
+          messagesShown = 1;
+        }, 500);
+      }
+    });
+
+    msg2BtnEl.addEventListener('click', () => {
+      if (messagesShown === 1) {
+        addMessage(conversation[1].user, true);
+        setTimeout(() => {
+          addMessage(conversation[1].karel, false, conversation[1].memory);
+          messagesShown = 2;
+        }, 500);
+      }
+    });
+
+    msg3BtnEl.addEventListener('click', () => {
+      if (messagesShown === 2) {
+        addMessage(conversation[2].user, true);
+        setTimeout(() => {
+          addMessage(conversation[2].karel, false, conversation[2].memory);
+          messagesShown = 3;
+          disableMessageButtons();
+        }, 500);
+      }
+    });
+
+    resetBtnEl.addEventListener('click', () => {
+      sessionNumber++;
+      sessionIndicatorEl.textContent = `Session ${sessionNumber}`;
+      clearChat();
+      enableMessageButtons();
+      messagesShown = 0;
+
+      setTimeout(() => {
+        addMessage(newSessionResponse.user, true);
+        setTimeout(() => {
+          addMessage(newSessionResponse.karel, false, newSessionResponse.memory);
+          disableMessageButtons();
+        }, 500);
+      }, 300);
+    });
+  </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+    window.parent.postMessage({ type: 'resize', height: height + 40 }, '*');
+  }
+  
+  // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

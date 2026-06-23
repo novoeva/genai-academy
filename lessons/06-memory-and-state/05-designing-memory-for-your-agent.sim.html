@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture Builder - Memory Design Wizard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html { overflow: hidden; }
+
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #f7f9fb;
+      color: #2c3437;
+      line-height: 1.6;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #596064;
+      font-weight: 500;
+    }
+
+    .wizard-container {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 32px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .progress-info {
+      font-size: 14px;
+      font-weight: 600;
+      color: #596064;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(44, 52, 55, 0.12);
+      border-radius: 3px;
+      margin: 0 16px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #4f46e5, #6f68f7);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .question-container {
+      margin-bottom: 32px;
+    }
+
+    .question-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2c3437;
+      margin-bottom: 16px;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .option input[type="radio"] {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(44, 52, 55, 0.12);
+      border-radius: 50%;
+      margin-right: 12px;
+      margin-top: 2px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .option input[type="radio"]:hover {
+      border-color: #4f46e5;
+    }
+
+    .option input[type="radio"]:checked {
+      border-color: #4f46e5;
+      background: linear-gradient(135deg, #4f46e5, #6f68f7);
+      box-shadow: inset 0 0 0 4px white;
+    }
+
+    .option-content {
+      flex: 1;
+    }
+
+    .option-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2c3437;
+      margin-bottom: 4px;
+      cursor: pointer;
+    }
+
+    .option-description {
+      font-size: 13px;
+      color: #596064;
+      line-height: 1.5;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 32px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4f46e5, #6f68f7);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(79, 70, 229, 0.2);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      background: white;
+      color: #2c3437;
+    }
+
+    .btn-secondary:hover {
+      border-color: #4f46e5;
+      background: #eef2ff;
+    }
+
+    .results-container {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 32px;
+    }
+
+    .results-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .architecture-name {
+      font-size: 32px;
+      font-weight: 800;
+      color: #4f46e5;
+      margin-bottom: 8px;
+    }
+
+    .architecture-tagline {
+      font-size: 16px;
+      color: #596064;
+      font-weight: 500;
+    }
+
+    .recommendation {
+      background: #eef2ff;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border-left: 4px solid #4f46e5;
+    }
+
+    .recommendation-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #4f46e5;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .recommendation-text {
+      font-size: 15px;
+      color: #2c3437;
+      line-height: 1.6;
+    }
+
+    .architecture-diagram {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 32px 0;
+    }
+
+    .memory-component {
+      background: white;
+      border-radius: 16px;
+      border: 2px solid rgba(44, 52, 55, 0.12);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .memory-component.active {
+      border-color: #4f46e5;
+      background: #eef2ff;
+    }
+
+    .memory-component.inactive {
+      opacity: 0.4;
+    }
+
+    .component-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #2c3437;
+      margin-bottom: 8px;
+    }
+
+    .component-description {
+      font-size: 12px;
+      color: #596064;
+      line-height: 1.5;
+    }
+
+    .example-box {
+      background: #f3f4f6;
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+
+    .example-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #2c3437;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .example-text {
+      font-size: 14px;
+      color: #2c3437;
+      line-height: 1.6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .insight-box {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 24px;
+      margin-top: 24px;
+      border-left: 4px solid #4f46e5;
+    }
+
+    .insight-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #4f46e5;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .insight-text {
+      font-size: 15px;
+      color: #2c3437;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .wizard-container,
+      .results-container {
+        padding: 20px;
+      }
+
+      .architecture-diagram {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .progress-header {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .progress-bar {
+        margin: 8px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Architecture Builder</h1>
+      <p class="subtitle">Design the right memory architecture for your agent</p>
+    </header>
+
+    <div id="wizardContainer" class="wizard-container">
+      <div class="progress-header">
+        <span class="progress-info" id="progressInfo">Question 1 of 5</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div id="questionsContainer"></div>
+
+      <div class="button-group">
+        <button class="btn btn-secondary" id="backBtn" style="display: none;">Back</button>
+        <button class="btn btn-primary" id="nextBtn">Next</button>
+      </div>
+    </div>
+
+    <div id="resultsContainer" class="results-container hidden"></div>
+
+    <div class="insight-box">
+      <div class="insight-title">Designing Memory Systems</div>
+      <div class="insight-text">
+        The right memory architecture depends on your agent's needs. Start by asking: Does it need to remember between sessions? How often does information change? How much data needs to be accessible in each turn? Your answers reveal which combination of in-context, external, and fine-tuning memory will work best.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        id: 'q1',
+        title: 'Does your agent need to remember anything between conversations?',
+        options: [
+          {
+            value: 'none',
+            label: 'No',
+            description: 'Each conversation is independent. In-context memory is enough.'
+          },
+          {
+            value: 'exact',
+            label: 'Yes, exact records',
+            description: 'Customer history, transaction logs, case IDs that need precise retrieval.'
+          },
+          {
+            value: 'semantic',
+            label: 'Yes, fuzzy/semantic patterns',
+            description: 'Similar past complaints, related incidents, behavioral trends.'
+          }
+        ]
+      },
+      {
+        id: 'q2',
+        title: 'How often does the core information change?',
+        options: [
+          {
+            value: 'daily',
+            label: 'Daily or more',
+            description: 'Exchange rates, current cases, live data. Must use external database (not fine-tuning).'
+          },
+          {
+            value: 'rarely',
+            label: 'Rarely (rules, policies, behavior)',
+            description: 'Brand guidelines, communication style, operational rules. Fine-tuning is viable.'
+          },
+          {
+            value: 'mixed',
+            label: 'It\'s a mix',
+            description: 'External for facts, fine-tuning for behavior.'
+          }
+        ]
+      },
+      {
+        id: 'q3',
+        title: 'How much information does one session need to access?',
+        options: [
+          {
+            value: 'small',
+            label: 'Small (fits in prompt)',
+            description: 'In-context is sufficient. No need for external retrieval.'
+          },
+          {
+            value: 'medium',
+            label: 'Medium (structured records)',
+            description: 'Lookups from a database, but not too much data per session.'
+          },
+          {
+            value: 'large',
+            label: 'Large or open-ended',
+            description: 'A lot of data or many possible queries. Hybrid approach needed.'
+          }
+        ]
+      },
+      {
+        id: 'q4',
+        title: 'Does the agent need to find "similar" things, or look up exact values?',
+        options: [
+          {
+            value: 'exact',
+            label: 'Exact values only',
+            description: 'Case numbers, account IDs, specific records. Structured database.'
+          },
+          {
+            value: 'similar',
+            label: 'Similar things (semantic search)',
+            description: 'Related complaints, past patterns. Vector store.'
+          },
+          {
+            value: 'both',
+            label: 'Both',
+            description: 'Sometimes exact lookup, sometimes finding similar patterns.'
+          }
+        ]
+      },
+      {
+        id: 'q5',
+        title: 'Does the agent\'s behavior need to stay exactly consistent regardless of what it\'s told in session?',
+        options: [
+          {
+            value: 'yes',
+            label: 'Yes',
+            description: 'Behavioral constraints must be enforced via fine-tuning.'
+          },
+          {
+            value: 'no',
+            label: 'No',
+            description: 'Behavior can adapt. System prompt is enough.'
+          }
+        ]
+      }
+    ];
+
+    let currentQuestion = 0;
+    let answers = {};
+
+    const architectures = {
+      simple: {
+        name: 'Simple',
+        tagline: 'In-context only',
+        description: 'For short, stateless sessions where no cross-conversation memory is needed.',
+        components: { inContext: true, external: false, fineTuning: false },
+        example: 'A single-turn chatbot that answers questions without needing to remember past conversations.'
+      },
+      database: {
+        name: 'Database-Backed',
+        tagline: 'In-context + Structured External',
+        description: 'For agents needing to retrieve exact records and facts across sessions.',
+        components: { inContext: true, external: true, fineTuning: false },
+        example: 'Karel retrieves customer history, transaction records, and case numbers from a structured database.'
+      },
+      vector: {
+        name: 'Vector-Augmented',
+        tagline: 'In-context + Vector Store + Fine-tuning',
+        description: 'For agents needing semantic retrieval and consistent behavioral patterns.',
+        components: { inContext: true, external: true, fineTuning: true },
+        example: 'Karel finds similar past fraud patterns while maintaining a consistent tone and fraud detection approach.'
+      },
+      hybrid: {
+        name: 'Full Hybrid',
+        tagline: 'In-context + Both External Types + Fine-tuning',
+        description: 'For production agents needing all three layers: structured facts, semantic patterns, and consistent behavior.',
+        components: { inContext: true, external: true, fineTuning: true },
+        example: 'Karel retrieves exact case records, finds similar fraud patterns, and maintains consistent empathetic communication across all interactions.'
+      }
+    };
+
+    const questionsContainer = document.getElementById('questionsContainer');
+    const nextBtnEl = document.getElementById('nextBtn');
+    const backBtnEl = document.getElementById('backBtn');
+    const progressFillEl = document.getElementById('progressFill');
+    const progressInfoEl = document.getElementById('progressInfo');
+    const wizardContainerEl = document.getElementById('wizardContainer');
+    const resultsContainerEl = document.getElementById('resultsContainer');
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      const selectedValue = answers[q.id] || null;
+
+      let html = `<div class="question-container">
+        <div class="question-title">${q.title}</div>`;
+
+      q.options.forEach(opt => {
+        const checked = opt.value === selectedValue ? 'checked' : '';
+        html += `
+          <div class="option">
+            <input type="radio" id="opt_${opt.value}" name="q${currentQuestion}" value="${opt.value}" ${checked}>
+            <div class="option-content">
+              <label for="opt_${opt.value}" class="option-label">${opt.label}</label>
+              <div class="option-description">${opt.description}</div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+
+      questionsContainer.innerHTML = html;
+
+      const radios = document.querySelectorAll('input[type="radio"]');
+      radios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          answers[q.id] = e.target.value;
+        });
+      });
+
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const percent = ((currentQuestion + 1) / questions.length) * 100;
+      progressFillEl.style.width = percent + '%';
+      progressInfoEl.textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+
+      backBtnEl.style.display = currentQuestion > 0 ? 'block' : 'none';
+      nextBtnEl.textContent = currentQuestion === questions.length - 1 ? 'See Results' : 'Next';
+    }
+
+    function determineArchitecture() {
+      const a1 = answers['q1'];
+      const a2 = answers['q2'];
+      const a3 = answers['q3'];
+      const a4 = answers['q4'];
+      const a5 = answers['q5'];
+
+      if (a1 === 'none') return architectures.simple;
+      if (a1 === 'exact' || (a4 === 'exact' && a5 === 'no')) return architectures.database;
+      if ((a1 === 'semantic' || a4 === 'similar') && a5 === 'no') return architectures.vector;
+      return architectures.hybrid;
+    }
+
+    function showResults() {
+      const arch = determineArchitecture();
+
+      let html = `
+        <div class="results-header">
+          <div class="architecture-name">${arch.name}</div>
+          <div class="architecture-tagline">${arch.tagline}</div>
+        </div>
+
+        <div class="recommendation">
+          <div class="recommendation-title">Why This Architecture</div>
+          <div class="recommendation-text">${arch.description}</div>
+        </div>
+
+        <div class="recommendation">
+          <div class="recommendation-title">Memory Components</div>
+          <div class="architecture-diagram">
+            <div class="memory-component ${arch.components.inContext ? 'active' : 'inactive'}">
+              <div class="component-name">💬 In-Context</div>
+              <div class="component-description">Current conversation</div>
+            </div>
+            <div class="memory-component ${arch.components.external ? 'active' : 'inactive'}">
+              <div class="component-name">📊 External Storage</div>
+              <div class="component-description">Databases & vectors</div>
+            </div>
+            <div class="memory-component ${arch.components.fineTuning ? 'active' : 'inactive'}">
+              <div class="component-name">🧠 Fine-Tuning</div>
+              <div class="component-description">Behavior & style</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example-box">
+          <div class="example-title">For Karel (Your Fraud Agent)</div>
+          <div class="example-text">${arch.example}</div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <button class="btn btn-secondary" id="restartBtn">Start Over</button>
+        </div>
+      `;
+
+      wizardContainerEl.classList.add('hidden');
+      resultsContainerEl.innerHTML = html;
+      resultsContainerEl.classList.remove('hidden');
+
+      document.getElementById('restartBtn').addEventListener('click', restart);
+    }
+
+    nextBtnEl.addEventListener('click', () => {
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        renderQuestion();
+      } else {
+        showResults();
+      }
+    });
+
+    backBtnEl.addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+      }
+    });
+
+    function restart() {
+      currentQuestion = 0;
+      answers = {};
+      resultsContainerEl.classList.add('hidden');
+      resultsContainerEl.innerHTML = '';
+      wizardContainerEl.classList.remove('hidden');
+      renderQuestion();
+    }
+
+    renderQuestion();
+  </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.body.offsetHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+      window.parent.postMessage({ type: "resize", height: height }, "*");
+    }
+  }
+     // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

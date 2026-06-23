@@ -1,0 +1,54 @@
+{
+  "lesson": "02-orchestrators-and-subagents",
+  "title": "Orchestrators and subagents",
+  "questions": [
+    {
+      "id": 1,
+      "question": "In a multi-agent system, what is the orchestrator's primary responsibility?",
+      "options": [
+        "To execute the detailed work of each task directly, using all available tools",
+        "To decompose a high-level goal into subtasks, delegate them to appropriate subagents, and synthesize the results",
+        "To monitor subagents for errors and restart them if they fail",
+        "To communicate directly with end users and handle all customer-facing interactions"
+      ],
+      "correct": 1,
+      "explanation": "The orchestrator is the planner and coordinator, not the executor. It understands the overall goal, breaks it into pieces, delegates those pieces to subagents with the right specialized capabilities, collects results, and synthesizes them. Direct execution of detailed work is the subagent's role, the orchestrator stays at the level of goal management and task routing."
+    },
+    {
+      "id": 2,
+      "question": "The Case Management Orchestrator delegates a task to Karel with the message: 'Handle this customer's fraud case.' What is the most likely result?",
+      "options": [
+        "Karel handles the case correctly because he can look up everything he needs using his tools",
+        "Karel may ask the customer to re-explain the situation, may not know what output format to return, and may handle the case inconsistently because the delegation is too vague",
+        "Karel refuses the task because the orchestrator didn't include authentication credentials",
+        "Karel completes the task and returns a detailed structured result because that's what his system prompt specifies"
+      ],
+      "correct": 1,
+      "explanation": "A vague delegation message means Karel has to guess at context, goal, and expected output. He may ask the customer to start from scratch (wasting time), may not know what to report back, and may handle the case in a way that doesn't match the orchestrator's expectations. The interface between orchestrator and subagent must be specific: case ID, context, goal, and expected output format."
+    },
+    {
+      "id": 3,
+      "question": "The fraud detection agent and Karel are operating in parallel, the detection agent is scanning transactions while Karel is handling a customer conversation about a different fraud case. What is required for this to work correctly?",
+      "options": [
+        "Both agents must share the same context window so they can see each other's work",
+        "Their tasks must be genuinely independent, the detection agent's current scan must not affect the case Karel is handling in real time",
+        "The orchestrator must pause the detection agent while Karel is in an active session",
+        "Both agents must use the same system prompt to ensure consistent behavior"
+      ],
+      "correct": 1,
+      "explanation": "Parallel execution requires task independence. Two subagents can run at the same time only if their tasks don't depend on each other's outputs in real time. The fraud detection agent scanning a different transaction stream while Karel handles a customer conversation is genuinely independent, they don't need each other's results to proceed. If Karel needed the detection agent's output to complete his task, they'd need to run sequentially."
+    },
+    {
+      "id": 4,
+      "question": "Which of the following is the most important design question when building a multi-agent system?",
+      "options": [
+        "Which LLM model should the orchestrator use vs. the subagents?",
+        "What does the interface between agents look like, what does each agent receive, and what does it return?",
+        "How many subagents should the system have?",
+        "Should subagents be able to communicate directly with each other or only through the orchestrator?"
+      ],
+      "correct": 1,
+      "explanation": "Vague interfaces between agents are the most common failure point in multi-agent systems. The architecture can have the right agents with the right tools, but if the messages between them are underspecified, the system will fail on complex cases. Before writing a line of code, be able to answer: for each agent, what exactly does it receive as input, and what exactly does it return as output?"
+    }
+  ]
+}

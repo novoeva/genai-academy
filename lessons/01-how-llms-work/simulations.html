@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module 1 Simulations, How LLMs Work</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f4f2;
+      color: #1a1a2e;
+      padding: 32px 16px;
+      min-height: 100vh;
+    }
+
+    .page-header {
+      max-width: 720px;
+      margin: 0 auto 48px;
+    }
+
+    .page-header .module-tag {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6c63ff;
+      margin-bottom: 12px;
+    }
+
+    .page-header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .page-header p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .sim-card {
+      max-width: 720px;
+      margin: 0 auto 40px;
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    .sim-header {
+      background: #1a1a2e;
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sim-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6c63ff;
+      background: rgba(108,99,255,0.15);
+      border: 1px solid rgba(108,99,255,0.3);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .sim-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .sim-subtitle {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      margin-left: auto;
+    }
+
+    .sim-body {
+      padding: 28px;
+    }
+
+    .sim-desc {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 24px;
+      line-height: 1.6;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* ---- SIMULATION 1: THE PREDICTOR ---- */
+    .input-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .sentence-input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e8e8e8;
+      border-radius: 12px;
+      font-size: 16px;
+      color: #1a1a2e;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 6px;
+      font-family: inherit;
+    }
+
+    .sentence-input:focus {
+      border-color: #6c63ff;
+    }
+
+    .input-hint {
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    .prob-section-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+
+    .prob-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .prob-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .prob-word {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a2e;
+      width: 140px;
+      flex-shrink: 0;
+    }
+
+    .prob-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: #f0f0f0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .prob-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #6c63ff, #9b93ff);
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .prob-bar-fill.dim {
+      background: linear-gradient(90deg, #bbb, #d0d0d0);
+    }
+
+    .prob-pct {
+      font-size: 14px;
+      font-weight: 700;
+      color: #6c63ff;
+      width: 44px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .prob-pct.dim {
+      color: #bbb;
+    }
+
+    .sim-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: #6c63ff;
+      color: #fff;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.1s;
+      font-family: inherit;
+    }
+
+    .btn-primary:hover { background: #5850d9; }
+    .btn-primary:active { transform: scale(0.97); }
+
+    .btn-secondary {
+      background: transparent;
+      color: #6c63ff;
+      border: 2px solid #e8e8e8;
+      padding: 12px 22px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.2s, color 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-secondary:hover { border-color: #6c63ff; }
+
+    /* ---- SIMULATION 2: TEMPERATURE DIAL ---- */
+    .temp-display {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .temp-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #6c63ff;
+    }
+
+    .temp-desc {
+      font-size: 13px;
+      color: #888;
+      font-style: italic;
+    }
+
+    .temp-slider {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 6px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #6c63ff 0%, #ff6584 100%);
+      outline: none;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .temp-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      background: #fff;
+      border: 3px solid #6c63ff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(108,99,255,0.3);
+    }
+
+    .temp-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 24px;
+    }
+
+    .temp-note {
+      font-size: 13px;
+      color: #888;
+      background: #f8f8f8;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+
+    .temp-note strong { color: #1a1a2e; }
+
+    /* ---- SIMULATION 3: CONTEXT WINDOW ---- */
+    .cw-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .cw-scroll-area {
+      border: 2px solid #f0f0f0;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+
+    .cw-scroll-header {
+      background: #1a1a2e;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cw-scroll-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .cw-token-count {
+      font-size: 12px;
+      font-weight: 700;
+      color: #6c63ff;
+      background: rgba(108,99,255,0.15);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .cw-messages {
+      height: 280px;
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cw-msg {
+      padding: 9px 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      transition: opacity 0.5s, background 0.5s;
+      position: relative;
+    }
+
+    .cw-msg.user-msg {
+      background: #ede9ff;
+      border-left: 3px solid #6c63ff;
+    }
+
+    .cw-msg.ai-msg {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-left: 3px solid #aaa;
+    }
+
+    .cw-msg.faded {
+      opacity: 0.25;
+    }
+
+    .cw-msg.dropped {
+      opacity: 0;
+      height: 0;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .cw-msg-role {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #999;
+      min-width: 28px;
+      padding-top: 1px;
+    }
+
+    .cw-msg-text {
+      font-size: 13px;
+      color: #333;
+      flex: 1;
+    }
+
+    .cw-msg-tokens {
+      font-size: 11px;
+      color: #bbb;
+      white-space: nowrap;
+    }
+
+    .cw-window-indicator {
+      border: 2px dashed #6c63ff;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #6c63ff;
+      text-align: center;
+      background: rgba(108,99,255,0.04);
+      margin-bottom: 8px;
+    }
+
+    .cw-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .cw-meter {
+      border: 2px solid #f0f0f0;
+      border-radius: 14px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .cw-meter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    .cw-meter-bar-bg {
+      height: 12px;
+      background: #f0f0f0;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .cw-meter-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #6c63ff, #ff6584);
+      transition: width 0.4s ease;
+    }
+
+    .cw-meter-numbers {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .cw-meter-numbers span:first-child {
+      font-weight: 700;
+      color: #6c63ff;
+    }
+
+    .cw-status {
+      border: 2px solid #f0f0f0;
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .cw-status.warning {
+      border-color: #ffcccc;
+      background: #fff8f8;
+      color: #cc4444;
+    }
+
+    .cw-status strong { color: #1a1a2e; }
+    .cw-status.warning strong { color: #cc4444; }
+
+    .cw-input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .cw-input {
+      flex: 1;
+      padding: 12px 14px;
+      border: 2px solid #e8e8e8;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+      color: #1a1a2e;
+    }
+
+    .cw-input:focus { border-color: #6c63ff; }
+
+    .btn-danger {
+      background: transparent;
+      color: #cc4444;
+      border: 2px solid #ffcccc;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+
+    .btn-danger:hover { background: #fff3f3; }
+
+    @media (max-width: 600px) {
+      .cw-layout { grid-template-columns: 1fr; }
+      .prob-word { width: 100px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="module-tag">Module 1, Live Simulations</div>
+    <h1>How LLMs Actually Work</h1>
+    <p>Three interactive demos that make the abstract concrete. Play with each one before moving to Module 2.</p>
+  </div>
+
+  <!-- ======= SIMULATION 1: THE PREDICTOR ======= -->
+  <div class="sim-card">
+    <div class="sim-header">
+      <span class="sim-label">Live Simulation</span>
+      <span class="sim-title">The Predictor</span>
+      <span class="sim-subtitle">Sub-chapter 2</span>
+    </div>
+    <div class="sim-body">
+      <p class="sim-desc">
+        An LLM is, at its core, a next-word prediction engine. Type a sentence fragment below and watch the model rank its top candidates for what comes next, with the probability it assigns to each one.
+      </p>
+
+      <div class="input-label">Input Sentence</div>
+      <input
+        id="predictor-input"
+        class="sentence-input"
+        type="text"
+        value="The best part of being a PM is"
+        placeholder="Type a sentence..."
+      />
+      <div class="input-hint">Try editing it and predicting again.</div>
+
+      <div class="prob-section-label">Probability Map (Top Candidates)</div>
+      <div class="prob-bars" id="prob-bars"></div>
+
+      <div class="sim-actions">
+        <button class="btn-primary" onclick="predictNext()">
+          ✦ Predict Next Word
+        </button>
+        <button class="btn-secondary" onclick="tryAnother()">
+          ↺ Try Another Example
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= SIMULATION 2: TEMPERATURE DIAL ======= -->
+  <div class="sim-card">
+    <div class="sim-header">
+      <span class="sim-label">Live Simulation</span>
+      <span class="sim-title">The Temperature Dial</span>
+      <span class="sim-subtitle">Sub-chapter 2</span>
+    </div>
+    <div class="sim-body">
+      <p class="sim-desc">
+        Temperature controls how randomly the model samples its next word. Low temperature collapses the choice to one dominant word. High temperature spreads probability across many candidates, more creative, more unpredictable. Drag the slider and watch what happens.
+      </p>
+
+      <div class="temp-display">
+        <div>
+          <div class="input-label">Temperature</div>
+          <div class="temp-value" id="temp-val">0.7</div>
+        </div>
+        <div class="temp-desc" id="temp-desc">Balanced</div>
+      </div>
+
+      <input
+        type="range"
+        class="temp-slider"
+        id="temp-slider"
+        min="0.1"
+        max="2.0"
+        step="0.1"
+        value="0.7"
+        oninput="updateTemp(this.value)"
+      />
+      <div class="temp-labels">
+        <span>0.1, Deterministic</span>
+        <span>2.0, Chaotic</span>
+      </div>
+
+      <div class="prob-section-label">Probability Map for: "The output will..."</div>
+      <div class="prob-bars" id="temp-prob-bars"></div>
+
+      <div class="temp-note" id="temp-note">
+        <strong>What you're seeing:</strong> At this temperature, the model has a moderate spread across candidates. The most likely word still wins, but there's real competition from others.
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= SIMULATION 3: THE CONTEXT WINDOW ======= -->
+  <div class="sim-card">
+    <div class="sim-header">
+      <span class="sim-label">Live Simulation</span>
+      <span class="sim-title">The Context Window</span>
+      <span class="sim-subtitle">Sub-chapter 3</span>
+    </div>
+    <div class="sim-body">
+      <p class="sim-desc">
+        The model can only "see" what fits inside its context window, a finite scroll of tokens. As a conversation grows, the oldest messages fall out of the window. The model genuinely cannot access them anymore. Keep adding messages and watch what happens.
+      </p>
+
+      <div class="cw-input-row">
+        <input id="cw-input" class="cw-input" type="text" placeholder='Type a message and hit Send...' />
+        <button class="btn-primary" style="padding: 12px 16px;" onclick="cwSend()">Send</button>
+      </div>
+
+      <div class="cw-layout">
+        <div class="cw-scroll-area">
+          <div class="cw-scroll-header">
+            <span class="cw-scroll-title">Conversation</span>
+            <span class="cw-token-count" id="cw-token-display">0 / 500 tokens</span>
+          </div>
+          <div class="cw-messages" id="cw-messages">
+            <div style="color:#ccc; font-size:13px; text-align:center; margin:auto;">
+              Send messages to fill the context window...
+            </div>
+          </div>
+        </div>
+
+        <div class="cw-sidebar">
+          <div class="cw-meter">
+            <div class="cw-meter-label">Context Window Usage</div>
+            <div class="cw-meter-bar-bg">
+              <div class="cw-meter-fill" id="cw-meter-fill" style="width:0%"></div>
+            </div>
+            <div class="cw-meter-numbers">
+              <span id="cw-used">0 tokens used</span>
+              <span>500 max</span>
+            </div>
+          </div>
+          <div class="cw-status" id="cw-status">
+            <strong>Window is empty.</strong><br/>The model has nothing to refer back to yet.
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn-primary" onclick="cwAutoFill()">⚡ Auto-fill conversation</button>
+        <button class="btn-danger" onclick="cwReset()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =============================================
+    // SIMULATION 1, THE PREDICTOR
+    // =============================================
+
+    const examples = [
+      {
+        sentence: "The best part of being a PM is",
+        predictions: [
+          { word: "prioritization", pct: 72 },
+          { word: "meetings", pct: 15 },
+          { word: "coffee", pct: 8 },
+          { word: "clarity", pct: 5 },
+        ]
+      },
+      {
+        sentence: "A language model predicts the next",
+        predictions: [
+          { word: "token", pct: 61 },
+          { word: "word", pct: 27 },
+          { word: "sentence", pct: 8 },
+          { word: "character", pct: 4 },
+        ]
+      },
+      {
+        sentence: "When designing an AI agent, always",
+        predictions: [
+          { word: "consider", pct: 44 },
+          { word: "define", pct: 31 },
+          { word: "ensure", pct: 18 },
+          { word: "test", pct: 7 },
+        ]
+      },
+      {
+        sentence: "The most dangerous thing about hallucination is",
+        predictions: [
+          { word: "confidence", pct: 68 },
+          { word: "frequency", pct: 17 },
+          { word: "subtlety", pct: 10 },
+          { word: "randomness", pct: 5 },
+        ]
+      },
+      {
+        sentence: "To reduce hallucination, you should",
+        predictions: [
+          { word: "ground", pct: 55 },
+          { word: "validate", pct: 24 },
+          { word: "constrain", pct: 13 },
+          { word: "avoid", pct: 8 },
+        ]
+      }
+    ];
+
+    let currentExampleIndex = 0;
+    let currentPredictions = examples[0].predictions;
+
+    function renderProbBars(containerId, predictions, animated = true) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      predictions.forEach((p, i) => {
+        const isTop = i === 0;
+        const row = document.createElement('div');
+        row.className = 'prob-row';
+        row.innerHTML = `
+          <div class="prob-word">${p.word}</div>
+          <div class="prob-bar-bg">
+            <div class="prob-bar-fill ${isTop ? '' : 'dim'}" style="width: 0%;" data-target="${p.pct}"></div>
+          </div>
+          <div class="prob-pct ${isTop ? '' : 'dim'}">${p.pct}%</div>
+        `;
+        container.appendChild(row);
+      });
+
+      if (animated) {
+        requestAnimationFrame(() => {
+          container.querySelectorAll('.prob-bar-fill').forEach(bar => {
+            bar.style.width = bar.dataset.target + '%';
+          });
+        });
+      }
+    }
+
+    function predictNext() {
+      const input = document.getElementById('predictor-input').value.trim();
+      // Check if the input matches one of our examples
+      const match = examples.find(e => e.sentence.toLowerCase() === input.toLowerCase());
+      if (match) {
+        currentPredictions = match.predictions;
+      } else {
+        // Generate plausible-looking random predictions based on input length
+        const words = ["generate", "produce", "create", "return", "define", "understand", "analyze", "consider"];
+        const shuffled = [...words].sort(() => Math.random() - 0.5).slice(0, 4);
+        const raw = [Math.random() * 40 + 40, Math.random() * 20 + 10, Math.random() * 15 + 5, Math.random() * 10 + 2];
+        const sum = raw.reduce((a, b) => a + b, 0);
+        currentPredictions = shuffled.map((w, i) => ({ word: w, pct: Math.round((raw[i] / sum) * 100) }));
+        currentPredictions.sort((a, b) => b.pct - a.pct);
+        // Normalize to 100
+        let total = currentPredictions.reduce((a, b) => a + b.pct, 0);
+        currentPredictions[0].pct += (100 - total);
+      }
+      renderProbBars('prob-bars', currentPredictions, true);
+    }
+
+    function tryAnother() {
+      currentExampleIndex = (currentExampleIndex + 1) % examples.length;
+      const ex = examples[currentExampleIndex];
+      document.getElementById('predictor-input').value = ex.sentence;
+      currentPredictions = ex.predictions;
+      renderProbBars('prob-bars', currentPredictions, true);
+    }
+
+    // Init
+    renderProbBars('prob-bars', examples[0].predictions, false);
+    setTimeout(() => renderProbBars('prob-bars', examples[0].predictions, true), 100);
+
+
+    // =============================================
+    // SIMULATION 2, THE TEMPERATURE DIAL
+    // =============================================
+
+    // Word pools: [word, base_logit]
+    // At low temp, only high-logit words appear. At high temp, low-logit words surface.
+    const TEMP_WORD_POOL = [
+      { word: "generate",    logit: 6.0 },
+      { word: "produce",     logit: 4.5 },
+      { word: "analyze",     logit: 3.2 },
+      { word: "return",      logit: 2.5 },
+      { word: "define",      logit: 1.8 },
+      { word: "fail",        logit: 1.0 },
+      { word: "ignore",      logit: 0.4 },
+      { word: "randomly",    logit: -0.5 },
+      { word: "banana",      logit: -1.2 },
+      { word: "purple",      logit: -1.8 },
+    ];
+
+    function softmaxPool(pool, temp) {
+      const scaled = pool.map(w => w.logit / temp);
+      const max = Math.max(...scaled);
+      const exps = scaled.map(s => Math.exp(s - max));
+      const sum = exps.reduce((a, b) => a + b, 0);
+      return pool.map((w, i) => ({
+        word: w.word,
+        pct: exps[i] / sum
+      }));
+    }
+
+    function updateTemp(val) {
+      const t = parseFloat(val);
+      document.getElementById('temp-val').textContent = t.toFixed(1);
+
+      let desc, note;
+      if (t <= 0.3) {
+        desc = "Deterministic";
+        note = `<strong>What you're seeing:</strong> Near-zero temperature. One word takes almost all the probability mass. The model produces this word almost every single time, safe, consistent, a little boring. Perfect for factual tasks.`;
+      } else if (t <= 0.6) {
+        desc = "Focused";
+        note = `<strong>What you're seeing:</strong> Low temperature. A small set of sensible words share most of the probability. The model is highly predictable, with occasional variation between the top 2-3 candidates.`;
+      } else if (t <= 1.0) {
+        desc = "Balanced";
+        note = `<strong>What you're seeing:</strong> Default temperature range for most models. The top word still wins, but others have real weight. Responses feel natural and varied without going off the rails.`;
+      } else if (t <= 1.5) {
+        desc = "Creative";
+        note = `<strong>What you're seeing:</strong> High temperature. Unusual words like "ignore" and "fail" are now surfacing. The model might pick any of these on a given run, good for creative tasks, risky for factual ones.`;
+      } else {
+        desc = "Chaotic";
+        note = `<strong>What you're seeing:</strong> Very high temperature. "Banana" and "purple" now have real probability. The distribution is nearly flat, the model is sampling almost randomly. This is why high temperature causes hallucination and incoherence.`;
+      }
+
+      document.getElementById('temp-desc').textContent = desc;
+      document.getElementById('temp-note').innerHTML = note;
+
+      // Compute softmax over full pool
+      const allProbs = softmaxPool(TEMP_WORD_POOL, t);
+
+      // Show only words with >1% probability, up to 6
+      let visible = allProbs.filter(w => w.pct > 0.01).slice(0, 6);
+      const total = visible.reduce((a, b) => a + b.pct, 0);
+      const predictions = visible.map(w => ({
+        word: w.word,
+        pct: Math.round((w.pct / total) * 100)
+      }));
+
+      // Fix rounding
+      const sum = predictions.reduce((a, b) => a + b.pct, 0);
+      if (predictions.length > 0) predictions[0].pct += (100 - sum);
+
+      renderProbBars('temp-prob-bars', predictions, true);
+    }
+
+    updateTemp(0.7);
+
+
+    // =============================================
+    // SIMULATION 3, THE CONTEXT WINDOW
+    // =============================================
+
+    const CW_MAX_TOKENS = 500;
+    let cwTokensUsed = 0;
+    let cwMessages = [];
+
+    const CW_AUTOFILL = [
+      { role: 'user', text: 'Hi! My name is Eva and I work at GLAMI.' },
+      { role: 'ai',   text: 'Hi Eva! Nice to meet you. What can I help you with today?' },
+      { role: 'user', text: 'I am a product manager learning about AI.' },
+      { role: 'ai',   text: 'Great context! AI is a fascinating space for PMs right now.' },
+      { role: 'user', text: 'Can you explain what a context window is?' },
+      { role: 'ai',   text: 'Sure! The context window is all the text I can "see" at once, your messages, my replies, and any system instructions. Once it fills up, the oldest messages fall out.' },
+      { role: 'user', text: 'So you literally forget things as the window fills up?' },
+      { role: 'ai',   text: 'Exactly. I have no special access to what was dropped. If your name fell out of the window, I would not know it anymore.' },
+      { role: 'user', text: 'That is wild. What happens to long customer support conversations?' },
+      { role: 'ai',   text: 'That is why production systems use techniques like summarization or RAG to pull in relevant context rather than relying on a single giant window.' },
+      { role: 'user', text: 'Makes sense. One more thing: what company do I work at?' },
+    ];
+
+    let autoFillIndex = 0;
+
+    function cwEstimateTokens(text) {
+      return Math.ceil(text.length / 4);
+    }
+
+    function cwAddMessage(role, text, animate = true) {
+      const tokens = cwEstimateTokens(text);
+      cwTokensUsed += tokens;
+      cwMessages.push({ role, text, tokens });
+
+      // Render all messages, fading/dropping old ones if over limit
+      cwRender();
+
+      if (animate) {
+        const container = document.getElementById('cw-messages');
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    function cwRender() {
+      const container = document.getElementById('cw-messages');
+      container.innerHTML = '';
+
+      // Work out which messages are "in window"
+      let runningTokens = 0;
+      const inWindow = [];
+      for (let i = cwMessages.length - 1; i >= 0; i--) {
+        runningTokens += cwMessages[i].tokens;
+        inWindow.unshift(runningTokens <= CW_MAX_TOKENS);
+      }
+
+      const windowStart = inWindow.indexOf(true);
+
+      if (cwMessages.length === 0) {
+        container.innerHTML = '<div style="color:#ccc; font-size:13px; text-align:center; margin:auto;">Send messages to fill the context window...</div>';
+      }
+
+      cwMessages.forEach((msg, i) => {
+        if (i === windowStart && windowStart > 0) {
+          const indicator = document.createElement('div');
+          indicator.className = 'cw-window-indicator';
+          indicator.textContent = '▲ Context window starts here, model cannot see above this line';
+          container.appendChild(indicator);
+        }
+
+        const el = document.createElement('div');
+        el.className = `cw-msg ${msg.role === 'user' ? 'user-msg' : 'ai-msg'}${!inWindow[i] ? ' faded' : ''}`;
+        el.innerHTML = `
+          <span class="cw-msg-role">${msg.role === 'user' ? 'You' : 'AI'}</span>
+          <span class="cw-msg-text">${msg.text}</span>
+          <span class="cw-msg-tokens">${msg.tokens}t</span>
+        `;
+        container.appendChild(el);
+      });
+
+      container.scrollTop = container.scrollHeight;
+
+      // Update meter
+      const pct = Math.min((cwTokensUsed / CW_MAX_TOKENS) * 100, 100);
+      document.getElementById('cw-meter-fill').style.width = pct + '%';
+      document.getElementById('cw-token-display').textContent = `${cwTokensUsed} / ${CW_MAX_TOKENS} tokens`;
+      document.getElementById('cw-used').textContent = `${cwTokensUsed} tokens used`;
+
+      // Update status
+      const status = document.getElementById('cw-status');
+      const droppedCount = inWindow.filter(v => !v).length;
+      if (cwTokensUsed === 0) {
+        status.className = 'cw-status';
+        status.innerHTML = '<strong>Window is empty.</strong><br/>The model has nothing to refer back to yet.';
+      } else if (cwTokensUsed < CW_MAX_TOKENS * 0.6) {
+        status.className = 'cw-status';
+        status.innerHTML = `<strong>Window is healthy.</strong><br/>The model can see all ${cwMessages.length} messages so far.`;
+      } else if (cwTokensUsed < CW_MAX_TOKENS) {
+        status.className = 'cw-status';
+        status.innerHTML = `<strong>Window is filling up.</strong><br/>Getting close to the limit. Old messages will start dropping soon.`;
+      } else {
+        status.className = 'cw-status warning';
+        status.innerHTML = `<strong>Window is full!</strong><br/>${droppedCount} message${droppedCount > 1 ? 's have' : ' has'} dropped out. The model cannot access them anymore, they are gone from its view.`;
+      }
+    }
+
+    function cwSend() {
+      const input = document.getElementById('cw-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      cwAddMessage('user', text);
+      input.value = '';
+
+      setTimeout(() => {
+        const replies = [
+          "Got it! That is useful context to have in the window.",
+          "Understood. I can see everything in our conversation so far.",
+          "Noted! Ask me anything, I have full access to this conversation.",
+          "Good point. Keep in mind I can only see what fits in the context window.",
+        ];
+        cwAddMessage('ai', replies[Math.floor(Math.random() * replies.length)]);
+      }, 400);
+    }
+
+    function cwAutoFill() {
+      if (autoFillIndex >= CW_AUTOFILL.length) return;
+      const msg = CW_AUTOFILL[autoFillIndex++];
+      cwAddMessage(msg.role, msg.text);
+      if (autoFillIndex < CW_AUTOFILL.length) {
+        setTimeout(cwAutoFill, 600);
+      }
+    }
+
+    function cwReset() {
+      cwTokensUsed = 0;
+      cwMessages = [];
+      autoFillIndex = 0;
+      cwRender();
+    }
+
+    document.getElementById('cw-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') cwSend();
+    });
+    document.getElementById('predictor-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') predictNext();
+    });
+  </script>
+</body>
+</html>

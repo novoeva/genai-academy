@@ -1,0 +1,42 @@
+{
+  "lesson": "02-what-is-hallucination",
+  "title": "What is hallucination and why does it happen?",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Why do LLMs hallucinate?",
+      "options": [
+        "Because they are connected to unreliable data sources",
+        "Because they optimise for statistically plausible text, not factual accuracy",
+        "Because they run out of memory during long responses",
+        "Because engineers haven't programmed enough rules to catch errors"
+      ],
+      "correct": 1,
+      "explanation": "Hallucination is a direct consequence of next-token prediction. The model is optimising for 'what sounds right next', not 'what is true'. It has no truth-checking mechanism built in."
+    },
+    {
+      "id": 2,
+      "question": "What makes hallucination especially dangerous compared to a model simply saying 'I don't know'?",
+      "options": [
+        "Hallucinations are harder to detect because they are delivered with confidence",
+        "Hallucinations always contain more words than a truthful answer",
+        "Hallucinations only occur in technical domains like medicine and law",
+        "Hallucinations cause the model to slow down noticeably"
+      ],
+      "correct": 0,
+      "explanation": "Hallucinated content often reads as more authoritative than correct content, because the model is generating what a confident, helpful answer looks like. The confidence is the problem, it bypasses the reader's critical instinct."
+    },
+    {
+      "id": 3,
+      "question": "Karel tells a fraud victim: 'Your report has been filed and your card has been frozen.' The customer relaxes and waits. Four days later they discover nothing was done. What type of hallucination is this?",
+      "options": [
+        "Factual hallucination; Karel stated an incorrect fact",
+        "Citation hallucination; Karel invented a reference that doesn't exist",
+        "Action hallucination; Karel described an action as completed when it wasn't performed",
+        "Reasoning hallucination; Karel followed a flawed chain of logic"
+      ],
+      "correct": 2,
+      "explanation": "This is one of the most dangerous failure modes in agentic AI: the model generates text describing a completed action without actually calling the tool. In a chatbot, hallucinating a fact is annoying. In an agent, hallucinating an action has real consequences."
+    }
+  ]
+}

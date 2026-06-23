@@ -1,0 +1,54 @@
+{
+  "lesson": "03-the-agent-loop",
+  "title": "The agent loop: perceive, plan, act, observe",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the correct order of stages in the agent loop?",
+      "options": [
+        "Act, observe, plan, perceive",
+        "Perceive, plan, act, observe",
+        "Plan, perceive, observe, act",
+        "Observe, perceive, act, plan"
+      ],
+      "correct": 1,
+      "explanation": "The agent loop flows: perceive (receive input and current state), plan (decide what to do next based on everything in context), act (take an action, call a tool or generate a response), observe (receive the results of the action and add them to context). The loop then repeats from perceive with the new state."
+    },
+    {
+      "id": 2,
+      "question": "Karel calls freeze_card() and immediately tells the customer 'Your card has been frozen.' The tool response hasn't arrived yet. What failure mode is this?",
+      "options": [
+        "An infinite loop; Karel keeps calling freeze_card() because he didn't wait for a response",
+        "A hallucinated completion; Karel is asserting success before observing whether the action actually succeeded",
+        "A compounding error; Karel froze the card before confirming the right transaction",
+        "Lost context; Karel forgot earlier in the conversation that the customer had already frozen their card"
+      ],
+      "correct": 1,
+      "explanation": "Hallucinated completion is when the agent declares success before observing the outcome. Karel predicted what success looks like and responded based on that prediction, rather than waiting for the Observe stage to confirm it. This is one of the most dangerous failure modes in transactional agents, if the tool failed silently, the customer believes their card is frozen when it isn't."
+    },
+    {
+      "id": 3,
+      "question": "In Karel's first loop, he reads transaction history and misidentifies the wrong transaction as the one the customer flagged. The customer, confused, confirms it anyway. Karel then flags the wrong transaction and freezes the card. What type of failure is this?",
+      "options": [
+        "Hallucinated completion",
+        "Compounding error, a mistake in an early loop turn shaped all subsequent actions",
+        "Infinite loop; Karel should have confirmed with the customer more times",
+        "Lost context; Karel forgot the original customer message"
+      ],
+      "correct": 1,
+      "explanation": "Compounding errors happen when a wrong decision in an early loop turn cascades into subsequent turns. In the agent loop, each observe feeds the next perceive, so if the first loop produces bad information, everything downstream inherits that error. This is why the perception and planning stages need careful design, not just the action stage."
+    },
+    {
+      "id": 4,
+      "question": "Karel is designed to confirm with the customer before flagging or freezing anything. From an agent loop perspective, what does this design decision accomplish?",
+      "options": [
+        "It reduces latency by running fewer tool calls per session",
+        "It inserts a human checkpoint inside the loop, preventing irreversible actions from being taken based on the agent's planning alone",
+        "It reduces the cost of the interaction by making tool calls cheaper",
+        "It prevents Karel from falling into an infinite loop"
+      ],
+      "correct": 1,
+      "explanation": "Requiring explicit customer confirmation before irreversible actions (flag, freeze, file) creates a human-in-the-loop checkpoint inside the agent loop. The agent can only proceed past planning to action once a human has validated the plan. This is a deliberate safety architecture, not just good UX, it's one of the most effective ways to prevent consequential mistakes in agentic systems."
+    }
+  ]
+}

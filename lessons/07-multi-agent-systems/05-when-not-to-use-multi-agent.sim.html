@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Judge - Agentic AI Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    html { overflow: hidden; }
+
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f7f9fb;
+            color: #2c3437;
+            padding: 40px 20px;
+            
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #596064;
+            font-weight: 400;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #2c3437;
+        }
+
+        .scenario-card {
+            border: 2px solid rgba(79, 70, 229, 0.15);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            background: #f7f9fb;
+            transition: all 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            border-color: #4f46e5;
+            background: white;
+        }
+
+        .scenario-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #6f68f7);
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .scenario-text {
+            font-size: 14px;
+            color: #2c3437;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            padding: 14px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            background: white;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .choice-btn.single {
+            border: 2px solid rgba(79, 70, 229, 0.3);
+            color: #4f46e5;
+        }
+
+        .choice-btn.single:hover {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .choice-btn.multi {
+            border: 2px solid rgba(79, 70, 229, 0.3);
+            color: #4f46e5;
+        }
+
+        .choice-btn.multi:hover {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .choice-btn.selected {
+            background: linear-gradient(135deg, #4f46e5, #6f68f7);
+            color: white;
+            border-color: #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .choice-btn.correct {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .choice-btn.incorrect {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        .choice-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            margin-top: 16px;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            display: none;
+            border-left: 4px solid transparent;
+            line-height: 1.5;
+        }
+
+        .feedback.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border-left-color: #10b981;
+            display: block;
+        }
+
+        .feedback.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-left-color: #ef4444;
+            display: block;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #6f68f7);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .summary-section {
+            display: none;
+        }
+
+        .summary-section.active {
+            display: block;
+        }
+
+        .principles-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .principle {
+            background: #f7f9fb;
+            border-left: 4px solid #4f46e5;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .principle-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #4f46e5, #6f68f7);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .principle-text {
+            font-size: 13px;
+            color: #2c3437;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .principle-detail {
+            font-size: 12px;
+            color: #596064;
+            line-height: 1.5;
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, #eef2ff, #f7f9fb);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .score-value {
+            font-size: 56px;
+            font-weight: 800;
+            color: #4f46e5;
+            margin-bottom: 8px;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: #596064;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .score-detail {
+            font-size: 12px;
+            color: #596064;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Architecture Judge</h1>
+            <p class="subtitle">Decide when to use single-agent vs. multi-agent systems</p>
+        </header>
+
+        <div id="gameSection">
+            <div class="card">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress"></div>
+                </div>
+
+                <h2>Single Agent or Multi-Agent?</h2>
+                <p style="font-size: 13px; color: #596064; margin-bottom: 24px;">For each scenario, decide the right architecture and explain your choice.</p>
+
+                <div id="scenariosContainer"></div>
+            </div>
+        </div>
+
+        <div id="summarySection" class="summary-section">
+            <div class="card">
+                <h2>5 Signs You Don't Need Multi-Agent</h2>
+                <div class="principles-grid" id="principlesContainer"></div>
+
+                <div class="score-card">
+                    <div class="score-value" id="scoreValue">0</div>
+                    <div class="score-label">Scenarios Correct</div>
+                    <div class="score-detail" id="scoreDetail"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scenarios = [
+            {
+                text: 'A customer service chatbot that answers FAQs, looks up order status, and can initiate a return.',
+                answer: 'single',
+                reason: 'Single Agent, Three capabilities but one user, one conversation, one context. Multi-agent adds orchestrator + subagent overhead with no benefit. A well-designed prompt handles all three tasks.'
+            },
+            {
+                text: 'Processing 10,000 insurance claims per day, each requiring: document parsing, fraud detection, medical coding, coverage calculation, and approval routing.',
+                answer: 'multi',
+                reason: 'Multi-Agent, High volume, 5 distinct specialized tasks, each with different models and logic. Parallel execution essential. Single agent becomes a bottleneck; specialization hard to maintain.'
+            },
+            {
+                text: 'A writing assistant that helps a user draft emails.',
+                answer: 'single',
+                reason: 'Single Agent, One user, one task, conversational iterative work. Multi-agent adds latency and complexity. User iterates with one agent on one draft.'
+            },
+            {
+                text: 'Monitoring all bank transactions in real time, with sub-teams that specialize in card fraud, wire fraud, account takeover, and merchant fraud, each with different data sources and detection models.',
+                answer: 'multi',
+                reason: 'Multi-Agent, Genuine specialization. Different data, different models, continuous monitoring. Separate agents scale better and allow independent tuning of fraud patterns.'
+            },
+            {
+                text: 'Karel needs to also send customers a follow-up email 24 hours after their fraud case is resolved.',
+                answer: 'single',
+                reason: 'Single Agent (+ scheduled task), This is a scheduling/timing problem, not a coordination problem. A single Karel with a scheduled follow-up task is cleaner. Don\'t create multi-agent for a timer.'
+            },
+            {
+                text: 'We want to improve Karel\'s accuracy by having a second agent review Karel\'s fraud decisions before they\'re executed.',
+                answer: 'single',
+                reason: 'Single Agent (with review step), A two-agent system adds latency and complexity. Better: add an explicit review step inside Karel\'s own reasoning loop. Or route to human review for high-confidence cases.'
+            }
+        ];
+
+        const principles = [
+            {
+                title: 'Only one user, one conversation',
+                detail: 'If the system serves a single user in a single conversation, multi-agent adds no value. One context, one session, one agent is sufficient.'
+            },
+            {
+                title: 'Tasks are sequential and tightly coupled',
+                detail: 'If Task B always needs the exact output of Task A, or steps are always interdependent, they belong in one agent. Sequential pipelines don\'t need multi-agent overhead.'
+            },
+            {
+                title: 'You\'re solving a scheduling or timing problem',
+                detail: 'Scheduled tasks, delayed actions, or reminders don\'t need multi-agent. Use a scheduler + single agent. Don\'t create agents just to manage timers.'
+            },
+            {
+                title: 'The "specialization" is just a prompt section',
+                detail: 'If a specialized behavior is really just a different instruction or context window, put it in one agent\'s prompt. You don\'t need separate agents for different writing styles or tones.'
+            },
+            {
+                title: 'You haven\'t tried a well-designed single agent yet',
+                detail: 'Before adding the coordination complexity of multi-agent, invest in a single agent with strong prompts, few-shot examples, and explicit reasoning steps.'
+            }
+        ];
+
+        let currentScenario = 0;
+        let correctAnswers = 0;
+        let answered = new Set();
+
+        function renderScenarios() {
+            const container = document.getElementById('scenariosContainer');
+            container.innerHTML = '';
+
+            scenarios.forEach((scenario, idx) => {
+                const card = document.createElement('div');
+                card.className = 'scenario-card';
+
+                const number = document.createElement('div');
+                number.className = 'scenario-number';
+                number.textContent = idx + 1;
+
+                const text = document.createElement('div');
+                text.className = 'scenario-text';
+                text.textContent = scenario.text;
+
+                const buttons = document.createElement('div');
+                buttons.className = 'button-group';
+
+                const singleBtn = document.createElement('button');
+                singleBtn.className = 'choice-btn single';
+                singleBtn.textContent = 'Single Agent';
+                singleBtn.dataset.scenario = idx;
+                singleBtn.dataset.choice = 'single';
+                singleBtn.addEventListener('click', () => selectAnswer(idx, 'single', singleBtn));
+
+                const multiBtn = document.createElement('button');
+                multiBtn.className = 'choice-btn multi';
+                multiBtn.textContent = 'Multi-Agent';
+                multiBtn.dataset.scenario = idx;
+                multiBtn.dataset.choice = 'multi';
+                multiBtn.addEventListener('click', () => selectAnswer(idx, 'multi', multiBtn));
+
+                buttons.appendChild(singleBtn);
+                buttons.appendChild(multiBtn);
+
+                const feedback = document.createElement('div');
+                feedback.className = 'feedback';
+                feedback.id = 'feedback-' + idx;
+
+                card.appendChild(number);
+                card.appendChild(text);
+                card.appendChild(buttons);
+                card.appendChild(feedback);
+
+                container.appendChild(card);
+            });
+        }
+
+        function selectAnswer(scenarioIdx, choice, button) {
+            const scenario = scenarios[scenarioIdx];
+            const feedback = document.getElementById('feedback-' + scenarioIdx);
+            const buttons = button.parentElement.querySelectorAll('.choice-btn');
+
+            buttons.forEach(b => b.disabled = true);
+
+            if (choice === scenario.answer) {
+                feedback.className = 'feedback success';
+                feedback.textContent = '✓ ' + scenario.reason;
+                button.classList.add('correct');
+                correctAnswers++;
+            } else {
+                feedback.className = 'feedback error';
+                feedback.textContent = '✗ ' + scenario.reason;
+                button.classList.add('incorrect');
+                buttons.forEach(b => {
+                    if (b.dataset.choice === scenario.answer) {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+
+            answered.add(scenarioIdx);
+            updateProgress();
+
+            if (answered.size === scenarios.length) {
+                setTimeout(showSummary, 800);
+            }
+        }
+
+        function updateProgress() {
+            document.getElementById('progress').style.width = (answered.size / scenarios.length * 100) + '%';
+        }
+
+        function showSummary() {
+            document.getElementById('gameSection').style.display = 'none';
+            document.getElementById('summarySection').classList.add('active');
+
+            const principlesContainer = document.getElementById('principlesContainer');
+            principlesContainer.innerHTML = '';
+
+            principles.forEach((principle, idx) => {
+                const box = document.createElement('div');
+                box.className = 'principle';
+
+                const num = document.createElement('div');
+                num.className = 'principle-number';
+                num.textContent = idx + 1;
+
+                const title = document.createElement('div');
+                title.className = 'principle-text';
+                title.textContent = principle.title;
+
+                const detail = document.createElement('div');
+                detail.className = 'principle-detail';
+                detail.textContent = principle.detail;
+
+                box.appendChild(num);
+                box.appendChild(title);
+                box.appendChild(detail);
+
+                principlesContainer.appendChild(box);
+            });
+
+            document.getElementById('scoreValue').textContent = correctAnswers;
+            const percentage = Math.round((correctAnswers / scenarios.length) * 100);
+            document.getElementById('scoreDetail').textContent = percentage + '% accuracy on architecture decisions';
+        }
+
+        renderScenarios();
+    </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.body.offsetHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+      window.parent.postMessage({ type: "resize", height: height }, "*");
+    }
+  }
+     // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

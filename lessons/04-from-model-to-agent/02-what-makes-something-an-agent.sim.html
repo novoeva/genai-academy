@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentiness Spectrum | Agentic AI Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4f46e5;
+            --primary-gradient: linear-gradient(135deg, #4f46e5, #6f68f7);
+            --bg: #f7f9fb;
+            --card-bg: white;
+            --card-border: rgba(44, 52, 55, 0.12);
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --text-primary: #2c3437;
+            --text-secondary: #596064;
+            --accent-light: #eef2ff;
+            --success: #10b981;
+            --error: #ef4444;
+            --border-radius-card: 24px;
+            --border-radius-btn: 12px;
+        }
+    html { overflow: hidden; }
+
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .spectrum-container {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-card);
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .spectrum-bar {
+            height: 12px;
+            background: linear-gradient(90deg, #ef4444, #f97316, #eab308, #84cc16, #10b981);
+            border-radius: 6px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .spectrum-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .systems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .system-card {
+            background: var(--accent-light);
+            border: 2px solid transparent;
+            border-radius: var(--border-radius-btn);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .system-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .system-card.placed {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .system-card.placed:hover {
+            transform: none;
+        }
+
+        .system-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .system-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .placement-slots {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .placement-slot {
+            flex: 1;
+            background: var(--accent-light);
+            border: 2px dashed var(--primary);
+            border-radius: var(--border-radius-btn);
+            padding: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .placement-slot.filled {
+            background: white;
+            border-style: solid;
+        }
+
+        .placement-slot:hover:not(.filled) {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .slot-content {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .system-placed {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius-btn);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-light);
+        }
+
+        .reveal-section {
+            display: none;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-card);
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .reveal-section.active {
+            display: block;
+        }
+
+        .answer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .answer-item {
+            background: var(--accent-light);
+            border-radius: var(--border-radius-btn);
+            padding: 20px;
+        }
+
+        .answer-position {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .answer-system {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .answer-explanation {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .key-requirements {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(111, 104, 247, 0.1));
+            border-left: 4px solid var(--primary);
+            border-radius: var(--border-radius-btn);
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .requirement-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .requirement-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .requirement-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .requirement-icon {
+            color: var(--primary);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .requirement-text {
+            color: var(--text-secondary);
+        }
+
+        .info-box {
+            background: var(--accent-light);
+            border-radius: var(--border-radius-btn);
+            padding: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .placement-instructions {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            padding: 12px;
+            background: var(--accent-light);
+            border-radius: var(--border-radius-btn);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Agentiness Spectrum</h1>
+            <p class="subtitle">Understanding where on the spectrum different systems lie</p>
+        </header>
+
+        <div class="section">
+            <div class="spectrum-container">
+                <div class="section-title">Where do these systems belong?</div>
+                <p class="info-box">Click on a system card, then click a slot to place it on the spectrum. Once all 5 are placed, we'll reveal the answers.</p>
+
+                <div class="spectrum-bar"></div>
+                <div class="spectrum-labels">
+                    <span>← Pure Tool</span>
+                    <span>Fully Autonomous Agent →</span>
+                </div>
+
+                <div class="systems-grid" id="systemsGrid"></div>
+
+                <div class="placement-slots" id="placementSlots"></div>
+
+                <div class="button-group">
+                    <button class="btn-primary" id="revealBtn" disabled>Reveal Answers</button>
+                    <button class="btn-secondary" id="resetBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="reveal-section" id="revealSection">
+            <h2 class="section-title">Here's how they line up:</h2>
+            <div class="answer-grid" id="answerGrid"></div>
+
+            <div class="key-requirements">
+                <div class="requirement-title">The 3 Requirements for True Agentiness</div>
+                <div class="requirement-item">
+                    <span class="requirement-icon">1.</span>
+                    <span class="requirement-text"><strong>Perception:</strong> The system takes input and understands its environment. It gathers information before acting.</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-icon">2.</span>
+                    <span class="requirement-text"><strong>Action:</strong> The system can affect the world through tools. It doesn't just analyze, it does.</span>
+                </div>
+                <div class="requirement-item">
+                    <span class="requirement-icon">3.</span>
+                    <span class="requirement-text"><strong>Feedback Loop:</strong> The system observes the outcome of its actions and uses that to inform the next decision.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const systems = [
+            {
+                id: 1,
+                name: "Spell-checker",
+                desc: "Flags typos in a document",
+                position: 0,
+                explanation: "No perception of context, no decisions, no feedback loop. Just pattern matching."
+            },
+            {
+                id: 2,
+                name: "FAQ Chatbot",
+                desc: "Answers questions from a fixed list",
+                position: 1,
+                explanation: "Perceives user text and retrieves answers, but doesn't act on the world or adjust based on outcomes."
+            },
+            {
+                id: 3,
+                name: "Karel (Simple)",
+                desc: "Reads transactions and responds",
+                position: 2,
+                explanation: "Perceives (reads history), acts (would flag), but limited feedback loop. Single-turn decision."
+            },
+            {
+                id: 4,
+                name: "Karel (Full Loop)",
+                desc: "Flags fraud, freezes card, files report, verifies",
+                position: 3,
+                explanation: "Perceives, acts with multiple tools, and verifies the outcome of each action. Loops until task is complete."
+            },
+            {
+                id: 5,
+                name: "Autonomous Monitor",
+                desc: "Continuously detects patterns, routes cases, learns from outcomes",
+                position: 4,
+                explanation: "Continuous perception, autonomous action, and persistent learning loop. Adjusts its own thresholds based on results."
+            }
+        ];
+
+        let placed = {};
+        let selectedSystem = null;
+
+        function render() {
+            const grid = document.getElementById('systemsGrid');
+            grid.innerHTML = systems.map(sys => `
+                <div class="system-card ${placed[sys.id] ? 'placed' : ''}"
+                     data-id="${sys.id}"
+                     onclick="selectSystem(${sys.id})">
+                    <div class="system-name">${sys.name}</div>
+                    <div class="system-desc">${sys.desc}</div>
+                </div>
+            `).join('');
+
+            const slots = document.getElementById('placementSlots');
+            slots.innerHTML = ['Pure Tool', 'Near-Tool', 'Middle', 'More Agentic', 'Fully Autonomous'].map((label, idx) => {
+                const system = Object.values(placed).find(s => s.position === idx);
+                return `
+                    <div class="placement-slot ${system ? 'filled' : ''}" onclick="placeSystem(${idx})">
+                        ${system ? `<div class="system-placed">${system.name}</div>` : `<div class="slot-content">${label}</div>`}
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('revealBtn').disabled = Object.keys(placed).length < 5;
+        }
+
+        function selectSystem(id) {
+            if (placed[id]) return;
+            selectedSystem = id;
+            document.querySelectorAll('.system-card').forEach(card => {
+                card.style.background = '';
+            });
+            event.target.closest('.system-card').style.background = 'rgba(79, 70, 229, 0.2)';
+        }
+
+        function placeSystem(position) {
+            if (!selectedSystem || placed[selectedSystem]) return;
+            const system = systems.find(s => s.id === selectedSystem);
+            if (system.position !== position) {
+                system.id; // Mark as wrong placement for later
+            }
+            placed[selectedSystem] = { name: system.name, position: system.position };
+            selectedSystem = null;
+            render();
+        }
+
+        function revealAnswers() {
+            const correct = systems.map(sys => ({
+                position: ['Pure Tool', 'Near-Tool', 'Middle', 'More Agentic', 'Fully Autonomous'][sys.position],
+                system: sys.name,
+                explanation: sys.explanation
+            }));
+
+            const grid = document.getElementById('answerGrid');
+            grid.innerHTML = correct.map(item => `
+                <div class="answer-item">
+                    <div class="answer-position">${item.position}</div>
+                    <div class="answer-system">${item.system}</div>
+                    <div class="answer-explanation">${item.explanation}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('revealSection').classList.add('active');
+            document.getElementById('revealBtn').disabled = true;
+        }
+
+        function reset() {
+            placed = {};
+            selectedSystem = null;
+            document.getElementById('revealSection').classList.remove('active');
+            render();
+        }
+
+        document.getElementById('revealBtn').onclick = revealAnswers;
+        document.getElementById('resetBtn').onclick = reset;
+
+        render();
+    </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.body.offsetHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+      window.parent.postMessage({ type: "resize", height: height }, "*");
+    }
+  }
+     // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "lesson": "02-what-is-an-llm",
+  "title": "What is an LLM?",
+  "questions": [
+    {
+      "id": 1,
+      "question": "An LLM generates its response by doing which of the following?",
+      "options": [
+        "Looking up facts in a database it was connected to at training time",
+        "Predicting the most likely next token, one at a time",
+        "Retrieving the closest matching answer from its training data",
+        "Running a logic engine built from rules programmed by engineers"
+      ],
+      "correct": 1,
+      "explanation": "LLMs work by predicting the next token given all previous tokens. There is no database lookup or rule engine, the 'knowledge' is encoded in the model's parameters as statistical patterns."
+    },
+    {
+      "id": 2,
+      "question": "Which of these best describes what an LLM's parameters contain?",
+      "options": [
+        "A compressed copy of all documents from the internet",
+        "A set of rules written by engineers about how to answer questions",
+        "A lookup table mapping questions to correct answers",
+        "Numerical weights that encode statistical patterns learned from training text"
+      ],
+      "correct": 3,
+      "explanation": "Parameters are numbers, not rules or stored documents. They encode the statistical patterns the model learned during training, patterns about how language works, how ideas connect, and how questions tend to be answered."
+    },
+    {
+      "id": 3,
+      "question": "Karel the fraud reporting agent is asked 'What transactions are on my account?' but has not been given the customer's account data. What most likely happens?",
+      "options": [
+        "Karel queries the bank's database directly to retrieve the transactions",
+        "Karel says 'I don't have access to your account' and stops",
+        "Karel generates a plausible-sounding response that may not reflect reality",
+        "Karel refuses to answer any questions until account data is provided"
+      ],
+      "correct": 2,
+      "explanation": "Karel is an LLM, a mathematical function that transforms input into output. Without the account data in his context, he has nothing real to work from and may generate a statistically plausible but fabricated response. This is why feeding real data into the prompt is critical."
+    }
+  ]
+}

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Inspector | Agentic AI Learning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4f46e5;
+            --primary-gradient: linear-gradient(135deg, #4f46e5, #6f68f7);
+            --bg: #f7f9fb;
+            --card-bg: white;
+            --card-border: rgba(44, 52, 55, 0.12);
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --text-primary: #2c3437;
+            --text-secondary: #596064;
+            --accent-light: #eef2ff;
+            --success: #10b981;
+            --error: #ef4444;
+            --border-radius-card: 24px;
+            --border-radius-btn: 12px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .scenario-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-card);
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .scenario-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .scenario-request {
+            background: var(--accent-light);
+            border-left: 4px solid var(--primary);
+            padding: 16px;
+            border-radius: var(--border-radius-btn);
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-style: italic;
+            color: var(--text-primary);
+        }
+
+        .tool-selection {
+            margin-bottom: 24px;
+        }
+
+        .selection-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .tool-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tool-btn {
+            padding: 12px 16px;
+            border: 2px solid var(--card-border);
+            background: white;
+            border-radius: var(--border-radius-btn);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--primary);
+            background: var(--accent-light);
+        }
+
+        .tool-btn.selected {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .selected-sequence {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: var(--border-radius-btn);
+            padding: 16px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .selected-sequence.active {
+            display: block;
+        }
+
+        .sequence-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--success);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .sequence-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sequence-item {
+            background: white;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .sequence-item .remove {
+            margin-left: 8px;
+            cursor: pointer;
+            color: var(--error);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius-btn);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-light);
+        }
+
+        .reveal-section {
+            display: none;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-btn);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .reveal-section.active {
+            display: block;
+        }
+
+        .tool-card {
+            background: var(--accent-light);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius-btn);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .tool-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .tool-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .tool-desc {
+            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .tool-params {
+            background: white;
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 12px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .tool-return {
+            background: #f5f3ff;
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 12px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: var(--text-primary);
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .scenario-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .next-prev {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .next-prev button {
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+
+        .next-prev .btn-secondary {
+            flex: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tool Inspector</h1>
+            <p class="subtitle">Learn how agents choose and call tools based on the situation</p>
+        </header>
+
+        <div id="scenariosContainer"></div>
+    </div>
+
+    <script>
+        const scenarios = [
+            {
+                id: 1,
+                title: "Request 1: Spending Analysis",
+                request: '"Is there anything unusual about my recent spending?"',
+                correctTools: ['read_transaction_history'],
+                options: [
+                    { name: 'read_transaction_history', desc: 'Fetch account transactions', correct: true },
+                    { name: 'flag_transaction', desc: 'Mark a transaction as fraud', correct: false },
+                    { name: 'freeze_card', desc: 'Temporarily disable the card', correct: false },
+                    { name: 'create_fraud_report', desc: 'File a formal fraud case', correct: false }
+                ]
+            },
+            {
+                id: 2,
+                title: "Request 2: Dispute a Charge",
+                request: '"I want to dispute the charge from last Friday."',
+                correctTools: ['read_transaction_history', 'flag_transaction'],
+                options: [
+                    { name: 'read_transaction_history', desc: 'Fetch account transactions', correct: true },
+                    { name: 'flag_transaction', desc: 'Mark a transaction as fraud', correct: true },
+                    { name: 'freeze_card', desc: 'Temporarily disable the card', correct: false },
+                    { name: 'create_fraud_report', desc: 'File a formal fraud case', correct: false }
+                ]
+            },
+            {
+                id: 3,
+                title: "Request 3: Card Stolen",
+                request: '"I think my card was stolen. Cancel it now."',
+                correctTools: ['freeze_card', 'create_fraud_report'],
+                options: [
+                    { name: 'read_transaction_history', desc: 'Fetch account transactions', correct: false },
+                    { name: 'flag_transaction', desc: 'Mark a transaction as fraud', correct: false },
+                    { name: 'freeze_card', desc: 'Temporarily disable the card', correct: true },
+                    { name: 'create_fraud_report', desc: 'File a formal fraud case', correct: true }
+                ]
+            }
+        ];
+
+        const toolDefinitions = {
+            read_transaction_history: {
+                description: 'Retrieve the account\'s recent transactions.',
+                parameters: 'account_id (string), days (number)',
+                returns: 'Array of transaction objects with merchant, amount, date, location, status'
+            },
+            flag_transaction: {
+                description: 'Mark a specific transaction for fraud review.',
+                parameters: 'transaction_id (string), reason (string)',
+                returns: 'Object with status, case_id, next_steps'
+            },
+            freeze_card: {
+                description: 'Temporarily disable the card to prevent further use.',
+                parameters: 'account_id (string), reason (string)',
+                returns: 'Object with status, card_status, freeze_time'
+            },
+            create_fraud_report: {
+                description: 'File a formal fraud case with the compliance team.',
+                parameters: 'case_summary (string), transactions (array), account_id (string)',
+                returns: 'Object with report_id, case_number, investigation_started'
+            }
+        };
+
+        let currentScenario = 0;
+        let selectedTools = [];
+
+        function renderScenarios() {
+            const container = document.getElementById('scenariosContainer');
+            container.innerHTML = scenarios.map((scenario, idx) => `
+                <div class="scenario-card" data-scenario-id="${scenario.id}">
+                    <div class="scenario-header">Scenario ${idx + 1} of ${scenarios.length}</div>
+                    <div class="scenario-title">${scenario.title}</div>
+                    <div class="scenario-request">Customer: ${scenario.request}</div>
+
+                    <div class="tool-selection">
+                        <div class="selection-label">Which tools should Karel call? (Select in order)</div>
+                        <div class="tool-buttons">
+                            ${scenario.options.map(opt => `
+                                <button class="tool-btn" onclick="toggleTool('${opt.name}', ${idx})" data-tool="${opt.name}">
+                                    ${opt.name}
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <div class="selected-sequence" data-sequence="${idx}">
+                            <div class="sequence-title">Selected sequence:</div>
+                            <div class="sequence-list" id="sequence-${idx}"></div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="resetScenario(${idx})">Reset</button>
+                        <button class="btn-primary" onclick="submitScenario(${idx})" data-submit="${idx}">Check Answer</button>
+                    </div>
+
+                    <div class="reveal-section" data-reveal="${idx}">
+                        <div id="feedback-${idx}"></div>
+                        <div id="tools-${idx}"></div>
+                    </div>
+
+                    ${idx < scenarios.length - 1 ? `
+                        <div class="next-prev" style="margin-top: 20px; display: none;" data-nav="${idx}">
+                            <button class="btn-secondary" onclick="goToScenario(${idx + 1})">Next Scenario →</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        window.toggleTool = function(toolName, scenarioIdx) {
+            const scenario = scenarios[scenarioIdx];
+            const sequence = selectedTools[scenarioIdx] || [];
+            const idx = sequence.indexOf(toolName);
+
+            if (idx > -1) {
+                sequence.splice(idx, 1);
+            } else {
+                sequence.push(toolName);
+            }
+
+            selectedTools[scenarioIdx] = sequence;
+            updateSequenceDisplay(scenarioIdx);
+            updateToolButtons(scenarioIdx);
+        };
+
+        function updateSequenceDisplay(scenarioIdx) {
+            const sequence = selectedTools[scenarioIdx] || [];
+            const seqContainer = document.querySelector(`[data-sequence="${scenarioIdx}"]`);
+            const seqList = document.getElementById(`sequence-${scenarioIdx}`);
+
+            if (sequence.length > 0) {
+                seqContainer.classList.add('active');
+                seqList.innerHTML = sequence.map((tool, idx) => `
+                    <div class="sequence-item">
+                        ${idx + 1}. ${tool}
+                        <span class="remove" onclick="removeTool('${tool}', ${scenarioIdx})">×</span>
+                    </div>
+                `).join('');
+            } else {
+                seqContainer.classList.remove('active');
+                seqList.innerHTML = '';
+            }
+        }
+
+        window.removeTool = function(toolName, scenarioIdx) {
+            const sequence = selectedTools[scenarioIdx] || [];
+            const idx = sequence.indexOf(toolName);
+            if (idx > -1) {
+                sequence.splice(idx, 1);
+            }
+            updateSequenceDisplay(scenarioIdx);
+            updateToolButtons(scenarioIdx);
+        };
+
+        function updateToolButtons(scenarioIdx) {
+            const sequence = selectedTools[scenarioIdx] || [];
+            document.querySelectorAll(`[data-scenario-id="${scenarioIdx + 1}"] .tool-btn`).forEach(btn => {
+                const tool = btn.dataset.tool;
+                if (sequence.includes(tool)) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+        }
+
+        window.submitScenario = function(scenarioIdx) {
+            const scenario = scenarios[scenarioIdx];
+            const sequence = selectedTools[scenarioIdx] || [];
+            const correct = JSON.stringify(sequence) === JSON.stringify(scenario.correctTools);
+
+            const feedbackDiv = document.getElementById(`feedback-${scenarioIdx}`);
+            const toolsDiv = document.getElementById(`tools-${scenarioIdx}`);
+            const revealSection = document.querySelector(`[data-reveal="${scenarioIdx}"]`);
+
+            if (correct) {
+                feedbackDiv.innerHTML = `
+                    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+                        <div style="color: var(--success); font-weight: 600; font-size: 14px;">✓ Correct! This is the right sequence.</div>
+                    </div>
+                `;
+            } else {
+                feedbackDiv.innerHTML = `
+                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+                        <div style="color: var(--error); font-weight: 600; font-size: 14px;">Not quite. The correct sequence is:</div>
+                        <div style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">${scenario.correctTools.map((t, i) => `${i + 1}. ${t}`).join(' → ')}</div>
+                    </div>
+                `;
+            }
+
+            toolsDiv.innerHTML = `
+                <div style="margin-top: 20px;">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px;">Tools in this scenario:</div>
+                    ${scenario.correctTools.map(toolName => {
+                        const def = toolDefinitions[toolName];
+                        return `
+                            <div class="tool-card">
+                                <div class="tool-name">${toolName}</div>
+                                <div class="tool-desc">${def.description}</div>
+                                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;"><strong>Parameters:</strong></div>
+                                <div class="tool-params">${def.parameters}</div>
+                                <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;"><strong>Returns:</strong></div>
+                                <div class="tool-return">${def.returns}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            revealSection.classList.add('active');
+
+            if (scenarioIdx < scenarios.length - 1) {
+                document.querySelector(`[data-nav="${scenarioIdx}"]`).style.display = correct ? 'flex' : 'none';
+            }
+        };
+
+        window.resetScenario = function(scenarioIdx) {
+            selectedTools[scenarioIdx] = [];
+            updateSequenceDisplay(scenarioIdx);
+            updateToolButtons(scenarioIdx);
+            document.querySelector(`[data-reveal="${scenarioIdx}"]`).classList.remove('active');
+            document.querySelector(`[data-nav="${scenarioIdx}"]`).style.display = 'none';
+        };
+
+        window.goToScenario = function(scenarioIdx) {
+            document.querySelectorAll('.scenario-card')[scenarioIdx].scrollIntoView({ behavior: 'smooth' });
+        };
+
+        renderScenarios();
+    </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+    window.parent.postMessage({ type: 'resize', height: height + 40 }, '*');
+  }
+  
+  // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

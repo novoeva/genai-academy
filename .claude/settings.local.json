@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx @_davideast/stitch-mcp)",
+      "Bash(npx @_davideast/stitch-mcp doctor)",
+      "Bash(npx @_davideast/stitch-mcp screens --help)",
+      "Bash(npx @_davideast/stitch-mcp tool --help)",
+      "Bash(npx @_davideast/stitch-mcp tool)",
+      "Bash(/Users/admin/.stitch-mcp/google-cloud-sdk/bin/gcloud auth:*)",
+      "mcp__b3f8512a-d845-4320-83ac-b689450cb382__get_design_context",
+      "mcp__b3f8512a-d845-4320-83ac-b689450cb382__use_figma",
+      "mcp__b3f8512a-d845-4320-83ac-b689450cb382__get_screenshot",
+      "Bash(npm install *)",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__b3f8512a-d845-4320-83ac-b689450cb382__get_metadata",
+      "Bash(brew upgrade:*)",
+      "Bash(npm run:*)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(lsof -ti:5173)",
+      "Bash(xargs kill *)",
+      "Bash(./server.sh status *)",
+      "WebFetch(domain:www.figma.com)",
+      "Skill(update-config)",
+      "Bash(find lessons *)",
+      "Bash(python3 *)",
+      "Bash(npx playwright *)",
+      "Bash(cd /Users/admin/Documents/Claude/Projects/Agentic AI/genai-academy)",
+      "Bash(./server.sh start *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)"
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "lesson": "04-fine-tuning-as-memory",
+  "title": "Fine-tuning as procedural memory",
+  "questions": [
+    {
+      "id": 1,
+      "question": "A bank wants Karel to always know the current fraud investigation timeline, which changes every few months based on team capacity. They propose fine-tuning Karel on this information quarterly. What is wrong with this approach?",
+      "options": [
+        "Fine-tuning can only be done annually, not quarterly",
+        "Fine-tuning embeds knowledge in model weights, it cannot be quickly updated when the timeline changes, and the cost and time of retraining every few months is not justified when a vector store could be updated in minutes",
+        "Fine-tuning would make Karel too confident about the timeline, causing hallucinations",
+        "The fraud investigation timeline is too short to be worth fine-tuning on"
+      ],
+      "correct": 1,
+      "explanation": "Fine-tuning is for stable behavior, not changeable facts. When information needs to stay current, external memory (a vector store or database) is the right tool, it can be updated quickly and accurately. Quarterly retraining for information that changes operationally is expensive, slow, and error-prone compared to simply updating a document in a knowledge base."
+    },
+    {
+      "id": 2,
+      "question": "Karel frequently responds to upset customers in a defensive tone, despite system prompt instructions to be empathetic. You've tried multiple prompt rewrites and few-shot examples with limited improvement. What might fine-tuning address here?",
+      "options": [
+        "Fine-tuning could add new facts about why customers are upset",
+        "Fine-tuning on verified examples of high-quality empathetic Karel interactions could embed the desired tone more deeply into the model's behavior than prompts alone can",
+        "Fine-tuning would allow Karel to recognize upset customers by analyzing their account history",
+        "Fine-tuning is not applicable here, the only fix is a better output validation layer"
+      ],
+      "correct": 1,
+      "explanation": "Tone and behavioral style are appropriate targets for fine-tuning because they're stable (Karel's desired tone won't change quarter to quarter) and because prompt instructions and examples have limitations in how deeply they can embed consistent behavior. If the tone problem persists after thorough prompt engineering, fine-tuning on examples of Karel at his empathetic best is the appropriate next step."
+    },
+    {
+      "id": 3,
+      "question": "What is the key difference between fine-tuning a model and adding content to a vector store?",
+      "options": [
+        "Fine-tuning is only available for large enterprise customers; vector stores are available to everyone",
+        "Fine-tuning embeds behavior and patterns into the model's weights, it's implicit and hard to audit. A vector store stores explicit documents that can be inspected, updated, and removed independently of the model.",
+        "Vector stores only work with text, while fine-tuning works with any type of data",
+        "Fine-tuning makes the model faster; vector stores make retrieval more accurate"
+      ],
+      "correct": 1,
+      "explanation": "The core distinction is explicitness and updatability. A vector store holds documents you can read, update, and delete independently of the model. Fine-tuning embeds patterns into billions of parameters, you can't easily inspect what the model 'knows' from fine-tuning, and updating it requires retraining. For factual content, explicitness and updatability usually win."
+    },
+    {
+      "id": 4,
+      "question": "A team is debugging Karel's tendency to give investment advice despite a clear system prompt prohibition. They propose fine-tuning Karel to fix it. What should they try first?",
+      "options": [
+        "Fine-tuning, because prompt engineering has an inherent ceiling for reliability",
+        "Stronger system prompt language with definitive prohibitions, testing under adversarial conditions, and adding tool restrictions, fine-tuning is the last resort after prompt and architecture approaches are exhausted",
+        "Output validation, because fine-tuning cannot fix refusal behavior",
+        "A different base model that was not trained on financial content"
+      ],
+      "correct": 1,
+      "explanation": "Fine-tuning is typically the last resort, not the first response. Scope drift problems are usually better addressed through better system prompt guardrails (more specific language, explicit pressure-handling), adversarial testing to find and close gaps, and architectural restrictions. These are faster, cheaper, and easier to iterate on. If the problem persists after thorough prompt engineering and architecture work, fine-tuning on refusal examples is appropriate."
+    }
+  ]
+}

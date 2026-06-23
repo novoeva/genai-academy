@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vagueness Meter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html { overflow: hidden; }
+
+
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: #f7f9fb;
+      color: #2c3437;
+      padding: 40px 20px;
+      
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #596064;
+      font-weight: 400;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .pair-container {
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .pair-container:last-of-type {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .pair-number {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #596064;
+      margin-bottom: 16px;
+    }
+
+    .pair-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .pair-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .instruction-card {
+      border-radius: 12px;
+      padding: 20px;
+      border: 2px solid #e5e7eb;
+      transition: all 0.3s ease;
+    }
+
+    .instruction-card.vague {
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    .instruction-card.specific {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .instruction-label {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .vague .instruction-label {
+      color: #ef4444;
+    }
+
+    .specific .instruction-label {
+      color: #10b981;
+    }
+
+    .instruction-text {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      color: #2c3437;
+      font-style: italic;
+    }
+
+    .clarity-slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #e5e7eb;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .clarity-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #4f46e5;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+    }
+
+    .clarity-slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #4f46e5;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #596064;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    .clarity-score {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4f46e5;
+      margin-top: 8px;
+    }
+
+    .response-area {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .response-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #596064;
+      margin-bottom: 12px;
+    }
+
+    .response-box {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 16px;
+      border-left: 4px solid #ef4444;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #2c3437;
+    }
+
+    .response-box.consistent {
+      border-left-color: #10b981;
+      background: #f0fdf4;
+    }
+
+    .consistency-indicator {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .inconsistent {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .consistent {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+    }
+
+    .insight-box {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 40px;
+      border-left: 4px solid #4f46e5;
+    }
+
+    .insight-title {
+      font-weight: 700;
+      color: #4f46e5;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+
+    .insight-text {
+      color: #596064;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .key-concept {
+      background: rgba(79, 70, 229, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: #4f46e5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Vagueness Meter</h1>
+      <p class="subtitle">Vague instructions lead to inconsistent behavior. Specific instructions create predictable agents.</p>
+    </header>
+
+    <div class="card" id="pairsContainer"></div>
+
+    <div class="card">
+      <div class="insight-box">
+        <div class="insight-title">The Core Pattern</div>
+        <div class="insight-text">
+          <span class="key-concept">Vague</span> instructions let Karel decide. <span class="key-concept">Specific</span> instructions let you decide. If you don't tell Karel exactly what to do and how to do it, he will interpret the instruction in his own way, and that interpretation will vary depending on context. The more specific you are, the more consistent your agent becomes.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pairs = [
+      {
+        vague: "Be helpful and professional.",
+        specific: "Respond in 2-3 sentences. Start by acknowledging the issue. End with one clear action Karel will take.",
+        vagueResponse: "Sure, I'd be happy to help with that. Let me know what you need and I'll do my best to assist you.",
+        specificResponse: "I understand your concern. I can flag this transaction for review right now. What's the transaction amount?"
+      },
+      {
+        vague: "Handle fraud questions carefully.",
+        specific: "If the customer reports a suspicious transaction, always: (1) ask for the specific transaction, (2) confirm you can see it in the history, (3) offer to flag it. Never speculate about whether fraud occurred.",
+        vagueResponse: "That sounds like it could be fraud. You might want to check your account to make sure. Let me know what you find.",
+        specificResponse: "I see a transaction from April 20th for €45.99 at 'Online Retailer'. Is this the one you don't recognize? I can flag it for review."
+      },
+      {
+        vague: "Don't give investment advice.",
+        specific: "Karel will not give investment, financial planning, or legal advice under any circumstances. If asked, respond: 'That's outside what I can help with. For investment questions, please speak with our wealth management team.'",
+        vagueResponse: "I'm not really qualified to give investment advice, but this stock could be a good opportunity if you're interested in growth.",
+        specificResponse: "That's outside what I can help with. For investment questions, please speak with our wealth management team."
+      },
+      {
+        vague: "Always be empathetic and professional.",
+        specific: "Use phrases like 'I understand' and 'I'm sorry to hear that' to show you're listening. Then move immediately to a specific action or next step. Never use generic phrases like 'Have a good day' without offering something concrete.",
+        vagueResponse: "I really feel for you in this situation. It must be stressful. Anyway, let me know if there's anything else I can do.",
+        specificResponse: "I understand how frustrating this is. I'm going to freeze your card immediately to prevent further charges. Here's your confirmation number."
+      }
+    ];
+
+    function createPairs() {
+      const container = document.getElementById('pairsContainer');
+
+      pairs.forEach((pair, index) => {
+        const pairHTML = `
+          <div class="pair-container">
+            <div class="pair-number">Scenario ${index + 1}</div>
+
+            <div class="pair-grid">
+              <div class="instruction-card vague">
+                <div class="instruction-label">Vague</div>
+                <div class="instruction-text">"${pair.vague}"</div>
+                <input type="range" min="1" max="5" value="2" class="clarity-slider" onchange="updateResponse(${index}, this.value)">
+                <div class="slider-label">
+                  <span>Vague</span>
+                  <span>Clear</span>
+                </div>
+                <div class="clarity-score" id="score-vague-${index}">Clarity: 2/5</div>
+              </div>
+
+              <div class="instruction-card specific">
+                <div class="instruction-label">Specific</div>
+                <div class="instruction-text">"${pair.specific}"</div>
+                <input type="range" min="1" max="5" value="5" class="clarity-slider" onchange="updateResponse(${index}, this.value)" disabled>
+                <div class="slider-label">
+                  <span>Vague</span>
+                  <span>Clear</span>
+                </div>
+                <div class="clarity-score" id="score-specific-${index}">Clarity: 5/5</div>
+              </div>
+            </div>
+
+            <div class="response-area">
+              <div class="response-label">Karel's Response (Vague Instruction):</div>
+              <div class="consistency-indicator inconsistent">Inconsistent</div>
+              <div class="response-box" id="response-vague-${index}">
+                ${pair.vagueResponse}
+              </div>
+
+              <div class="response-label" style="margin-top: 16px;">Karel's Response (Specific Instruction):</div>
+              <div class="consistency-indicator consistent">Consistent</div>
+              <div class="response-box consistent" id="response-specific-${index}">
+                ${pair.specificResponse}
+              </div>
+            </div>
+          </div>
+        `;
+
+        container.innerHTML += pairHTML;
+      });
+    }
+
+    function updateResponse(index, value) {
+      const scoreEl = document.getElementById(`score-vague-${index}`);
+      scoreEl.textContent = `Clarity: ${value}/5`;
+    }
+
+    createPairs();
+  </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.body.offsetHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+      window.parent.postMessage({ type: "resize", height: height }, "*");
+    }
+  }
+     // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

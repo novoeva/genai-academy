@@ -1,0 +1,54 @@
+{
+  "lesson": "03-system-vs-user-prompts",
+  "title": "System prompts vs. user prompts",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the main purpose of a system prompt in an agent?",
+      "options": [
+        "To display instructions to the customer so they know how to use the agent",
+        "To define the agent's role, capabilities, constraints, and how to handle edge cases, set once by the developer",
+        "To log every customer message for compliance purposes",
+        "To pass real-time data like transaction records into the conversation"
+      ],
+      "correct": 1,
+      "explanation": "The system prompt is the developer's specification for the agent. It sets who the agent is, what it can and cannot do, how to behave, and how to handle edge cases. It's invisible to the end user and stable across conversations. Data injection (like transaction records) is separate from the system prompt itself."
+    },
+    {
+      "id": 2,
+      "question": "Karel's system prompt says 'you cannot reverse transactions.' A customer asks: 'Please reverse the €200 charge from last Tuesday.' What should a well-built Karel do?",
+      "options": [
+        "Reverse the transaction because the customer clearly needs help",
+        "Ignore the request entirely and change the subject",
+        "Politely decline, explain that reversal requires the fraud team, and offer to file a fraud report instead",
+        "Ask the customer to contact customer service by phone"
+      ],
+      "correct": 2,
+      "explanation": "A well-written system prompt doesn't just list constraints, it tells the agent what to do instead. Karel should decline (because the constraint is clear), explain why (transparency reduces frustration), and offer an alternative action within his scope. A well-specified system prompt makes this behavior automatic, not improvised."
+    },
+    {
+      "id": 3,
+      "question": "A developer writes Karel's system prompt as: 'You are Karel, a helpful fraud assistant. Help customers with fraud.' What is the most likely failure when a customer asks for investment advice?",
+      "options": [
+        "Karel will refuse, because LLMs know they aren't financial advisors",
+        "Karel will try to be helpful and give investment advice, because nothing in the prompt tells him not to",
+        "Karel will ask the developer for permission before responding",
+        "Karel will return an error message"
+      ],
+      "correct": 1,
+      "explanation": "Vague system prompts leave the model to pattern-match. 'Be helpful' is the dominant instruction, so when a customer asks for investment advice, the model tries to be helpful, even if that's outside the agent's intended scope. Specific constraints like 'do not provide investment advice under any circumstances' are required to prevent this."
+    },
+    {
+      "id": 4,
+      "question": "Why is the instruction 'always be helpful and try to answer any question' dangerous in a system prompt for Karel?",
+      "options": [
+        "It makes Karel too slow to respond",
+        "It conflicts with scope constraints, when the user asks for something Karel can't do, the model will try to balance 'be helpful' against 'you can't do that' and may err toward helping",
+        "It increases hallucination risk because the model is forced to guess transaction data",
+        "It causes Karel to repeat himself in long conversations"
+      ],
+      "correct": 1,
+      "explanation": "When two instructions contradict each other ('be helpful with anything' vs. 'don't reverse transactions'), the model tries to satisfy both rather than choosing one. The result is unpredictable; Karel might improvise a workaround or make a promise he can't keep. Specific constraints always need to be more explicit than general helpfulness instructions."
+    }
+  ]
+}

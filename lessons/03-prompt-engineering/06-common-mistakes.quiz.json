@@ -1,0 +1,66 @@
+{
+  "lesson": "06-common-mistakes",
+  "title": "Common prompt engineering mistakes",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Karel's system prompt includes: 'Use your best judgment when a customer asks for something unusual.' What problem does this create?",
+      "options": [
+        "'Best judgment' is a legally ambiguous phrase that could create compliance issues",
+        "The model has no shared context about what 'best judgment' means in your organization, so it falls back to statistical plausibility, which may not match your intentions",
+        "The model will refuse to respond because the instruction is too vague to execute",
+        "'Best judgment' implies the model should make financial decisions, which it's not trained to do"
+      ],
+      "correct": 1,
+      "explanation": "Instructions that rely on implied shared understanding, like 'use your best judgment', don't transfer to LLMs. The model has no knowledge of your organization's values or what appropriate behavior looks like in your domain. It will pattern-match to whatever seems most statistically plausible, which may be wrong. Explicit behavior descriptions are always more reliable."
+    },
+    {
+      "id": 2,
+      "question": "Karel's system prompt says: 'Do not promise the customer a refund will be issued.' A customer asks 'Will I get my money back?' and Karel responds with silence, saying nothing about next steps. What was likely missing?",
+      "options": [
+        "A positive alternative: what Karel should say or offer instead of the refund promise",
+        "More examples of customers asking about refunds",
+        "A lower temperature setting to make Karel more cautious",
+        "A reminder that Karel is a fraud assistant, not a refund assistant"
+      ],
+      "correct": 0,
+      "explanation": "Negative instructions (don't do X) need corresponding positive alternatives (instead, do Y). Without one, the model follows the constraint but has no path forward. Adding 'instead, tell the customer the fraud team will determine the outcome, and offer to file the report now so the review starts today' gives Karel a complete response to this common situation."
+    },
+    {
+      "id": 3,
+      "question": "Karel's system prompt describes him as 'a fraud specialist with full knowledge of the bank's systems.' He has no such access, only access to the past 30 days of transaction history. What is most likely to happen?",
+      "options": [
+        "Karel will automatically recognize the limits of his access and say so",
+        "Karel will speak with the confidence of a specialist and generate plausible-sounding information when he doesn't know something",
+        "Karel will refuse to answer any questions about bank systems",
+        "The system will raise an error when Karel tries to access data he doesn't have"
+      ],
+      "correct": 1,
+      "explanation": "The persona described in the system prompt sets expectations the model tries to fulfill. If the prompt says Karel is a specialist with full system access, he will behave like one, including generating plausible-sounding answers to questions he actually can't answer. The fix is to only describe capabilities the agent genuinely has, and explicitly state the limits."
+    },
+    {
+      "id": 4,
+      "question": "A new team member edits Karel's system prompt to fix a bug where he was being too formal. Two months later, Karel starts declining requests he should be helping with. What is the most likely cause?",
+      "options": [
+        "The model was updated by the AI provider and now behaves differently",
+        "The edit to fix the formality issue created a conflict with an existing constraint, and the model is now trying to satisfy both contradictory instructions",
+        "Karel's context window has been exceeded by the length of the system prompt",
+        "The customer's behavior has changed and is triggering different responses"
+      ],
+      "correct": 1,
+      "explanation": "Prompt drift happens when edits accumulate without checking for internal consistency. A change to tone can inadvertently conflict with an existing constraint. The model will try to satisfy both, resulting in unpredictable behavior. Treating the system prompt like code, versioning it, reviewing the whole document before changes, not just the edited section, prevents this."
+    },
+    {
+      "id": 5,
+      "question": "You ship Karel and he passes all your QA tests. Three days later, a customer reports that Karel tried to help them dispute a legitimate charge, flagging it as fraudulent. What should you do first?",
+      "options": [
+        "Retrain the model on more fraud-specific data",
+        "Add an explicit instruction to the system prompt for this edge case, then red-team to find other unhandled situations",
+        "Remove Karel from production until the model is replaced with a better one",
+        "Lower Karel's temperature to make him less likely to make decisions on ambiguous inputs"
+      ],
+      "correct": 1,
+      "explanation": "An unhandled edge case is a missing instruction, not a model failure. The fix is to add explicit handling for the scenario ('if the customer is asking about a legitimate charge they want to dispute, tell them this is the wrong service and direct them to dispute resolution'), then actively look for similar gaps by red-teaming the prompt. Waiting for customer complaints is too slow."
+    }
+  ]
+}

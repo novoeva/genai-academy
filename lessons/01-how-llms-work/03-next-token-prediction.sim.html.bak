@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Lab | Agentic AI Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #f7f9fb;
+            --bg-card: #ffffff;
+            --border-card: 1px solid rgba(44, 52, 55, 0.12);
+            --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --color-primary: #4f46e5;
+            --color-primary-gradient: linear-gradient(135deg, #4f46e5, #6f68f7);
+            --color-accent-light: #eef2ff;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --text-primary: #2c3437;
+            --text-secondary: #596064;
+            --border-radius-card: 24px;
+            --border-radius-button: 12px;
+            --padding-card: 32px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        header { margin-bottom: 36px; text-align: center; }
+        h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { font-size: 16px; color: var(--text-secondary); }
+
+        .intro-panel {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-card);
+        }
+        .intro-panel p { color: var(--text-secondary); line-height: 1.7; margin-bottom: 10px; }
+        .intro-panel p:last-child { margin-bottom: 0; }
+
+        .lab-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 700px) {
+            .lab-grid { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            box-shadow: var(--shadow-card);
+        }
+
+        .panel-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .prompt-box {
+            background: var(--color-accent-light);
+            border-left: 4px solid var(--color-primary);
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .prompt-box .label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--color-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        /* Temperature Slider */
+        .temp-section { margin-top: 20px; }
+
+        .temp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .temp-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+        .temp-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--color-primary);
+            transition: color 0.3s;
+        }
+
+        .slider-wrap { position: relative; margin-bottom: 8px; }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            appearance: none;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #10b981, #f59e0b, #ef4444);
+            cursor: pointer;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--color-primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            transition: transform 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .temp-description {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .temp-description.cold {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--color-success);
+            color: #065f46;
+        }
+        .temp-description.warm {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--color-warning);
+            color: #92400e;
+        }
+        .temp-description.hot {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--color-error);
+            color: #991b1b;
+        }
+
+        /* Response panel */
+        .response-area { min-height: 180px; }
+
+        .response-bubble {
+            background: #f7f9fb;
+            border: 1px solid rgba(44,52,55,0.1);
+            border-radius: 16px 16px 16px 4px;
+            padding: 18px 20px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .response-bubble .agent-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .response-tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        .tag-safe { background: rgba(16, 185, 129, 0.12); color: #065f46; }
+        .tag-variable { background: rgba(245, 158, 11, 0.12); color: #92400e; }
+        .tag-risky { background: rgba(239, 68, 68, 0.12); color: #991b1b; }
+
+        /* Token distribution */
+        .tokens-section {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 24px;
+        }
+
+        .tokens-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .tokens-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .token-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .token-word {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            width: 90px;
+            flex-shrink: 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: #f5f3ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .token-bar-wrap {
+            flex: 1;
+            height: 22px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .token-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .token-pct {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            width: 40px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .selected-token-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(44,52,55,0.08);
+        }
+
+        .selected-token-label strong { color: var(--color-primary); }
+
+        /* Takeaway */
+        .takeaway-panel {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            box-shadow: var(--shadow-card);
+        }
+
+        .takeaway-panel h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .insight-grid { grid-template-columns: 1fr; }
+        }
+
+        .insight-card {
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .insight-card.cold { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16,185,129,0.2); }
+        .insight-card.warm { background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245,158,11,0.2); }
+        .insight-card.hot { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239,68,68,0.2); }
+
+        .insight-card .use-case {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .insight-card.cold .use-case { color: #065f46; }
+        .insight-card.warm .use-case { color: #92400e; }
+        .insight-card.hot .use-case { color: #991b1b; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Temperature Lab</h1>
+        <p class="subtitle">See how temperature controls the randomness of Karel's responses</p>
+    </header>
+
+    <div class="intro-panel">
+        <p>Every time an LLM picks the next token, it calculates probabilities for all possible next words. Temperature controls how it samples from those probabilities.</p>
+        <p>Drag the slider to change Karel's temperature setting. Watch how the token probabilities shift — and how his responses change as a result.</p>
+    </div>
+
+    <div class="lab-grid">
+        <div class="panel">
+            <div class="panel-label">Incoming customer message</div>
+            <div class="prompt-box">
+                <div class="label">Customer</div>
+                "Hi, I'd like to report a charge I don't recognise."
+            </div>
+
+            <div class="temp-section">
+                <div class="temp-header">
+                    <div class="temp-label">Temperature</div>
+                    <div class="temp-value" id="tempValue">0.2</div>
+                </div>
+                <div class="slider-wrap">
+                    <input type="range" id="tempSlider" min="0" max="4" step="1" value="1" oninput="updateTemp()">
+                </div>
+                <div class="slider-labels">
+                    <span>0.0 — Precise</span>
+                    <span>1.0 — Balanced</span>
+                </div>
+                <div class="temp-description cold" id="tempDescription">
+                    Almost always picks the most likely next token. Responses are consistent and predictable every time.
+                </div>
+            </div>
+        </div>
+
+        <div class="panel response-area">
+            <div class="panel-label">Karel's response</div>
+            <div class="response-bubble" id="responseBubble">
+                <div class="agent-name">Karel</div>
+                <div id="responseText"></div>
+                <div id="responseTag"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tokens-section">
+        <div class="tokens-title">Next token probabilities</div>
+        <div class="tokens-subtitle" id="tokensSubtitle">After "I", what word is Karel most likely to pick next?</div>
+        <div id="tokenBars"></div>
+        <div class="selected-token-label" id="selectedLabel"></div>
+    </div>
+
+    <div class="takeaway-panel">
+        <h3>Temperature as a product decision</h3>
+        <div class="insight-grid">
+            <div class="insight-card cold">
+                <div class="use-case">Low temp (0.0 – 0.3)</div>
+                Consistent, safe, predictable. Use for: fraud alerts, legal notices, compliance messages, account confirmations.
+            </div>
+            <div class="insight-card warm">
+                <div class="use-case">Medium temp (0.4 – 0.7)</div>
+                Natural and varied while staying on-topic. Use for: general customer support, FAQ responses, product recommendations.
+            </div>
+            <div class="insight-card hot">
+                <div class="use-case">High temp (0.8 – 1.0+)</div>
+                Creative and surprising — but unpredictable. Use for: brainstorming tools, creative writing assistants, ideation.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const settings = [
+        {
+            value: "0.0",
+            descClass: "cold",
+            desc: "Always picks the single most likely token. Every run gives the exact same response.",
+            response: "I understand. I can see a charge you don't recognise. Please provide the transaction date and amount so I can look into this for you.",
+            tagClass: "tag-safe",
+            tag: "Consistent — same every time",
+            subtitle: "After \"I\", what token is most likely?",
+            tokens: [
+                { word: '"understand"', pct: 72, color: '#10b981' },
+                { word: '"can"', pct: 16, color: '#86efac' },
+                { word: '"see"', pct: 8, color: '#d1fae5' },
+                { word: '"\'ll"', pct: 4, color: '#f0fdf4' },
+            ],
+            selected: '"understand" — with 72% probability, this is almost certain at temperature 0'
+        },
+        {
+            value: "0.2",
+            descClass: "cold",
+            desc: "Almost always picks the most likely next token. Responses are consistent and predictable every time.",
+            response: "I understand. I can see a charge you don't recognise. Please provide the transaction date and amount so I can look into this for you.",
+            tagClass: "tag-safe",
+            tag: "Consistent — same every time",
+            subtitle: "After \"I\", what token is most likely?",
+            tokens: [
+                { word: '"understand"', pct: 68, color: '#10b981' },
+                { word: '"can"', pct: 19, color: '#86efac' },
+                { word: '"see"', pct: 9, color: '#d1fae5' },
+                { word: '"\'ll"', pct: 4, color: '#f0fdf4' },
+            ],
+            selected: '"understand" is very likely to be chosen — temperature barely shifts the distribution'
+        },
+        {
+            value: "0.5",
+            descClass: "warm",
+            desc: "Samples more broadly. Responses vary a little between runs but stay on-topic and appropriate.",
+            response: "Of course — I'd be happy to help you with that. Could you share the transaction date and approximate amount so I can pull up the details?",
+            tagClass: "tag-variable",
+            tag: "Slightly variable — mostly consistent",
+            subtitle: "After \"Of\", what token might follow?",
+            tokens: [
+                { word: '"course"', pct: 51, color: '#f59e0b' },
+                { word: '"course,"', pct: 24, color: '#fcd34d' },
+                { word: '"sure,"', pct: 15, color: '#fef3c7' },
+                { word: '"all"', pct: 10, color: '#fffbeb' },
+            ],
+            selected: '"course" is still the likely pick, but alternatives are now realistic options'
+        },
+        {
+            value: "0.8",
+            descClass: "warm",
+            desc: "More variety in word choice. Responses feel natural and conversational, though tone may shift.",
+            response: "Sure thing! Let's get to the bottom of this. Can you tell me roughly when the charge appeared and how much it was for?",
+            tagClass: "tag-variable",
+            tag: "Variable — tone may shift between runs",
+            subtitle: "After \"Sure\", which token gets chosen?",
+            tokens: [
+                { word: '"thing!"', pct: 35, color: '#f59e0b' },
+                { word: '"!"', pct: 28, color: '#fcd34d' },
+                { word: '","', pct: 22, color: '#fef3c7' },
+                { word: '"—"', pct: 15, color: '#fffbeb' },
+            ],
+            selected: 'The distribution is much flatter — any of these could be chosen, giving noticeably different responses'
+        },
+        {
+            value: "1.0+",
+            descClass: "hot",
+            desc: "Samples very broadly. Responses are creative and varied — but may go off-brand or off-topic.",
+            response: "Yikes, that sounds stressful! Fraudsters are the worst. Let me dig into your account like a detective and see what we can find. What's the charge?",
+            tagClass: "tag-risky",
+            tag: "Unpredictable — risky for a banking agent",
+            subtitle: "After \"Yikes,\", anything could follow",
+            tokens: [
+                { word: '"that"', pct: 22, color: '#ef4444' },
+                { word: '"sounds"', pct: 20, color: '#fca5a5' },
+                { word: '"I"', pct: 18, color: '#fee2e2' },
+                { word: '"this"', pct: 16, color: '#fff0f0' },
+            ],
+            selected: 'The probabilities are nearly flat — the model picks almost randomly, producing wildly different outputs each run'
+        }
+    ];
+
+    function updateTemp() {
+        const idx = parseInt(document.getElementById('tempSlider').value);
+        const s = settings[idx];
+
+        document.getElementById('tempValue').textContent = s.value;
+
+        const desc = document.getElementById('tempDescription');
+        desc.className = 'temp-description ' + s.descClass;
+        desc.textContent = s.desc;
+
+        const bubble = document.getElementById('responseBubble');
+        bubble.style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('responseText').textContent = s.response;
+            const tag = document.getElementById('responseTag');
+            tag.className = 'response-tag ' + s.tagClass;
+            tag.textContent = s.tag;
+            bubble.style.opacity = '1';
+        }, 150);
+
+        document.getElementById('tokensSubtitle').textContent = s.subtitle;
+
+        const bars = document.getElementById('tokenBars');
+        bars.innerHTML = s.tokens.map(t => `
+            <div class="token-row">
+                <div class="token-word">${t.word}</div>
+                <div class="token-bar-wrap">
+                    <div class="token-bar" style="width: ${t.pct}%; background: ${t.color};"></div>
+                </div>
+                <div class="token-pct">${t.pct}%</div>
+            </div>
+        `).join('');
+
+        document.getElementById('selectedLabel').innerHTML = `<strong>What gets picked:</strong> ${s.selected}`;
+    }
+
+    // Initial render
+    updateTemp();
+</script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+    window.parent.postMessage({ type: 'resize', height: height + 40 }, '*');
+  }
+  
+  // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "lesson": "03-how-to-reduce-it",
+  "title": "How to reduce hallucination: grounding, RAG, and guardrails",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What does RAG stand for, and what problem does it solve?",
+      "options": [
+        "Retrieval-Augmented Generation, it gives the model real source material to work from instead of relying on training memory",
+        "Randomness-Adjusted Generation, it lowers temperature to reduce hallucination",
+        "Rule-Augmented Generation, it adds a rule layer on top of the model's output",
+        "Retrieval-Assisted Grounding, it connects the model to a live internet search"
+      ],
+      "correct": 0,
+      "explanation": "RAG retrieves relevant documents and includes them in the prompt, so the model generates answers based on real, current source material rather than from pattern-matching in training data alone. It's the single most impactful technique for reducing hallucination."
+    },
+    {
+      "id": 2,
+      "question": "Which system prompt instruction would most directly reduce Karel's risk of falsely confirming a fraud report was filed?",
+      "options": [
+        "'Always be polite and empathetic when speaking to customers.'",
+        "'Never confirm that an action has been completed unless you have received a successful response from the tool.'",
+        "'Do not discuss competitor banks or financial products.'",
+        "'Respond in the customer's preferred language if possible.'"
+      ],
+      "correct": 1,
+      "explanation": "This instruction directly addresses the hallucinated-action failure mode. It tells Karel to wait for tool confirmation before declaring success, closing the gap between 'Karel generated a confirmation' and 'the action was actually performed'."
+    },
+    {
+      "id": 3,
+      "question": "Karel successfully files a fraud report via the tool API. Before showing the customer a confirmation message, what should the system do?",
+      "options": [
+        "Nothing, if Karel said it worked, it worked",
+        "Ask Karel to double-check by calling the tool a second time",
+        "Check that the tool returned a success status before displaying the confirmation",
+        "Show the customer a disclaimer that the report may or may not have been filed"
+      ],
+      "correct": 2,
+      "explanation": "Output validation means checking the tool's actual response before surfacing anything to the user. If the tool returned an error, Karel's confirmation message should be blocked. This is a separate guardrail layer independent of what Karel says."
+    }
+  ]
+}

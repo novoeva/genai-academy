@@ -1,0 +1,54 @@
+{
+  "lesson": "02-what-does-working-mean",
+  "title": "What does 'working' mean for an agent?",
+  "questions": [
+    {
+      "id": 1,
+      "question": "A team ships Karel after testing 50 conversations and declaring he 'works well.' Three days later, customers report that Karel sometimes confirms fraud reports without the card status. What failure in evaluation process led to this?",
+      "options": [
+        "The team tested too few conversations, 50 was not enough",
+        "The team didn't define explicit success criteria before testing, without pre-defined pass/fail criteria for required confirmation elements, the testers couldn't consistently check for this gap",
+        "The team should have used automated testing rather than human reviewers",
+        "Karel's model version was updated after testing, changing his behavior"
+      ],
+      "correct": 1,
+      "explanation": "Without explicit pre-defined criteria (e.g., '100% of fraud report confirmations must include transaction flagged, card status, and review timeline'), reviewers checking 50 conversations have no consistent standard to apply. They look for things that seem obviously wrong, miss gaps in required elements, and ship. Pre-defined pass/fail criteria make the missing element detectable before launch."
+    },
+    {
+      "id": 2,
+      "question": "Karel fails to complete a fraud report 3% of the time because of a tool error. When this happens, he says 'I encountered an issue; a specialist will follow up within 24 hours.' Is this failure mode acceptable?",
+      "options": [
+        "No, a 3% failure rate means Karel should not be shipped",
+        "Yes, the failure is graceful (honest, offers a human resolution path, doesn't create a false expectation), even though the technical failure rate is nonzero",
+        "No; Karel should retry the tool call automatically rather than escalating to a human",
+        "It depends on whether the customer gives positive feedback about the experience"
+      ],
+      "correct": 1,
+      "explanation": "Failure mode acceptability is a separate dimension from failure rate. A 3% failure rate with a graceful, honest recovery (acknowledging the issue, escalating to a human, giving a realistic timeline) is far more acceptable than a 0.5% failure rate where Karel hallucinate-confirms the report was filed when it wasn't. The question is not just 'how often does it fail?' but 'when it fails, how does it fail?'"
+    },
+    {
+      "id": 3,
+      "question": "A PM is reviewing Karel's evaluation results. Karel passes all behavioral tests but human reviewers rated only 72% of his responses as 'clear and appropriate.' The launch criterion was 85%. What should happen?",
+      "options": [
+        "Ship Karel, behavioral correctness is more important than communication quality",
+        "Don't ship, 72% is below the pre-defined 85% threshold. The output quality gap needs to be addressed through prompt improvements before launch.",
+        "Ship Karel with a disclaimer that communication quality is still being improved",
+        "Raise the threshold to 72% since Karel otherwise performs well"
+      ],
+      "correct": 1,
+      "explanation": "Pre-defined success criteria are pass/fail, not directional. The purpose of setting them before evaluation is to avoid post-hoc rationalization ('well, 72% is pretty close, and he does well on the other dimensions'). If 85% was the standard, 72% is a fail. The right response is to improve Karel's communication quality through prompt engineering (clearer tone instructions, more examples) and re-test."
+    },
+    {
+      "id": 4,
+      "question": "After using Karel to file a fraud report, a PM asks a customer: 'Was the experience helpful?' The customer says 'yes.' What is the limitation of this as an evaluation signal?",
+      "options": [
+        "Customers can't be trusted to give accurate feedback about AI systems",
+        "'Was it helpful?' gets polite yes answers regardless of actual outcome. A better signal is behavioral: 'Do you feel confident the right process has started?' or 'Is there anything you're still unsure about?' These reveal whether Karel actually built understanding, not just satisfaction.",
+        "One customer's response is too small a sample to be meaningful",
+        "Customer feedback should only be collected via structured surveys, not casual questions"
+      ],
+      "correct": 1,
+      "explanation": "Satisfaction questions produce socially desirable answers. The 'Monday moment' test asks whether the interaction produced genuine value, a decision the customer is now ready to make, a confidence they now have, an action they took that they wouldn't have otherwise. Questions like 'what will you do next?' or 'is there anything you're still uncertain about?' reveal whether the agent actually delivered understanding."
+    }
+  ]
+}

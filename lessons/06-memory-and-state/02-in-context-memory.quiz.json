@@ -1,0 +1,54 @@
+{
+  "lesson": "02-in-context-memory",
+  "title": "In-context memory",
+  "questions": [
+    {
+      "id": 1,
+      "question": "A customer calls Karel for the third time about the same fraudulent transaction. Karel asks them to explain the situation again from the start. What is the most likely cause?",
+      "options": [
+        "Karel is designed to always re-verify fraud claims from scratch for security",
+        "The customer's previous sessions are not being retrieved and injected into Karel's current context; Karel's context resets with each new session",
+        "Karel's context window was too full to remember the previous conversation",
+        "The customer's account ID changed between sessions"
+      ],
+      "correct": 1,
+      "explanation": "Each new session starts with a fresh context window. Without explicit retrieval and injection of the customer's history (previous reports, actions taken, case status), Karel has no access to what happened before. This is an in-context memory limit, the fix is external memory with a retrieval step at the start of each session."
+    },
+    {
+      "id": 2,
+      "question": "Karel is handling a complex fraud case with 25 conversation turns. Near the end, he contradicts an instruction he received in turn 3. What is the most likely explanation?",
+      "options": [
+        "Karel's system prompt was updated mid-conversation",
+        "Items earlier in the context window receive relatively less attention weight as the context grows, early instructions can lose influence in very long conversations",
+        "Karel's temperature setting increased over the conversation",
+        "The model made a deliberate decision to override the earlier instruction"
+      ],
+      "correct": 1,
+      "explanation": "Attention in transformer models is not uniform, content near the end of the context window tends to receive relatively more weight. In a very long conversation, instructions from early in the session can become less influential. This is why critical constraints are reinforced throughout long interactions, and why agent tasks are designed to be as short as necessary."
+    },
+    {
+      "id": 3,
+      "question": "Karel injects a customer's full 30-day transaction history (400 transactions) into his context at the start of every session. What problem might this cause?",
+      "options": [
+        "The transaction data will hallucinate incorrect values when the model reads it",
+        "The large data injection consumes significant context window tokens, leaving less room for conversation history and potentially causing earlier context to be dropped in longer sessions",
+        "The bank's database will be overloaded by the retrieval request",
+        "Karel will be confused by too much information and flag random transactions as fraudulent"
+      ],
+      "correct": 1,
+      "explanation": "Context window space is finite. Injecting 400 transactions at the start of every session consumes a large portion of the available tokens upfront. As the conversation progresses, this leaves less room for conversation history, in longer sessions, early turns may be dropped. The fix is selective injection: retrieve and inject only the transactions relevant to the customer's current issue."
+    },
+    {
+      "id": 4,
+      "question": "Which design pattern best addresses the problem of long Karel conversations causing the model to lose track of early decisions?",
+      "options": [
+        "Increase the model's context window by switching to a model with a larger limit",
+        "Periodically summarize the conversation history, replacing the full history with a compact summary of key facts and decisions made",
+        "Ask the customer to repeat the key facts at regular intervals",
+        "Restart Karel's session every five turns to keep the context fresh"
+      ],
+      "correct": 1,
+      "explanation": "Summarization replaces long conversation history with a compact summary at natural break points. The summary preserves the key facts (what transaction was flagged, what the customer confirmed, what actions were taken) while freeing up context window space. This maintains continuity across a long interaction without risking important early context dropping out."
+    }
+  ]
+}

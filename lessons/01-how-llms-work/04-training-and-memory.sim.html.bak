@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Does Karel Know? | Agentic AI Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #f7f9fb;
+            --bg-card: #ffffff;
+            --border-card: 1px solid rgba(44, 52, 55, 0.12);
+            --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --color-primary: #4f46e5;
+            --color-primary-gradient: linear-gradient(135deg, #4f46e5, #6f68f7);
+            --color-accent-light: #eef2ff;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --text-primary: #2c3437;
+            --text-secondary: #596064;
+            --border-radius-card: 24px;
+            --border-radius-button: 12px;
+            --padding-card: 32px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        header { margin-bottom: 36px; text-align: center; }
+        h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { font-size: 16px; color: var(--text-secondary); }
+
+        .intro-panel {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-card);
+        }
+        .intro-panel p { color: var(--text-secondary); line-height: 1.7; margin-bottom: 10px; }
+        .intro-panel p:last-child { margin-bottom: 0; }
+
+        /* Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 700px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Scenario buttons */
+        .scenarios-panel {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            box-shadow: var(--shadow-card);
+        }
+
+        .scenarios-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .scenario-group {
+            margin-bottom: 20px;
+        }
+
+        .group-label {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .group-training { background: rgba(16, 185, 129, 0.12); color: #065f46; }
+        .group-cutoff { background: rgba(245, 158, 11, 0.12); color: #92400e; }
+        .group-memory { background: rgba(239, 68, 68, 0.12); color: #991b1b; }
+        .group-context { background: rgba(79, 70, 229, 0.12); color: #3730a3; }
+
+        .scenario-btn {
+            display: block;
+            width: 100%;
+            background: white;
+            border: 1.5px solid rgba(44, 52, 55, 0.15);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            text-align: left;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .scenario-btn:hover { border-color: var(--color-primary); background: var(--color-accent-light); }
+        .scenario-btn.active { border-color: var(--color-primary); background: var(--color-accent-light); font-weight: 600; }
+        .scenario-btn:last-child { margin-bottom: 0; }
+
+        /* Chat panel */
+        .chat-panel {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-area {
+            flex: 1;
+            min-height: 300px;
+        }
+
+        .empty-state {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 40px 20px;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .chat-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .message {
+            margin-bottom: 14px;
+        }
+
+        .message-sender {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .message-sender.user { color: var(--text-secondary); }
+        .message-sender.karel { color: var(--color-primary); }
+
+        .message-bubble {
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .message-bubble.user {
+            background: #f0f0f0;
+            color: var(--text-primary);
+            border-radius: 12px 12px 4px 12px;
+        }
+
+        .message-bubble.karel {
+            background: var(--color-accent-light);
+            color: var(--text-primary);
+            border-radius: 4px 12px 12px 12px;
+        }
+
+        /* Knowledge badge */
+        .knowledge-badge {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .knowledge-badge.knows {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .knowledge-badge.doesnt-know {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .knowledge-badge.needs-context {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .badge-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+        .badge-content {}
+        .badge-title {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+        .badge-title.knows { color: #065f46; }
+        .badge-title.doesnt-know { color: #991b1b; }
+        .badge-title.needs-context { color: #92400e; }
+
+        .badge-text { color: var(--text-secondary); }
+
+        /* Summary */
+        .summary-panel {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            box-shadow: var(--shadow-card);
+        }
+
+        .summary-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 700px) {
+            .summary-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .summary-card {
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .summary-card.training { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16,185,129,0.2); }
+        .summary-card.cutoff { background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245,158,11,0.2); }
+        .summary-card.memory { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239,68,68,0.2); }
+        .summary-card.context { background: rgba(79, 70, 229, 0.08); border: 1px solid rgba(79,70,229,0.2); }
+
+        .summary-card .card-icon { font-size: 20px; margin-bottom: 8px; }
+        .summary-card .card-title { font-weight: 700; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .summary-card.training .card-title { color: #065f46; }
+        .summary-card.cutoff .card-title { color: #92400e; }
+        .summary-card.memory .card-title { color: #991b1b; }
+        .summary-card.context .card-title { color: #3730a3; }
+        .summary-card .card-text { color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>What Does Karel Know?</h1>
+        <p class="subtitle">Explore the limits of training knowledge, memory, and context</p>
+    </header>
+
+    <div class="intro-panel">
+        <p>Karel knows a lot — but his knowledge has hard limits. Pick a scenario below and send a question to Karel. See how he responds, and more importantly, <em>why</em> he can or can't answer.</p>
+        <p>Each scenario illustrates a different concept: training knowledge, knowledge cutoff, cross-session memory, and context window.</p>
+    </div>
+
+    <div class="main-layout">
+        <div class="scenarios-panel">
+            <div class="scenarios-title">Pick a scenario</div>
+
+            <div class="scenario-group">
+                <span class="group-label group-training">From training</span>
+                <button class="scenario-btn" onclick="selectScenario('fraud-types')">"What are common types of card fraud?"</button>
+                <button class="scenario-btn" onclick="selectScenario('chargeback')">"How does a chargeback work?"</button>
+            </div>
+
+            <div class="scenario-group">
+                <span class="group-label group-cutoff">Knowledge cutoff</span>
+                <button class="scenario-btn" onclick="selectScenario('new-scheme')">"There's a new SIM-swap fraud wave this month. Tell me about it."</button>
+                <button class="scenario-btn" onclick="selectScenario('regulation')">"What does the new EU payment regulation from last week say?"</button>
+            </div>
+
+            <div class="scenario-group">
+                <span class="group-label group-memory">Cross-session memory</span>
+                <button class="scenario-btn" onclick="selectScenario('follow-up')">"Hi Karel, it's me again. Any update on my fraud case?"</button>
+                <button class="scenario-btn" onclick="selectScenario('remember')">"You said last time my refund would arrive by Friday."</button>
+            </div>
+
+            <div class="scenario-group">
+                <span class="group-label group-context">Context window</span>
+                <button class="scenario-btn" onclick="selectScenario('account-info')">"What's the balance in my account right now?"</button>
+                <button class="scenario-btn" onclick="selectScenario('with-context')">"[Transaction data provided] Is this charge unusual for me?"</button>
+            </div>
+        </div>
+
+        <div class="chat-panel">
+            <div class="chat-label">Conversation with Karel</div>
+            <div class="chat-area" id="chatArea">
+                <div class="empty-state">
+                    <div class="empty-icon">💬</div>
+                    <div class="empty-text">Select a scenario on the left to start a conversation with Karel and see what he knows — and what he doesn't.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary-panel">
+        <div class="summary-title">Karel's four types of knowledge</div>
+        <div class="summary-grid">
+            <div class="summary-card training">
+                <div class="card-icon">📚</div>
+                <div class="card-title">Training knowledge</div>
+                <div class="card-text">Patterns baked in from training data. Available in every conversation, but frozen — cannot be updated by talking to him.</div>
+            </div>
+            <div class="summary-card cutoff">
+                <div class="card-icon">📅</div>
+                <div class="card-title">Knowledge cutoff</div>
+                <div class="card-text">Anything after the training cutoff date is unknown to Karel — unless you tell him in the conversation.</div>
+            </div>
+            <div class="summary-card memory">
+                <div class="card-icon">🧹</div>
+                <div class="card-title">No session memory</div>
+                <div class="card-text">Each conversation starts fresh. Karel has no recollection of previous chats. Memory must be built as a product feature.</div>
+            </div>
+            <div class="summary-card context">
+                <div class="card-icon">📋</div>
+                <div class="card-title">Context window</div>
+                <div class="card-text">Real-time data can be given to Karel in the prompt — but it must be provided explicitly, every single time.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const scenarios = {
+        'fraud-types': {
+            question: "What are the most common types of card fraud I should know about?",
+            response: "The most common types are card-not-present fraud (using stolen card details online), counterfeit card fraud (skimmed physical cards), lost and stolen card fraud, and account takeover (someone gaining access to your account through phishing or social engineering). Each has a distinct transaction pattern — online fraud tends to show up as small test charges followed by larger ones, for example.",
+            badgeType: 'knows',
+            badgeIcon: '✅',
+            badgeTitle: 'From training knowledge',
+            badgeText: 'Karel learned about fraud types during training — this information exists in general banking and security literature. He can answer this reliably without needing any account data.'
+        },
+        'chargeback': {
+            question: "How does a chargeback process work for disputed transactions?",
+            response: "When a cardholder disputes a transaction, the bank initiates a chargeback: they reverse the funds and send a dispute notice to the merchant's bank. The merchant then has a window to respond with evidence. If they can\'t prove the transaction was legitimate, the reversal stands. The process typically takes 30–90 days and is governed by card network rules (Visa, Mastercard, etc.).",
+            badgeType: 'knows',
+            badgeIcon: '✅',
+            badgeTitle: 'From training knowledge',
+            badgeText: 'Chargeback processes are well-documented in Karel\'s training data. This is stable, general domain knowledge that doesn\'t change between conversations.'
+        },
+        'new-scheme': {
+            question: "There's been a major SIM-swap fraud wave reported this month. What can you tell me about it?",
+            response: "I can tell you about SIM-swap fraud as a general technique — attackers convince a mobile carrier to transfer a victim\'s phone number to a SIM they control, then intercept SMS-based authentication codes. However, I don\'t have information about events from this month. My training data has a cutoff date, and anything that happened after that point isn\'t something I know about.",
+            badgeType: 'doesnt-know',
+            badgeIcon: '⚠️',
+            badgeTitle: 'Knowledge cutoff — recent events unknown',
+            badgeText: 'Karel knows what SIM-swap fraud is (from training), but he has no knowledge of recent incidents, news, or emerging patterns. His training data ended at a fixed point in time. For anything current, you need to provide the information in the prompt.'
+        },
+        'regulation': {
+            question: "What does the new EU payment regulation published last week require banks to do?",
+            response: "I don\'t have access to regulations published last week — my knowledge has a cutoff date, and I simply don\'t know what was published after that point. I can speak to EU payment regulations that existed in my training data, like PSD2 and GDPR principles, but I\'d be guessing if I tried to describe something recent. Please share the regulation text if you need me to analyze it.",
+            badgeType: 'doesnt-know',
+            badgeIcon: '⚠️',
+            badgeTitle: 'Knowledge cutoff — cannot know',
+            badgeText: 'This is a hard limit. Karel\'s parameters are frozen — there is no mechanism by which he learned about last week\'s events. Providing the regulation text directly in the prompt is the only way to give him this information.'
+        },
+        'follow-up': {
+            question: "Hi Karel, it\'s Eva again. Is there any update on the fraud case I reported on Monday?",
+            response: "Hello! I\'m sorry, but I don\'t have any record of a previous conversation with you. Each conversation I have starts completely fresh — I have no access to what was discussed in past sessions. If you reported a fraud case earlier, I\'d need you to provide the case reference number or details so I can look into it for you.",
+            badgeType: 'doesnt-know',
+            badgeIcon: '🧹',
+            badgeTitle: 'No cross-session memory',
+            badgeText: 'This is perhaps the most surprising limitation. Karel has zero memory of previous conversations — not because of a bug, but by design. When a conversation ends, the context window is gone. Building memory for Karel (loading previous case details into the prompt) is a product feature the team must deliberately design.'
+        },
+        'remember': {
+            question: "You told me last Tuesday that my refund would arrive by this Friday.",
+            response: "I don\'t have any record of a previous conversation with you — I genuinely have no memory of what was said in past sessions. If I said something to you before, I have no way to confirm or deny it now. To help you with your refund, I\'d need you to share the case details or reference number from that earlier interaction.",
+            badgeType: 'doesnt-know',
+            badgeIcon: '🧹',
+            badgeTitle: 'No cross-session memory',
+            badgeText: 'Karel isn\'t being evasive — he genuinely doesn\'t know. The previous conversation\'s context window was cleared. This is why a memory layer (storing conversation summaries and loading them into new sessions) is a critical design decision for any ongoing customer support agent.'
+        },
+        'account-info': {
+            question: "What\'s the current balance in my account?",
+            response: "I don\'t have access to your account balance. I\'m not connected to the bank\'s core systems by default — account data needs to be provided to me in the conversation, or I need to be given a tool that can look it up. Right now, neither has happened, so I can\'t see any of your account details.",
+            badgeType: 'needs-context',
+            badgeIcon: '📋',
+            badgeTitle: 'Needs context — not provided',
+            badgeText: 'Karel is not connected to anything. He\'s a mathematical function — without account data being passed into his context window (or a tool call returning it), he has no way to answer. This is why every Karel session must load the customer\'s relevant data into the prompt before he can help.'
+        },
+        'with-context': {
+            question: "[Transaction data loaded] Customer\'s last 30 days of transactions provided. Is the €340 charge at ElectroMart in Berlin unusual?",
+            response: "Yes — looking at the transaction history provided, this customer has no other purchases in Germany in the past 30 days, and their usual spending is concentrated in Prague. A €340 electronics purchase in Berlin is outside their normal pattern. I\'d flag this as worth investigating.",
+            badgeType: 'knows',
+            badgeIcon: '📋',
+            badgeTitle: 'Answered using context window',
+            badgeText: 'When the transaction data is provided in the prompt, Karel can reason about it accurately. This is the context window in action — Karel\'s working memory for the current conversation. The data isn\'t "stored" anywhere; it was handed to him explicitly for this session.'
+        }
+    };
+
+    let activeBtn = null;
+
+    function selectScenario(key) {
+        const s = scenarios[key];
+
+        // Update button states
+        document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const badgeClass = s.badgeType === 'knows' ? 'knows' : s.badgeType === 'doesnt-know' ? 'doesnt-know' : 'needs-context';
+        const titleClass = badgeClass;
+
+        document.getElementById('chatArea').innerHTML = `
+            <div class="message">
+                <div class="message-sender user">You</div>
+                <div class="message-bubble user">${s.question}</div>
+            </div>
+            <div class="message">
+                <div class="message-sender karel">Karel</div>
+                <div class="message-bubble karel">${s.response}</div>
+            </div>
+            <div class="knowledge-badge ${badgeClass}">
+                <div class="badge-icon">${s.badgeIcon}</div>
+                <div class="badge-content">
+                    <div class="badge-title ${titleClass}">${s.badgeTitle}</div>
+                    <div class="badge-text">${s.badgeText}</div>
+                </div>
+            </div>
+        `;
+    }
+</script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+    window.parent.postMessage({ type: 'resize', height: height + 40 }, '*');
+  }
+  
+  // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

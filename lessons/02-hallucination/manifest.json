@@ -1,0 +1,43 @@
+{
+  "module": 2,
+  "title": "The Hallucination Problem",
+  "lessons": [
+    {
+      "id": "01-introduction",
+      "title": "Introduction",
+      "file": "01-introduction.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": false,
+        "simulation": false
+      }
+    },
+    {
+      "id": "02-what-is-hallucination",
+      "title": "What is hallucination and why does it happen?",
+      "file": "01-what-is-hallucination.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "quiz_file": "01-what-is-hallucination.quiz.json",
+        "simulation": true,
+        "simulation_file": "01-what-is-hallucination.sim.html"
+      }
+    },
+    {
+      "id": "03-how-to-reduce-it",
+      "title": "How to reduce hallucination: grounding, RAG, and guardrails",
+      "file": "02-how-to-reduce-it.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "quiz_file": "02-how-to-reduce-it.quiz.json",
+        "simulation": true,
+        "simulation_file": "02-how-to-reduce-it.sim.html"
+      }
+    }
+  ]
+}

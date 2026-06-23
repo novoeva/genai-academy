@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Confidence Trap - Agentic AI Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #f7f9fb;
+            --bg-card: #ffffff;
+            --border-card: 1px solid rgba(44, 52, 55, 0.12);
+            --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --color-primary: #4f46e5;
+            --color-primary-gradient: linear-gradient(135deg, #4f46e5, #6f68f7);
+            --color-accent-light: #eef2ff;
+            --color-success: #10b981;
+            --color-error: #ef4444;
+            --text-primary: #2c3437;
+            --text-secondary: #596064;
+            --border-radius-card: 24px;
+            --border-radius-button: 12px;
+            --padding-card: 32px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .intro-panel {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .intro-panel p {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .intro-panel p:last-child {
+            margin-bottom: 0;
+        }
+
+        .statements-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .statement-card {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s ease;
+        }
+
+        .statement-card.answered {
+            border-color: rgba(44, 52, 55, 0.2);
+        }
+
+        .statement-card.correct {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.04));
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .statement-card.incorrect {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.04));
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .statement-number {
+            display: inline-block;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .statement-text {
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-weight: 500;
+            padding: 16px;
+            background-color: var(--color-accent-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--border-radius-button);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-answer {
+            background: white;
+            color: var(--text-primary);
+            border: 2px solid rgba(44, 52, 55, 0.2);
+        }
+
+        .btn-answer:hover:not(:disabled) {
+            border-color: var(--color-primary);
+            background: var(--color-accent-light);
+        }
+
+        .btn-answer:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-answer.selected {
+            background: var(--color-primary-gradient);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .feedback {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: rgba(16, 185, 129, 0.12);
+            color: #047857;
+            border-left: 4px solid var(--color-success);
+        }
+
+        .feedback.incorrect {
+            background: rgba(239, 68, 68, 0.12);
+            color: #991b1b;
+            border-left: 4px solid var(--color-error);
+        }
+
+        .reveal-section {
+            background: var(--bg-card);
+            border: var(--border-card);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            box-shadow: var(--shadow-card);
+            margin-top: 32px;
+            display: none;
+        }
+
+        .reveal-section.show {
+            display: block;
+        }
+
+        .reveal-section h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .explanation {
+            background: var(--color-accent-light);
+            border-left: 4px solid var(--color-primary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .explanation p {
+            color: var(--text-primary);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .explanation p:last-child {
+            margin-bottom: 0;
+        }
+
+        .score-box {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(111, 104, 247, 0.1));
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: var(--border-radius-card);
+            padding: var(--padding-card);
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--color-primary);
+            line-height: 1;
+        }
+
+        .score-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .btn-reset {
+            background: var(--color-primary-gradient);
+            color: white;
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 24px;
+            width: 100%;
+        }
+
+        .btn-reset:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        .statement-answer-details {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(44, 52, 55, 0.04);
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .statement-answer-details.show {
+            display: block;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .hidden-content {
+            color: var(--color-error);
+            font-weight: 500;
+        }
+
+        .correct-content {
+            color: var(--color-success);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>The Confidence Trap</h1>
+            <p class="subtitle">Can you spot Karel's hallucinations?</p>
+        </header>
+
+        <div class="intro-panel">
+            <p>Karel is a fraud-detection AI agent. Below are 6 statements about fraud cases. Some are accurate — based on real transaction data. Some are hallucinations — Karel made up details with complete confidence.</p>
+            <p>Your task: Read each statement carefully. Click "Accurate" if you think it's real, or "Hallucinated" if you think Karel invented it. All 6 statements sound equally confident. That's the problem.</p>
+        </div>
+
+        <div class="statements-container" id="statementsContainer"></div>
+
+        <div class="reveal-section" id="revealSection">
+            <h2>How did you do?</h2>
+
+            <div class="explanation">
+                <p><strong>The Core Problem:</strong> Both types of statement sound identical. Hallucinations come out with the same confident tone as accurate information. You cannot tell them apart just by reading the text.</p>
+                <p>This is why it's dangerous to trust an AI agent's outputs without verification. Confidence is not accuracy.</p>
+            </div>
+
+            <div id="detailedResults"></div>
+
+            <div class="score-box">
+                <div class="score-number" id="scoreNumber">0</div>
+                <div class="score-label" id="scoreLabel">out of 6 correct</div>
+            </div>
+
+            <button class="btn btn-reset" onclick="resetSimulation()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const statements = [
+            {
+                id: 1,
+                text: "I found 3 transactions at MerchantX on March 4th totaling €847.50 — these match the disputed amount.",
+                isAccurate: false,
+                explanation: "Hallucinated. Karel invented both the date (actual was March 7th) and the merchant name. The confidence made it sound real."
+            },
+            {
+                id: 2,
+                text: "Your account shows no international transactions in the past 90 days, which makes the Dubai charge unusual.",
+                isAccurate: true,
+                explanation: "Accurate. Karel referenced real transaction history data to make a legitimate observation about an anomaly."
+            },
+            {
+                id: 3,
+                text: "This card was last used in Prague on the 12th before the suspicious London charge.",
+                isAccurate: false,
+                explanation: "Hallucinated. Karel invented the Prague transaction entirely — there was no prior use of the card there."
+            },
+            {
+                id: 4,
+                text: "The transaction at 3:47 AM is outside your normal spending pattern, which is typically between 8 AM and 10 PM.",
+                isAccurate: true,
+                explanation: "Accurate. Karel analyzed actual spending patterns and identified a legitimate time-based anomaly."
+            },
+            {
+                id: 5,
+                text: "I can confirm the refund of €234 was processed on Tuesday.",
+                isAccurate: false,
+                explanation: "Hallucinated (out of scope). Karel cannot issue or confirm refunds — that's outside his tool constraints. He made this up anyway."
+            },
+            {
+                id: 6,
+                text: "I've flagged 2 transactions for review and frozen the card. A fraud report has been created with reference #FR-2847.",
+                isAccurate: true,
+                explanation: "Accurate. Karel executed his actual tools correctly: flag_transaction, freeze_card, and create_fraud_report."
+            }
+        ];
+
+        let userAnswers = {};
+
+        function initSimulation() {
+            const container = document.getElementById('statementsContainer');
+            container.innerHTML = '';
+            userAnswers = {};
+
+            statements.forEach(stmt => {
+                const card = document.createElement('div');
+                card.className = 'statement-card';
+                card.id = `statement-${stmt.id}`;
+
+                card.innerHTML = `
+                    <div class="statement-number">Statement ${stmt.id}</div>
+                    <div class="statement-text">"${stmt.text}"</div>
+                    <div class="button-group">
+                        <button class="btn btn-answer" onclick="answerQuestion(${stmt.id}, true)">Accurate</button>
+                        <button class="btn btn-answer" onclick="answerQuestion(${stmt.id}, false)">Hallucinated</button>
+                    </div>
+                    <div class="feedback" id="feedback-${stmt.id}"></div>
+                    <div class="statement-answer-details" id="details-${stmt.id}"></div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            document.getElementById('revealSection').classList.remove('show');
+        }
+
+        function answerQuestion(statementId, userSaysAccurate) {
+            userAnswers[statementId] = userSaysAccurate;
+
+            const stmt = statements.find(s => s.id === statementId);
+            const isCorrect = userSaysAccurate === stmt.isAccurate;
+
+            const card = document.getElementById(`statement-${statementId}`);
+            const feedback = document.getElementById(`feedback-${statementId}`);
+            const details = document.getElementById(`details-${statementId}`);
+            const buttons = card.querySelectorAll('.btn-answer');
+
+            card.classList.add('answered');
+            card.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+            buttons.forEach(btn => btn.disabled = true);
+
+            buttons.forEach(btn => {
+                const isAccurateBtn = btn.textContent === 'Accurate';
+                if (isAccurateBtn === userSaysAccurate) {
+                    btn.classList.add('selected');
+                }
+            });
+
+            feedback.classList.add('show');
+            feedback.classList.add(isCorrect ? 'correct' : 'incorrect');
+            feedback.textContent = isCorrect ? 'Correct!' : 'Not quite.';
+
+            details.classList.add('show');
+            details.innerHTML = `
+                <div class="detail-label">${stmt.isAccurate ? 'Why this is accurate:' : 'Why this is hallucinated:'}</div>
+                <div>${stmt.explanation}</div>
+            `;
+
+            if (Object.keys(userAnswers).length === statements.length) {
+                setTimeout(showReveal, 800);
+            }
+        }
+
+        function showReveal() {
+            const correct = Object.entries(userAnswers).filter(([id, answer]) => {
+                const stmt = statements.find(s => s.id === parseInt(id));
+                return answer === stmt.isAccurate;
+            }).length;
+
+            document.getElementById('scoreNumber').textContent = correct;
+
+            const detailedResults = document.getElementById('detailedResults');
+            detailedResults.innerHTML = `
+                <div style="background: rgba(44, 52, 55, 0.04); border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary);">Statement Review</h3>
+                    <div style="display: grid; gap: 12px;">
+                        ${statements.map((stmt, idx) => {
+                            const userAnswer = userAnswers[stmt.id];
+                            const isCorrect = userAnswer === stmt.isAccurate;
+                            return `
+                                <div style="padding: 12px; background: white; border-radius: 8px; border-left: 4px solid ${isCorrect ? 'var(--color-success)' : 'var(--color-error)'};font-size: 13px;">
+                                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Statement ${stmt.id}</div>
+                                    <div style="color: var(--text-secondary);">
+                                        You said: <strong>${userAnswer ? 'Accurate' : 'Hallucinated'}</strong>
+                                        | Correct answer: <strong>${stmt.isAccurate ? 'Accurate' : 'Hallucinated'}</strong>
+                                        ${isCorrect ? ' ✓' : ' ✗'}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('revealSection').classList.add('show');
+            document.getElementById('revealSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetSimulation() {
+            initSimulation();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        initSimulation();
+    </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+    window.parent.postMessage({ type: 'resize', height: height + 40 }, '*');
+  }
+  
+  // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

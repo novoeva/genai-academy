@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug Hunt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html { overflow: hidden; }
+
+
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: #f7f9fb;
+      color: #2c3437;
+      padding: 40px 20px;
+      
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #596064;
+      font-weight: 400;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      border: 1px solid rgba(44, 52, 55, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .bug-hunt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .bug-counter {
+      background: linear-gradient(135deg, #4f46e5, #6f68f7);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .instructions {
+      background: #f0f4f8;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      border-left: 4px solid #3b82f6;
+      font-size: 14px;
+      color: #2c3437;
+    }
+
+    .prompt-display {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      font-family: "Courier New", monospace;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #2c3437;
+      border: 1px solid #e5e7eb;
+    }
+
+    .buggy-line {
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      background: #fff9f9;
+      border: 2px solid #fecaca;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .buggy-line:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+      transform: translateX(4px);
+    }
+
+    .buggy-line.found {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      cursor: default;
+    }
+
+    .buggy-line.found:hover {
+      transform: none;
+      background: #f0fdf4;
+    }
+
+    .buggy-marker {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      margin-right: 8px;
+      margin-left: 0;
+    }
+
+    .buggy-line.found .buggy-marker {
+      background: #10b981;
+    }
+
+    .tooltip {
+      display: none;
+      position: fixed;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      z-index: 1000;
+      max-width: 300px;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: 13px;
+    }
+
+    .tooltip.visible {
+      display: block;
+    }
+
+    .tooltip-title {
+      font-weight: 700;
+      color: #ef4444;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .tooltip-text {
+      color: #596064;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .tooltip-fix {
+      background: #f0fdf4;
+      border-left: 3px solid #10b981;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #166534;
+      font-weight: 500;
+    }
+
+    .explanation-panel {
+      background: #eef2ff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 32px;
+      border: 1px solid #c7d2fe;
+      border-left: 4px solid #4f46e5;
+      display: none;
+    }
+
+    .explanation-panel.visible {
+      display: block;
+    }
+
+    .explanation-title {
+      font-weight: 700;
+      font-size: 18px;
+      color: #4f46e5;
+      margin-bottom: 20px;
+    }
+
+    .bug-explanation {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(79, 70, 229, 0.2);
+    }
+
+    .bug-explanation:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .bug-num {
+      font-weight: 700;
+      color: #4f46e5;
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .bug-title {
+      font-weight: 700;
+      color: #2c3437;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .bug-problem {
+      background: rgba(239, 68, 68, 0.1);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #991b1b;
+      margin-bottom: 8px;
+      border-left: 3px solid #ef4444;
+    }
+
+    .bug-solution {
+      background: rgba(16, 185, 129, 0.1);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #065f46;
+      border-left: 3px solid #10b981;
+    }
+
+    .completion-message {
+      display: none;
+      background: #f0fdf4;
+      border: 2px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .completion-message.visible {
+      display: block;
+    }
+
+    .completion-emoji {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .completion-text {
+      font-weight: 700;
+      color: #065f46;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .completion-subtext {
+      color: #047857;
+      font-size: 14px;
+    }
+
+    .progress {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4f46e5, #6f68f7);
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 14px;
+      color: #596064;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Bug Hunt</h1>
+      <p class="subtitle">Find 6 common prompt engineering mistakes hidden in Karel's broken system prompt.</p>
+    </header>
+
+    <div class="card">
+      <div class="bug-hunt-header">
+        <h2 style="font-size: 18px; font-weight: 700;">Click on buggy text to find mistakes:</h2>
+        <div class="bug-counter" id="bugCounter">Bugs Found: 0/6</div>
+      </div>
+
+      <div class="instructions">
+        Click on highlighted text segments in the prompt below. Each click reveals what's wrong with that instruction and how to fix it.
+      </div>
+
+      <div class="completion-message" id="completionMessage">
+        <div class="completion-emoji">Congratulations!</div>
+        <div class="completion-text">You found all 6 bugs!</div>
+        <div class="completion-subtext">Scroll down to see what each mistake teaches us.</div>
+      </div>
+
+      <div class="prompt-display">
+        <div class="buggy-line" onclick="revealBug(0)">
+          <span class="buggy-marker"></span>You are Karel, a helpful banking assistant.
+        </div>
+
+        <div class="buggy-line" onclick="revealBug(1)">
+          <span class="buggy-marker"></span>Try to avoid giving investment advice where possible.
+        </div>
+
+        <div class="buggy-line" onclick="revealBug(2)">
+          <span class="buggy-marker"></span>If customers ask about fraud, help them.
+        </div>
+
+        <div class="buggy-line" onclick="revealBug(3)">
+          <span class="buggy-marker"></span>Karel can freeze cards, flag transactions, create reports, check history, process refunds, and escalate issues.
+        </div>
+
+        <div class="buggy-line" onclick="revealBug(4)">
+          <span class="buggy-marker"></span>Always be empathetic and professional.
+        </div>
+
+        <div class="buggy-line" onclick="revealBug(5)">
+          <span class="buggy-marker"></span>If the conversation goes long, summarize when needed.
+        </div>
+      </div>
+
+      <div class="progress">
+        <div class="progress-text">Progress: <span id="bugCount">0</span>/6 bugs found</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <div class="explanation-panel" id="explanationPanel">
+        <div class="explanation-title">What Each Bug Teaches</div>
+
+        <div class="bug-explanation">
+          <div class="bug-num">Bug 1: Vague Persona</div>
+          <div class="bug-title">"a helpful banking assistant"</div>
+          <div class="bug-problem">Problem: "Helpful" means nothing specific. What does Karel actually do? Give investment tips? Sell products? Help with anything?</div>
+          <div class="bug-solution">Better: "You are Karel, a fraud reporting assistant. You help customers report suspicious transactions, flag fraud, and freeze compromised cards. You do not give investment advice, product recommendations, or financial planning guidance."</div>
+        </div>
+
+        <div class="bug-explanation">
+          <div class="bug-num">Bug 2: Soft Constraints</div>
+          <div class="bug-title">"Try to avoid" and "where possible"</div>
+          <div class="bug-problem">Problem: These are weak words. Karel will interpret this as "you can give investment advice if it seems helpful or relevant." Soft constraints get violated.</div>
+          <div class="bug-solution">Better: "Karel will never give investment, financial planning, or legal advice under any circumstances. If asked, respond: 'That's outside what I can help with.'"</div>
+        </div>
+
+        <div class="bug-explanation">
+          <div class="bug-num">Bug 3: No Alternative Path</div>
+          <div class="bug-title">"If customers ask about fraud, help them"</div>
+          <div class="bug-problem">Problem: What happens if they ask about something else? The instruction doesn't say. Karel will improvise, leading to inconsistent behavior.</div>
+          <div class="bug-solution">Better: "If customers ask about fraud, flag or freeze their card immediately. If they ask about anything else, respond: 'I can only help with fraud. For other issues, contact customer service at [number].'"</div>
+        </div>
+
+        <div class="bug-explanation">
+          <div class="bug-num">Bug 4: Non-existent Tools</div>
+          <div class="bug-title">"process refunds"</div>
+          <div class="bug-problem">Problem: This tool doesn't exist. Karel will claim he can refund customers, then fail when it's time to actually do it. This breaks trust.</div>
+          <div class="bug-solution">Better: "Karel can: flag transactions, freeze cards, create fraud reports, read transaction history. Karel cannot: reverse transactions, process refunds, resolve claims, or issue compensation."</div>
+        </div>
+
+        <div class="bug-explanation">
+          <div class="bug-num">Bug 5: Unmeasurable Traits</div>
+          <div class="bug-title">"Always be empathetic and professional"</div>
+          <div class="bug-problem">Problem: "Empathetic" is not measurable. What does empathy look like? Karel doesn't know, so each response varies wildly.</div>
+          <div class="bug-solution">Better: "Use phrases like 'I understand' and 'I'm sorry to hear that.' Then move immediately to a specific action. For example: 'I understand this is frustrating. I'm freezing your card now to prevent further charges.'"</div>
+        </div>
+
+        <div class="bug-explanation">
+          <div class="bug-num">Bug 6: Prompt Drift</div>
+          <div class="bug-title">"when needed"</div>
+          <div class="bug-problem">Problem: Vague trigger. Karel will decide "when needed," leading to unpredictable summarization. You lose control of when summaries happen.</div>
+          <div class="bug-solution">Better: "If the conversation exceeds 5 exchanges, summarize the key transaction and next step. For example: 'So far we've flagged €45 from OnlineRetail. I'll monitor this. Anything else?'"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    const bugs = [
+      {
+        title: "Bug 1: Vague Persona",
+        description: "'Helpful' is too broad. What specifically does Karel do? This lack of clarity causes role confusion.",
+        fix: "Specify: 'You are Karel, a fraud reporting assistant focused only on fraud detection and prevention.'"
+      },
+      {
+        title: "Bug 2: Soft Constraints",
+        description: "'Try to avoid' and 'where possible' are weak. Karel will find loopholes and give investment advice anyway.",
+        fix: "Be absolute: 'Karel will never give investment advice under any circumstances.'"
+      },
+      {
+        title: "Bug 3: No Fallback",
+        description: "You only told Karel what to do IF someone asks about fraud. What if they ask about refunds? He'll improvise.",
+        fix: "Add else: 'If not about fraud, respond: \"I can only help with fraud reports.\"'"
+      },
+      {
+        title: "Bug 4: Phantom Tools",
+        description: "'Process refunds' doesn't exist in Karel's toolset. He'll claim he can do this, then fail.",
+        fix: "List real tools only: 'flag_transaction, freeze_card, read_transaction_history, create_fraud_report'"
+      },
+      {
+        title: "Bug 5: Unmeasurable Quality",
+        description: "'Empathetic and professional' means nothing. Empathy is unmeasurable. Karel can't follow this.",
+        fix: "Show, don't tell: 'Use 'I understand' and 'I'm sorry.' Then state exactly what you'll do next.'"
+      },
+      {
+        title: "Bug 6: Vague Triggers",
+        description: "'When needed' means Karel decides. Now summarization is unpredictable and uncontrollable.",
+        fix: "Be specific: 'Summarize after 5 exchanges' or 'When context exceeds 500 words.'"
+      }
+    ];
+
+    let foundBugs = new Set();
+
+    function revealBug(index) {
+      if (foundBugs.has(index)) {
+        return;
+      }
+
+      const bug = bugs[index];
+      const tooltip = document.getElementById('tooltip');
+
+      tooltip.innerHTML = `
+        <div class="tooltip-title">${bug.title}</div>
+        <div class="tooltip-text">${bug.description}</div>
+        <div class="tooltip-fix">Fix: ${bug.fix}</div>
+      `;
+
+      const rect = event.target.closest('.buggy-line').getBoundingClientRect();
+      tooltip.style.left = (rect.right + 12) + 'px';
+      tooltip.style.top = (rect.top - 10) + 'px';
+      tooltip.classList.add('visible');
+
+      event.target.closest('.buggy-line').classList.add('found');
+
+      foundBugs.add(index);
+      updateProgress();
+
+      if (foundBugs.size === 6) {
+        document.getElementById('completionMessage').classList.add('visible');
+        document.getElementById('explanationPanel').classList.add('visible');
+      }
+    }
+
+    function updateProgress() {
+      const count = foundBugs.size;
+      document.getElementById('bugCount').textContent = count;
+      document.getElementById('bugCounter').textContent = `Bugs Found: ${count}/6`;
+      document.getElementById('progressFill').style.width = (count / 6) * 100 + '%';
+    }
+
+    document.addEventListener('click', (e) => {
+      const tooltip = document.getElementById('tooltip');
+      if (!e.target.closest('.buggy-line')) {
+        tooltip.classList.remove('visible');
+      }
+    });
+  </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.body.offsetHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+      window.parent.postMessage({ type: "resize", height: height }, "*");
+    }
+  }
+     // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

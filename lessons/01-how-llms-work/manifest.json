@@ -1,0 +1,57 @@
+{
+  "chapter": 1,
+  "title": "How LLMs Actually Work",
+  "lessons": [
+    {
+      "id": "01-introduction",
+      "title": "Introduction",
+      "file": "01-introduction.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": false,
+        "simulation": false
+      }
+    },
+    {
+      "id": "02-what-is-an-llm",
+      "title": "What is an LLM?",
+      "file": "02-what-is-an-llm.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "quiz_file": "02-what-is-an-llm.quiz.json",
+        "simulation": false
+      }
+    },
+    {
+      "id": "03-next-token-prediction",
+      "title": "Next-token prediction",
+      "file": "03-next-token-prediction.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "quiz_file": "03-next-token-prediction.quiz.json",
+        "simulation": true,
+        "simulation_file": "simulations.html",
+        "simulation_id": "the-predictor"
+      }
+    },
+    {
+      "id": "04-training-and-memory",
+      "title": "Training, parameters, and why the model has no memory",
+      "file": "04-training-and-memory.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "quiz_file": "04-training-and-memory.quiz.json",
+        "simulation": true,
+        "simulation_file": "simulations.html",
+        "simulation_id": "the-context-window"
+      }
+    }
+  ]
+}

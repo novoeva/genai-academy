@@ -1,0 +1,54 @@
+{
+  "lesson": "03-external-memory",
+  "title": "External memory: vector stores and databases",
+  "questions": [
+    {
+      "id": 1,
+      "question": "A customer asks Karel: 'What does the bank's policy say about provisional credits during a fraud investigation?' Karel should retrieve this from the bank's knowledge base. Which memory type is most appropriate, and why?",
+      "options": [
+        "A transactional database, because policies are official bank records",
+        "A vector store, because the query is semantic; Karel needs to find the most relevant policy content based on meaning, not retrieve a specific record by identifier",
+        "In-context memory, because Karel should have policies in his system prompt",
+        "Fine-tuning, because Karel should know bank policies without needing to retrieve them"
+      ],
+      "correct": 1,
+      "explanation": "Policy lookup is a semantic retrieval task; the customer's question is expressed in natural language and needs to be matched to relevant policy documents by meaning, not by exact key. A vector store is purpose-built for this: it finds the most semantically similar documents to the query and returns them. A transactional database would require knowing the exact policy ID, and stuffing all policies into the system prompt would be impractical."
+    },
+    {
+      "id": 2,
+      "question": "Karel uses a vector store to retrieve bank policies. A customer asks about the dispute timeline for a legitimate charge (not fraud). The vector store returns a document about the fraud investigation timeline instead. What failure mode is this, and what is the consequence?",
+      "options": [
+        "A context overflow, the retrieved document is too long and the model can't process it",
+        "A relevance failure, the retrieval returned the wrong document, and Karel will ground his answer in incorrect source material, potentially giving the customer wrong information about dispute timelines",
+        "A prompt injection, the policy document contains instructions that override Karel's behavior",
+        "A hallucination, the model invented the policy document rather than retrieving a real one"
+      ],
+      "correct": 1,
+      "explanation": "Vector retrieval is probabilistic, not guaranteed. When the retrieval returns the wrong document, the model grounds its response in incorrect information, this is a form of grounding failure. Karel will confidently explain the fraud investigation timeline when the customer needed dispute resolution information. The answer is sourced and sounds authoritative, but it's wrong for the customer's situation."
+    },
+    {
+      "id": 3,
+      "question": "A customer contacts Karel for the fourth time about an ongoing fraud case. Karel knows nothing about the previous three sessions. What architectural change would fix this?",
+      "options": [
+        "Increase Karel's context window so he can remember more conversations",
+        "Write session outcomes to a case management database and retrieve them at the start of each new session, injecting a summary of the customer's history into Karel's context",
+        "Train a new version of Karel on this customer's specific conversation history",
+        "Ask the customer to paste their previous conversation transcript at the start of each session"
+      ],
+      "correct": 1,
+      "explanation": "Session state persistence uses an external database to store what happened in previous sessions and retrieves it at the start of each new one. A session summary (what was reported, what actions were taken, what the investigation status is) is injected into Karel's opening context, giving him continuity across sessions without relying on the ephemeral context window."
+    },
+    {
+      "id": 4,
+      "question": "Which of the following is the correct reason to use a transactional database over a vector store for retrieving a customer's transaction history?",
+      "options": [
+        "Transactional databases are cheaper to operate than vector stores",
+        "Transaction history is structured data retrieved by exact identifier (account ID), it requires accurate, deterministic lookup, not semantic similarity search",
+        "Vector stores can't handle financial data due to regulatory restrictions",
+        "Transactional databases are faster for all types of data retrieval"
+      ],
+      "correct": 1,
+      "explanation": "Transaction history is structured (defined fields: date, amount, merchant, transaction ID) and retrieved by exact match (give me the records where account_id = X). This is precisely what relational databases are optimized for. A vector store would be the wrong tool, financial data needs to be retrieved exactly, not approximately matched by semantic similarity."
+    }
+  ]
+}

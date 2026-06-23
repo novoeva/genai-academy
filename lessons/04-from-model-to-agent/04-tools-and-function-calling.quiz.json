@@ -1,0 +1,54 @@
+{
+  "lesson": "04-tools-and-function-calling",
+  "title": "Tools and function calling",
+  "questions": [
+    {
+      "id": 1,
+      "question": "When Karel decides to freeze a customer's card, what actually executes the freeze?",
+      "options": [
+        "The LLM runs the freeze_card function directly inside the model",
+        "The model generates a structured tool call request, and the surrounding application code executes it against the bank's real system",
+        "The customer's browser sends a freeze request when Karel says 'freezing now'",
+        "The model calls the bank's API directly using credentials stored in its training data"
+      ],
+      "correct": 1,
+      "explanation": "The model is a text predictor, it cannot execute code or call APIs itself. When Karel decides to freeze a card, it generates a structured request (like a JSON object with the tool name and arguments). The application code around the model receives this request, validates it, and executes the real freeze against the bank's system. The result is then returned to the model as context."
+    },
+    {
+      "id": 2,
+      "question": "Karel's freeze_card tool description says 'Freezes the customer's card.' A developer changes the underlying implementation so that freeze_card now requires manager approval before taking effect. What happens?",
+      "options": [
+        "Karel automatically updates his behavior to reflect the new approval requirement",
+        "Karel continues telling customers their card is frozen immediately, because his tool description still says it freezes the card, he has no visibility into the implementation",
+        "Karel refuses to call freeze_card until the description is updated",
+        "The model detects the implementation change and asks the developer to update the description"
+      ],
+      "correct": 1,
+      "explanation": "The model only sees the tool description, it has no visibility into what the implementation actually does. If the description says the card is frozen immediately but the implementation now requires approval, Karel will still tell customers their card is frozen right away. This is why tool descriptions must stay synchronized with the actual tool behavior, it's a live operational concern."
+    },
+    {
+      "id": 3,
+      "question": "Karel needs to both flag a transaction and file a fraud report. The fraud report should only be created after the flag is confirmed. How should these tool calls be structured?",
+      "options": [
+        "In parallel, to save time",
+        "Sequentially, flag first, observe the result, then file the report only if the flag succeeded",
+        "The report should always be filed first, then the transaction flagged",
+        "Both should be called at the same time but with a short delay between them"
+      ],
+      "correct": 1,
+      "explanation": "When one action depends on the result of another, tool calls must be sequential. Filing a report that references an unflagged transaction, or that references a flag that failed, creates data integrity problems. The correct design is: call flag_transaction, observe success, then call create_fraud_report. Sequential execution here isn't about caution, it's about correctness."
+    },
+    {
+      "id": 4,
+      "question": "The freeze_card tool returns {status: 'success'} but due to a downstream bank system error, the card is not actually frozen. Karel tells the customer 'Your card has been frozen.' What is the root cause of this failure?",
+      "options": [
+        "Karel hallucinated, he invented the freeze rather than calling the tool",
+        "Karel's temperature setting was too high, causing unpredictable behavior",
+        "The model cannot verify tool results beyond what the tool returns, if the tool reports success, Karel proceeds as if the action succeeded",
+        "Karel's system prompt did not include instructions to double-check freeze confirmations"
+      ],
+      "correct": 2,
+      "explanation": "The model trusts tool return values. If freeze_card returns {status: 'success'}, Karel has no way to independently verify whether the freeze actually took effect. This means downstream system reliability is a critical dependency for agent correctness, not just model correctness. The fix is at the infrastructure layer: the freeze_card tool itself should only return success when it has confirmed the freeze propagated through all downstream systems."
+    }
+  ]
+}

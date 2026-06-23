@@ -1,0 +1,66 @@
+{
+  "lesson": "05-the-pm-checklist",
+  "title": "The PM's checklist before shipping",
+  "questions": [
+    {
+      "id": 1,
+      "question": "A PM signs off on Karel's launch. The scope document lists what Karel can do, but doesn't have an 'explicitly not allowed' column. Three days after launch, customers report that Karel is trying to help with investment questions. What checklist item was missed?",
+      "options": [
+        "Section 2: the system prompt's hard constraints should have been tested under pressure",
+        "Section 1: the scope document must include an explicitly-not-allowed list, implied prohibitions don't transfer to the model, which fills gaps with plausible behavior",
+        "Section 3: the eval set should have included investment advice scenarios",
+        "Section 5: the observability stack should have caught this before customers reported it"
+      ],
+      "correct": 1,
+      "explanation": "An incomplete scope document, one that lists allowed actions but doesn't explicitly enumerate prohibited ones, leaves the model to interpret what 'everything else' means. LLMs fill gaps with plausible behavior: since investment questions are banking-adjacent, Karel tries to be helpful. Explicit prohibition ('Karel will not give investment, financial, or legal advice under any circumstances') must appear in both the scope document and the system prompt."
+    },
+    {
+      "id": 2,
+      "question": "Karel's eval suite runs automatically on every prompt change. A developer pushes a tone improvement and the eval suite shows a 4% regression. The developer says the failing tests are 'edge cases that don't really matter in practice.' What should happen?",
+      "options": [
+        "Deploy the change, 4% regression on edge cases is acceptable for a tone improvement",
+        "Hold the deployment, the developer needs to understand what changed and why before shipping. 'Edge cases that don't matter' is often how scope drift begins: each individual change seems minor, but they compound.",
+        "Run a larger human eval sample to override the automated result",
+        "Deploy with enhanced monitoring to catch any real-world impact"
+      ],
+      "correct": 1,
+      "explanation": "The eval suite exists specifically to catch behavioral changes that seem minor in isolation. 'Edge cases that don't really matter' is exactly the rationalization that accumulates into serious scope drift. Every regression needs to be understood before deploying, not to block all changes, but to ensure that changes are intentional. If the edge cases genuinely don't matter, that reasoning should be documented and the tests updated to reflect the new intended behavior."
+    },
+    {
+      "id": 3,
+      "question": "On launch day, Karel's team has set up monitoring for block rate and escalation rate, but not for conversation completion rate or tool call patterns. A week later, Karel is silently skipping the confirmation gate in 8% of conversations. Which monitoring gap allowed this to go undetected?",
+      "options": [
+        "Block rate monitoring, the confirmation gate skip should have triggered output validation",
+        "Tool call pattern monitoring, unexpected sequences or missing required tool calls (like the confirmation gate check) would have surfaced as an anomaly in tool call pattern analysis",
+        "Customer satisfaction monitoring, customers would have flagged the issue in post-conversation surveys",
+        "Escalation rate monitoring, skipping the confirmation gate would increase escalation frequency"
+      ],
+      "correct": 1,
+      "explanation": "Confirmation gate compliance is a behavioral property that appears in the sequence of tool calls, not in the text of Karel's responses. Block rate monitoring checks output text. Escalation rate measures conversation outcomes. Customer satisfaction is a lagging indicator. Tool call pattern monitoring, tracking which tools are called, in what order, would detect that the confirmation step (which involves a specific UI confirmation call) is missing from 8% of sequences."
+    },
+    {
+      "id": 4,
+      "question": "A PM is asked to approve launching an agent that has passed all technical evaluations but has not been red-teamed. The launch is scheduled for tomorrow. What is the right call?",
+      "options": [
+        "Launch, if the technical evals passed, red-teaming is optional",
+        "Delay, technical evals test scenarios the team anticipated. Red-teaming tests scenarios the team didn't anticipate. An agent that hasn't been adversarially tested has unknown behavior under pressure, which is exactly when failures are most visible and most costly.",
+        "Launch with enhanced monitoring and complete red-teaming within the first week",
+        "Red-team only the highest-risk scenarios and launch if those pass"
+      ],
+      "correct": 1,
+      "explanation": "Red-teaming is not optional for a customer-facing agent, it's the only way to discover how the agent behaves when users try to break it. Technical evals test the happy path and anticipated edge cases. Real users include people who will push, probe, and attempt to get the agent to do things it shouldn't. Launching without red-teaming is launching without knowing what happens in those scenarios. The schedule is not a reason to skip it, it's a reason to find time for it."
+    },
+    {
+      "id": 5,
+      "question": "Karel is 95% accurate on the cases he can handle but struggles with 5% of edge cases, trying to help rather than escalating. An alternative design is 90% accurate on the cases he can handle, but reliably escalates the 10% he can't. Which is the better agent to ship, and why?",
+      "options": [
+        "The first agent, higher accuracy on the cases it handles means better overall performance",
+        "The second agent, a lower overall accuracy rate is acceptable when failures are handled gracefully through escalation. An agent that fails while trying to help on edge cases creates unpredictable, potentially harmful outcomes. An agent that escalates predictably is safer and more trustworthy.",
+        "Neither, both agents should reach 95% before shipping",
+        "The first agent, with added output validation to catch the 5% edge case failures"
+      ],
+      "correct": 1,
+      "explanation": "The goal is not maximum accuracy, it's bounded, predictable, and acceptable failure behavior. The first agent is technically more accurate but fails unpredictably on the 5% it can't handle. The second agent fails less often on handled cases but redirects all unhandled cases to humans, a predictable, safe, correctable failure mode. In production, the agent that knows its limits and handles them gracefully is more trustworthy than the one that tries to handle everything and fails quietly."
+    }
+  ]
+}

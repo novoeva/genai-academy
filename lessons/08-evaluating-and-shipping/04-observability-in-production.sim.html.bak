@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f7f9fb;
+            color: #2c3437;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #596064;
+            font-weight: 400;
+            margin-bottom: 24px;
+        }
+
+        .scenario-controls {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .scenario-controls h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #2c3437;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #4f46e5, #6f68f7);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        button.active {
+            background: #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .metric {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric.alert {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .metric.alert::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #ef4444;
+        }
+
+        .metric h3 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #596064;
+            margin-bottom: 12px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3437;
+            margin-bottom: 16px;
+        }
+
+        .metric.alert .metric-value {
+            color: #ef4444;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #596064;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .mini-chart {
+            height: 60px;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(111, 104, 247, 0.1));
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .chart-bar {
+            position: absolute;
+            bottom: 0;
+            width: 8px;
+            background: linear-gradient(135deg, #4f46e5, #6f68f7);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .metric.alert .chart-bar {
+            background: #ef4444;
+        }
+
+        .chart-bar:nth-child(1) { left: 2%; height: 25%; }
+        .chart-bar:nth-child(2) { left: 12%; height: 35%; }
+        .chart-bar:nth-child(3) { left: 22%; height: 45%; }
+        .chart-bar:nth-child(4) { left: 32%; height: 55%; }
+        .chart-bar:nth-child(5) { left: 42%; height: 65%; }
+        .chart-bar:nth-child(6) { left: 52%; height: 75%; }
+        .chart-bar:nth-child(7) { left: 62%; height: 80%; }
+        .chart-bar:nth-child(8) { left: 72%; height: 75%; }
+        .chart-bar:nth-child(9) { left: 82%; height: 70%; }
+        .chart-bar:nth-child(10) { left: 92%; height: 65%; }
+
+        .metric.alert .chart-bar {
+            opacity: 0.8;
+        }
+
+        .metric-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #10b981;
+        }
+
+        .metric.alert .metric-status {
+            color: #ef4444;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .metric.alert .status-dot {
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .diagnosis-section {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 32px;
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .diagnosis-section.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .diagnosis-section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #2c3437;
+        }
+
+        .diagnosis-question {
+            font-size: 15px;
+            color: #596064;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .diagnosis-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid rgba(44, 52, 55, 0.12);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            color: #2c3437;
+            background: white;
+        }
+
+        .option:hover {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .option.selected {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .option.correct {
+            border-color: #10b981;
+            background: #dcfce7;
+        }
+
+        .option.incorrect {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .option::before {
+            content: attr(data-letter);
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 6px;
+            margin-right: 12px;
+            font-weight: 600;
+            color: #4f46e5;
+            text-align: center;
+            line-height: 24px;
+        }
+
+        .option.correct::before {
+            background: #10b981;
+            color: white;
+            content: '✓';
+        }
+
+        .option.incorrect::before {
+            background: #ef4444;
+            color: white;
+            content: '✗';
+        }
+
+        .feedback {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #dcfce7;
+            color: #10b981;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #fee2e2;
+            color: #ef4444;
+            display: block;
+        }
+
+        .response-protocol {
+            background: #eef2ff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #2c3437;
+            border-left: 4px solid #4f46e5;
+        }
+
+        .response-protocol strong {
+            color: #4f46e5;
+        }
+
+        .summary {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 32px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .summary.show {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .summary h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #2c3437;
+        }
+
+        .summary p {
+            font-size: 15px;
+            color: #596064;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Live Dashboard</h1>
+            <p class="subtitle">5 metrics tell you if Karel is healthy in production. When something goes wrong, one or more metrics spike first. Click through 4 scenarios and diagnose what went wrong.</p>
+        </header>
+
+        <div class="scenario-controls">
+            <h2>Select a Scenario</h2>
+            <div class="button-group">
+                <button class="active" onclick="showScenario(1)">Week 1 → 2</button>
+                <button onclick="showScenario(2)">Week 3</button>
+                <button onclick="showScenario(3)">Week 4</button>
+                <button onclick="showScenario(4)">Week 5</button>
+            </div>
+        </div>
+
+        <div class="dashboard" id="dashboard"></div>
+
+        <div class="diagnosis-section" id="diagnosis"></div>
+
+        <div class="summary" id="summary">
+            <h2>Production Response Protocol</h2>
+            <p><strong>For Technical Spikes (Block Rate, Tool Patterns, Completion):</strong> Alert engineering + product. Time to act: 1-2 hours. First step: check logs, deployment history, recent prompt changes. Likely causes: model update, distribution shift, prompt drift.</p>
+            <p><strong>For Quality Drops (Customer Satisfaction):</strong> Review sample of recent interactions. Time to act: 2-4 hours. First step: read actual conversations, survey customers. Root cause: tone, clarity, or attunement — not technical.</p>
+            <p><strong>For Pattern Anomalies (Tool Call Patterns, Escalation):</strong> Audit decision logic. Time to act: 4-8 hours. First step: trace tool calls, check confirmation gates. Likely causes: prompt drift, behavioral change.</p>
+            <p><strong>If multiple metrics spike:</strong> This is not coincidence. Multiple failures point to: (1) system-wide issue (API down, model degradation), (2) cascade failure (one problem broke something else), or (3) distribution shift (customers behaving differently). Escalate to leadership.</p>
+        </div>
+    </div>
+
+    <script>
+        const metrics = [
+            {
+                name: 'Output Validation Block Rate',
+                healthy: '<1%',
+                values: [0.8, 0.8, 0.8, 0.9, 0.8, 0.7, 0.9],
+                unit: '%'
+            },
+            {
+                name: 'Escalation Rate',
+                healthy: '8-12%',
+                values: [10, 9, 11, 10, 9, 8, 10],
+                unit: '%'
+            },
+            {
+                name: 'Conversation Completion',
+                healthy: '>85%',
+                values: [88, 87, 89, 86, 88, 87, 86],
+                unit: '%'
+            },
+            {
+                name: 'Tool Call Patterns (Normal)',
+                healthy: '>95%',
+                values: [96, 95, 97, 96, 95, 94, 96],
+                unit: '%'
+            },
+            {
+                name: 'Customer Satisfaction',
+                healthy: '>80%',
+                values: [87, 86, 88, 87, 86, 85, 84],
+                unit: '%'
+            }
+        ];
+
+        const scenarios = [
+            {
+                name: 'Week 1 → 2 Change',
+                description: 'Block rate spikes from 0.8% → 3.2%',
+                changes: [2.0, 0, 0, 0, 0],
+                alertMetrics: [0],
+                question: 'What happened to Block Rate?',
+                options: [
+                    { text: 'Customers are being rude', correct: false },
+                    { text: 'Something changed in how Karel responds — model update, prompt drift, or distribution shift', correct: true },
+                    { text: 'The validation rules broke', correct: false }
+                ],
+                protocol: 'Check: Did you deploy a model update? Prompt change? Run eval on before/after responses. Block rate increases mean Karel is producing non-compliant outputs.'
+            },
+            {
+                name: 'Week 3 Anomaly',
+                description: 'Customer satisfaction drops from 87% → 72%. All other metrics normal.',
+                changes: [0, 0, 0, 0, -15],
+                alertMetrics: [4],
+                question: 'Customer satisfaction dropped but technical metrics are fine. Why?',
+                options: [
+                    { text: 'Karel is making more errors', correct: false },
+                    { text: 'Karel is technically correct but communicating badly — tone, clarity, or emotional attunement issue', correct: true },
+                    { text: 'Too many escalations', correct: false }
+                ],
+                protocol: 'Read recent conversations. Look for: tone changes, new phrases, clarity issues. This is a communication problem, not a technical bug. May need prompt refinement.'
+            },
+            {
+                name: 'Week 4 Pattern',
+                description: 'Tool call patterns show: 8% of conversations skip confirmation gate before card freeze.',
+                changes: [0, 0, 0, -8, 0],
+                alertMetrics: [3],
+                question: 'What caused the tool pattern anomaly?',
+                options: [
+                    { text: 'Customers are asking Karel to skip confirmation', correct: false },
+                    { text: 'A prompt change removed the confirmation instruction', correct: true },
+                    { text: 'The freeze tool is broken', correct: false }
+                ],
+                protocol: 'Audit recent prompt changes. Check: Did someone remove the confirmation gate? Was it accidental? Revert or fix immediately — this is a safety issue.'
+            },
+            {
+                name: 'Week 5 Drop',
+                description: 'Conversation completion rate drops from 88% → 61%.',
+                changes: [0, 0, -27, 0, 0],
+                alertMetrics: [2],
+                question: 'Completion rate collapsed. What caused it?',
+                options: [
+                    { text: 'More customers are hanging up mid-conversation', correct: false },
+                    { text: 'Karel is hitting a timeout or loop error that ends conversations prematurely', correct: true },
+                    { text: 'Escalation rate increased', correct: false }
+                ],
+                protocol: 'Check error logs. Look for: timeouts, loop detection, tool call failures. Pair with tool call patterns — incomplete loops would show. This is a technical issue.'
+            }
+        ];
+
+        let currentScenario = 0;
+
+        function showScenario(idx) {
+            currentScenario = idx - 1;
+            const scenario = scenarios[currentScenario];
+
+            // Update active button
+            document.querySelectorAll('.scenario-controls button').forEach((b, i) => {
+                b.classList.toggle('active', i === currentScenario);
+            });
+
+            // Update dashboard
+            renderDashboard(scenario);
+
+            // Show diagnosis
+            showDiagnosis(scenario);
+
+            // Hide summary until diagnosis is complete
+            document.getElementById('summary').classList.remove('show');
+        }
+
+        function renderDashboard(scenario) {
+            const dashboard = document.getElementById('dashboard');
+            dashboard.innerHTML = '';
+
+            metrics.forEach((metric, idx) => {
+                const metricEl = document.createElement('div');
+                metricEl.className = 'metric';
+                if (scenario.alertMetrics.includes(idx)) metricEl.classList.add('alert');
+
+                const values = [...metric.values];
+                if (scenario.changes[idx] !== 0) {
+                    values.push(values[values.length - 1] + scenario.changes[idx]);
+                }
+
+                const currentValue = values[values.length - 1];
+                const change = scenario.changes[idx];
+
+                metricEl.innerHTML = `
+                    <h3>${metric.name}</h3>
+                    <div class="metric-value">${currentValue}${metric.unit}</div>
+                    <div class="metric-label">Healthy range: ${metric.healthy}</div>
+                    <div class="mini-chart">
+                        ${values.map((_, i) => `<div class="chart-bar"></div>`).join('')}
+                    </div>
+                    <div class="metric-status">
+                        <div class="status-dot"></div>
+                        ${scenario.alertMetrics.includes(idx) ? 'ALERT' : 'NORMAL'}
+                    </div>
+                `;
+
+                dashboard.appendChild(metricEl);
+            });
+        }
+
+        function showDiagnosis(scenario) {
+            const diagnosis = document.getElementById('diagnosis');
+            diagnosis.innerHTML = `
+                <h2>${scenario.name}</h2>
+                <div class="diagnosis-question">${scenario.question}</div>
+                <div class="diagnosis-options">
+                    ${scenario.options.map((opt, idx) => `
+                        <div class="option" data-letter="${String.fromCharCode(65 + idx)}" data-correct="${opt.correct}" onclick="selectOption(this, ${opt.correct})">
+                            ${opt.text}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            diagnosis.classList.add('show');
+        }
+
+        function selectOption(el, correct) {
+            const options = el.parentElement.querySelectorAll('.option');
+            options.forEach(o => o.classList.remove('selected'));
+
+            el.classList.add(correct ? 'correct' : 'incorrect');
+
+            if (correct) {
+                el.innerHTML += `<div class="feedback correct">Correct! ${scenarios[currentScenario].protocol}</div>`;
+                setTimeout(() => {
+                    document.getElementById('summary').classList.add('show');
+                }, 500);
+            } else {
+                el.innerHTML += `<div class="feedback incorrect">Not quite. Try another option.</div>`;
+            }
+        }
+
+        // Initialize with first scenario
+        showScenario(1);
+    </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+    window.parent.postMessage({ type: 'resize', height: height + 40 }, '*');
+  }
+  
+  // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>

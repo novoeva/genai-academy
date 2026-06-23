@@ -1,0 +1,54 @@
+{
+  "lesson": "06-banking-agent-scoping-in-practice",
+  "title": "Karel: scoping in practice",
+  "questions": [
+    {
+      "id": 1,
+      "question": "A new agent is being scoped for a retail bank. The team says 'the system prompt will handle everything, we don't need separate tool restrictions.' What is the risk with this approach?",
+      "options": [
+        "System prompts are too expensive to maintain for every possible scenario",
+        "System prompt instructions can drift under adversarial pressure or in edge cases, without tool restrictions, there is no architectural backstop if the model decides to take an unauthorized action",
+        "System prompts are not legally binding, so regulators won't accept them as scope controls",
+        "The system prompt will become too long and the model won't be able to follow all the instructions"
+      ],
+      "correct": 1,
+      "explanation": "System prompts guide model behavior probabilistically. Tool restrictions enforce scope architecturally. Relying on the prompt alone means a single-layer defense, and no single layer is sufficient for a customer-facing financial agent. If the model's prompt behavior drifts in an edge case, there's nothing preventing it from taking an action it shouldn't take. Defense in depth means both layers working together."
+    },
+    {
+      "id": 2,
+      "question": "Karel's output validation blocks a response where he said 'your case looks strong and I'd expect a positive outcome.' The validation system retried twice and got similar responses both times. What should happen next?",
+      "options": [
+        "Show the third response to the customer since Karel has already tried twice",
+        "Lower Karel's temperature to prevent confident statements",
+        "Escalate to a human agent, repeated validation failures on the same turn indicate a scenario the system prompt didn't handle well enough",
+        "Disable output validation for this conversation since it's blocking legitimate responses"
+      ],
+      "correct": 2,
+      "explanation": "Repeated validation failures on the same turn mean the model is consistently generating out-of-scope content in response to whatever the customer said. This is an edge case the system prompt didn't fully handle. Escalating to a human both protects the customer (they get a real answer) and surfaces a gap in the prompt that needs to be fixed. Output validation failures should be treated as signals to improve the system, not as errors to retry around."
+    },
+    {
+      "id": 3,
+      "question": "You're reviewing a new agent before launch. The tool list includes: read_account_history, flag_transaction, freeze_card, create_fraud_report, reverse_transaction, resolve_claim. The system prompt says Karel cannot reverse transactions or resolve claims. Is this adequate scope enforcement?",
+      "options": [
+        "Yes, the system prompt clearly prohibits both actions",
+        "No, the tools exist, which means Karel can call them if the system prompt guardrails fail. The tools should be removed from Karel's toolkit entirely.",
+        "Yes, as long as output validation is in place to catch any mistakes",
+        "No; Karel needs additional examples in his prompt showing that he refused to reverse transactions"
+      ],
+      "correct": 1,
+      "explanation": "Giving Karel tools he's instructed not to use creates a gap between capability and constraint. System prompt instructions can fail, under adversarial pressure, in novel edge cases, or due to prompt drift. If reverse_transaction and resolve_claim exist in Karel's toolkit, they can be called if the prompt fails. Removing them entirely makes the constraint architectural, not instructional. The tools that shouldn't be used shouldn't exist."
+    },
+    {
+      "id": 4,
+      "question": "Which of the following scenarios would NOT be prevented by Karel's four-layer scope enforcement?",
+      "options": [
+        "Karel attempting to call reverse_transaction",
+        "Karel predicting that a customer's fraud claim will succeed",
+        "A customer misunderstanding Karel's correctly-stated 24-hour review timeline as a guarantee",
+        "Karel flagging a transaction without customer confirmation"
+      ],
+      "correct": 2,
+      "explanation": "Technical scope enforcement controls what Karel does and says, but it cannot control how a customer interprets a correctly-stated message. If Karel accurately says 'your report will be reviewed within 24 hours' and the customer hears 'my money will be returned within 24 hours,' that's a UX and communication design problem, not a scope enforcement problem. The other scenarios are caught by tool restrictions (A), output validation (B), and confirmation gates (D)."
+    }
+  ]
+}

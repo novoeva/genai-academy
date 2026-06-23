@@ -1,0 +1,54 @@
+{
+  "lesson": "04-observability-in-production",
+  "title": "Observability in production",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Karel's output validation block rate has risen from 0.8% to 3.2% over the past two weeks, with no changes to the system. What should the team do first?",
+      "options": [
+        "Loosen the output validation rules, since they're blocking too many responses",
+        "Trace a sample of the blocked conversations to identify what Karel is saying that's being blocked, then determine if the cause is a model update, distribution shift in customer behavior, or a previously undetected prompt gap",
+        "Immediately revert to the previous version of the underlying model",
+        "Raise the block rate alert threshold to 4% since this appears to be a new baseline"
+      ],
+      "correct": 1,
+      "explanation": "A rising block rate is a signal, not a conclusion. The right first step is investigation: trace the blocked conversations to understand what Karel is saying. Is it a model update changing his behavior at the margins? Are new customer messages surfacing phrasing that triggers the validation? Is a recent prompt change creating unexpected outputs? Loosening validation rules or adjusting thresholds before understanding the cause hides the problem."
+    },
+    {
+      "id": 2,
+      "question": "Karel's technical metrics (block rate, tool call patterns, completion rate) all look healthy, but customer satisfaction has dropped from 87% to 74% over three weeks. What does this most likely indicate?",
+      "options": [
+        "The customer satisfaction survey is unreliable and should be ignored if technical metrics are healthy",
+        "Technical metrics measure what Karel does, customer satisfaction measures how customers experience it. A divergence means Karel may be technically correct but communicating poorly, handling emotional tone badly, or leaving customers without the clarity they need.",
+        "The drop in satisfaction is probably seasonal and will self-correct",
+        "Output validation is too strict and is blocking helpful responses"
+      ],
+      "correct": 1,
+      "explanation": "Technical metrics and customer experience are related but distinct. Karel can make correct decisions and take correct actions while still communicating in ways that leave customers confused, anxious, or dismissed. A satisfaction drop without corresponding technical metric changes often points to quality dimensions that technical monitoring doesn't capture: tone, emotional attunement, clarity of explanation. The fix is usually in prompt engineering and example refinement."
+    },
+    {
+      "id": 3,
+      "question": "A customer files a complaint that Karel promised her a refund. The team reads the conversation transcript and doesn't see a promise. What should they check next?",
+      "options": [
+        "Tell the customer they're mistaken, the transcript shows no such promise",
+        "Review the full trace of the conversation, the transcript shows what Karel said, but the trace may reveal a sequence of tool calls or context that explains why the customer perceived a promise Karel didn't explicitly make",
+        "Review Karel's system prompt to ensure no promise language exists",
+        "Add a stronger disclaimer to all of Karel's fraud report confirmation messages"
+      ],
+      "correct": 1,
+      "explanation": "The transcript and the trace tell different stories. The transcript shows the words. The trace shows the full sequence of inputs, reasoning, and tool calls, including context that may explain how a customer formed an incorrect expectation. Additionally, sometimes a customer's perception is shaped by something that isn't a literal word in the transcript, the phrasing of a confirmation, the omission of a caveat, the framing of next steps. The trace and a careful re-read of the full conversation together often surface what the transcript alone misses."
+    },
+    {
+      "id": 4,
+      "question": "Why is it important to run the eval suite periodically against a sample of real production conversations, not just against the pre-launch test set?",
+      "options": [
+        "Production conversations are always more complex than test cases",
+        "Real customer inputs include patterns, phrasings, and scenarios that weren't in the eval set. Running evals on production data detects when real-world behavior is causing Karel to fail in ways that weren't anticipated in testing, catching distribution shift and prompt gaps that only surface with real users.",
+        "Pre-launch test cases expire after 30 days and need to be replaced",
+        "Production evaluations are required by financial services regulators"
+      ],
+      "correct": 1,
+      "explanation": "The pre-launch eval set captures scenarios the team anticipated. Real users generate scenarios the team didn't anticipate. Distribution shift, the difference between test behavior and real-world behavior, is one of the most common causes of post-launch quality degradation. Running evals against production conversations closes the feedback loop between what was tested and what's actually happening, allowing the team to discover and close gaps before they become customer-visible failures."
+    }
+  ]
+}

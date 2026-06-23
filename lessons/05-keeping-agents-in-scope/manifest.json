@@ -1,0 +1,77 @@
+{
+  "chapter": 5,
+  "title": "Keeping Agents in Scope",
+  "lessons": [
+    {
+      "id": "01-introduction",
+      "title": "Introduction",
+      "file": "01-introduction.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": false,
+        "simulation": false
+      }
+    },
+    {
+      "id": "02-defining-scope-before-you-build",
+      "title": "Defining scope before you build",
+      "file": "02-defining-scope-before-you-build.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "02-defining-scope-before-you-build.sim.html"
+      }
+    },
+    {
+      "id": "03-system-prompt-guardrails",
+      "title": "System prompt guardrails",
+      "file": "03-system-prompt-guardrails.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "03-system-prompt-guardrails.sim.html"
+      }
+    },
+    {
+      "id": "04-tool-restrictions",
+      "title": "Tool restrictions",
+      "file": "04-tool-restrictions.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "04-tool-restrictions.sim.html"
+      }
+    },
+    {
+      "id": "05-output-validation",
+      "title": "Output validation",
+      "file": "05-output-validation.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "05-output-validation.sim.html"
+      }
+    },
+    {
+      "id": "06-banking-agent-scoping-in-practice",
+      "title": "Karel: scoping in practice",
+      "file": "06-banking-agent-scoping-in-practice.md",
+      "parts": {
+        "content": true,
+        "example": true,
+        "quiz": true,
+        "simulation": true,
+        "simulation_file": "06-banking-agent-scoping-in-practice.sim.html"
+      }
+    }
+  ]
+}

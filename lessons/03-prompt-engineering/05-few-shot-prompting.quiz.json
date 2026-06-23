@@ -1,0 +1,54 @@
+{
+  "lesson": "05-few-shot-prompting",
+  "title": "Few-shot prompting: teaching by example",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the key advantage of few-shot prompting over pure instruction prompting?",
+      "options": [
+        "It makes the model run faster by reducing the number of tokens processed",
+        "It demonstrates desired behavior concretely, which the model can generalize from, especially useful when tone or format is hard to describe in words",
+        "It eliminates the need for a system prompt entirely",
+        "It prevents the model from hallucinating by giving it correct facts to reference"
+      ],
+      "correct": 1,
+      "explanation": "Instructions describe what to do. Examples show it. When the required behavior involves subtle qualities like tone, voice, or how to handle a specific edge case, showing the model is often more reliable than describing the behavior in abstract terms that the model has to interpret."
+    },
+    {
+      "id": 2,
+      "question": "Karel responds inconsistently to frustrated customers, sometimes empathetically, sometimes defensively. You've already added an instruction: 'respond with empathy to frustrated customers.' What should you try next?",
+      "options": [
+        "Remove the empathy instruction and rewrite the entire system prompt",
+        "Add two or three example conversations showing exactly how Karel handles a frustrated customer",
+        "Lower the model's temperature setting to make responses more consistent",
+        "Add more instructions clarifying what 'empathy' means"
+      ],
+      "correct": 1,
+      "explanation": "When an agent behaves inconsistently, particularly around tone or voice, few-shot examples are usually the fastest fix. Adding instructions about what empathy means risks creating another layer of abstraction for the model to interpret. Examples demonstrate the target behavior directly, and the model generalizes from them more reliably."
+    },
+    {
+      "id": 3,
+      "question": "You're adding examples to Karel's system prompt. Which formatting approach will work most reliably?",
+      "options": [
+        "Write the examples as a paragraph of prose describing the interaction",
+        "Use a consistent, clearly labeled format for every example, such as 'Customer: [message] / Karel: [response]'",
+        "Include examples at the end of the system prompt without any labels",
+        "Format each example differently to show the model that variability is acceptable"
+      ],
+      "correct": 1,
+      "explanation": "Consistency in formatting helps the model recognize examples as a coherent pattern. If examples are labeled and structured the same way, the model learns to treat them as a set of demonstrations. Inconsistent formatting or unlabeled examples embedded in prose are harder for the model to distinguish from instructions."
+    },
+    {
+      "id": 4,
+      "question": "A developer is writing Karel's system prompt and adds 12 examples to cover every situation. What's the most likely issue with this approach?",
+      "options": [
+        "The model will run out of memory and stop responding",
+        "Too many examples will confuse the model, making it unable to generalize",
+        "12 examples may be a sign that the underlying instructions are unclear, more examples can't substitute for missing or vague core instructions",
+        "The model will only follow the last example it sees and ignore the others"
+      ],
+      "correct": 2,
+      "explanation": "A large number of examples often signals that the root problem is unclear instructions. Examples work best when they handle the gap between what instructions describe and what the model needs to demonstrate, two to four well-chosen examples covering distinct scenarios. If you need twelve, step back and ask what the instructions are missing."
+    }
+  ]
+}

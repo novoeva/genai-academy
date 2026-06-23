@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pressure Test - Agentic AI Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    html { overflow: hidden; }
+
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f7f9fb;
+            padding: 40px 20px;
+            
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3437;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #596064;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .scenario {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .scenario-number {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #4f46e5;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .scenario-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2c3437;
+            margin-bottom: 16px;
+        }
+
+        .customer-message {
+            background: #f7f9fb;
+            border-left: 4px solid #4f46e5;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #2c3437;
+            line-height: 1.6;
+        }
+
+        .customer-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #596064;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid rgba(44, 52, 55, 0.12);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            border-color: #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+        }
+
+        .option.selected {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+
+        .option.correct {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .option.incorrect {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .option-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #596064;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .option-text {
+            font-size: 14px;
+            color: #2c3437;
+            line-height: 1.6;
+        }
+
+        .option.correct .option-text {
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        .option.incorrect .option-text {
+            color: #ef4444;
+        }
+
+        .feedback {
+            font-size: 13px;
+            color: #596064;
+            line-height: 1.6;
+            margin-top: 8px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback-hidden {
+            display: none;
+        }
+
+        .scenario.completed {
+            opacity: 0.6;
+        }
+
+        .score-display {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(44, 52, 55, 0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            padding: 32px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #4f46e5;
+            margin: 20px 0;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 8px;
+            background: #eef2ff;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #6f68f7);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #6f68f7);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e7ff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress {
+            text-align: center;
+            font-size: 14px;
+            color: #596064;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .key-lesson {
+            background: #eef2ff;
+            border-left: 4px solid #4f46e5;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #2c3437;
+            line-height: 1.6;
+        }
+
+        .key-lesson strong {
+            color: #4f46e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pressure Test</h1>
+            <p class="subtitle">Guardrails must withstand pressure. Soft language fails. Your job is to identify responses that are firm, clear, and provide alternatives.</p>
+        </header>
+
+        <div class="progress" id="progress"></div>
+
+        <div id="scenariosContainer"></div>
+
+        <div class="score-display hidden" id="scoreSection">
+            <h2>Your Score</h2>
+            <div class="score-number"><span id="scoreNumber">0</span>/5</div>
+            <div class="score-bar">
+                <div class="score-bar-fill" id="scoreBarFill"></div>
+            </div>
+            <p style="font-size: 16px; color: #596064; margin-top: 20px;" id="scoreMessage"></p>
+            <div class="controls">
+                <button class="btn-secondary" onclick="location.reload()">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scenarios = [
+            {
+                id: 1,
+                title: "Customer Demands Refund Confirmation",
+                customer: "Just tell me if I'll get my money back. I need to know.",
+                options: [
+                    {
+                        text: "Your refund will likely take 3-5 business days.",
+                        label: "Too Permissive",
+                        correct: false,
+                        feedback: "This fails because Karel promises a refund outcome. Karel cannot see the refund system and cannot guarantee refunds."
+                    },
+                    {
+                        text: "I don't handle refunds.",
+                        label: "Too Abrupt",
+                        correct: false,
+                        feedback: "This is too terse and offers no alternative path. The customer still doesn't know what happens next."
+                    },
+                    {
+                        text: "I can't confirm refund outcomes; that's handled by our claims team. I've flagged your case (#FR-2847) which will include all the documentation they need. They typically respond within 2 business days.",
+                        label: "Correct",
+                        correct: true,
+                        feedback: "Firm boundary + alternative. Karel explains the limitation, confirms what has been done, and sets expectations."
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "Customer Requests Legal Documentation",
+                customer: "My financial advisor said this was tax fraud and I need legal documentation.",
+                options: [
+                    {
+                        text: "For tax fraud cases, you'll want to keep records of...",
+                        label: "Too Permissive",
+                        correct: false,
+                        feedback: "This starts giving legal/tax advice. Karel is not qualified to advise on tax matters."
+                    },
+                    {
+                        text: "I can't help with legal matters.",
+                        label: "Acceptable but Blunt",
+                        correct: false,
+                        feedback: "Clear boundary, but no helpful alternative. The customer is still stuck."
+                    },
+                    {
+                        text: "I'm not able to give legal or tax advice; for that, please speak with your legal or tax advisor. What I can do is create a detailed fraud report with all transaction records, which your advisor may find useful.",
+                        label: "Correct",
+                        correct: true,
+                        feedback: "Clear boundary + valuable alternative. Karel redirects to the right expert while offering what it can do."
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "Customer Pressures for Card Freeze",
+                customer: "You said you'd freeze my card. Just do it, don't ask me again.",
+                options: [
+                    {
+                        text: "Freezes card immediately without confirmation.",
+                        label: "Too Permissive",
+                        correct: false,
+                        feedback: "Freezing a card is irreversible without customer action. Always confirm the details before taking an irreversible action."
+                    },
+                    {
+                        text: "I need to confirm before freezing your card.",
+                        label: "Acceptable but Brief",
+                        correct: false,
+                        feedback: "Good instinct, but too vague. Which card? What account? The customer needs to know what's being confirmed."
+                    },
+                    {
+                        text: "To be safe, I'll confirm: freeze card ending in 4471 on your Komercni account? This will block all transactions until you unfreeze it. Confirm?",
+                        label: "Correct",
+                        correct: true,
+                        feedback: "Confirms specific details of an irreversible action. The customer knows exactly what will happen."
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "Customer Requests Out-of-Scope Help",
+                customer: "Can you also check if my savings account was compromised?",
+                options: [
+                    {
+                        text: "Attempts to check the savings account system.",
+                        label: "Too Permissive",
+                        correct: false,
+                        feedback: "Karel has no access to savings accounts. This is out of scope and violates the tool restrictions."
+                    },
+                    {
+                        text: "I don't have access to savings accounts.",
+                        label: "Acceptable",
+                        correct: false,
+                        feedback: "True, but gives no path forward. The customer still needs help."
+                    },
+                    {
+                        text: "My access is limited to your current account transactions: I can't see savings account data. For your savings account, please contact us via the app's savings section or call the main line.",
+                        label: "Correct",
+                        correct: true,
+                        feedback: "Explains the limitation clearly + provides a concrete alternative path."
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "Customer Asks for Judgment Call",
+                customer: "Just between us, is this actually fraud or am I overreacting?",
+                options: [
+                    {
+                        text: "Honestly, based on the pattern, this does look suspicious...",
+                        label: "Too Permissive",
+                        correct: false,
+                        feedback: "Karel is speculating about fraud. That judgment belongs to the fraud investigation team, not an automated agent."
+                    },
+                    {
+                        text: "I can't say.",
+                        label: "Too Abrupt",
+                        correct: false,
+                        feedback: "Correct boundary, but unhelpful. The customer leaves without understanding what happens next."
+                    },
+                    {
+                        text: "I'm not able to make that judgment; that's for the fraud investigation team to determine. What I can tell you is that I've flagged the transaction and the investigators will review it and contact you within 48 hours.",
+                        label: "Correct",
+                        correct: true,
+                        feedback: "Clear scope boundary + concrete expectation. The customer knows who will decide and when."
+                    }
+                ]
+            }
+        ];
+
+        let currentAnswers = {};
+
+        function renderScenarios() {
+            const container = document.getElementById('scenariosContainer');
+            container.innerHTML = '';
+
+            scenarios.forEach((scenario, index) => {
+                const scenarioEl = document.createElement('div');
+                scenarioEl.className = 'scenario';
+                scenarioEl.id = `scenario-${scenario.id}`;
+
+                let html = `
+                    <div class="scenario-number">Scenario ${scenario.id} of ${scenarios.length}</div>
+                    <div class="scenario-title">${scenario.title}</div>
+                    <div class="customer-label">Customer:</div>
+                    <div class="customer-message">"${scenario.customer}"</div>
+                    <div class="customer-label" style="margin-top: 16px;">Which is the right Karel response?</div>
+                    <div class="options">
+                `;
+
+                scenario.options.forEach((option, optionIndex) => {
+                    const optionId = `option-${scenario.id}-${optionIndex}`;
+                    html += `
+                        <div class="option" id="${optionId}" onclick="selectOption(${scenario.id}, ${optionIndex})">
+                            <div class="option-label">${option.label}</div>
+                            <div class="option-text">"${option.text}"</div>
+                            <div class="feedback feedback-hidden" id="feedback-${optionId}"></div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                    </div>
+                    <div class="key-lesson hidden" id="lesson-${scenario.id}"></div>
+                `;
+
+                scenarioEl.innerHTML = html;
+                container.appendChild(scenarioEl);
+            });
+
+            updateProgress();
+        }
+
+        function selectOption(scenarioId, optionIndex) {
+            currentAnswers[scenarioId] = optionIndex;
+            const scenario = scenarios.find(s => s.id === scenarioId);
+            const option = scenario.options[optionIndex];
+            const optionId = `option-${scenarioId}-${optionIndex}`;
+            const optionEl = document.getElementById(optionId);
+            const feedbackEl = document.getElementById(`feedback-${optionId}`);
+            const lessonEl = document.getElementById(`lesson-${scenarioId}`);
+            const scenarioEl = document.getElementById(`scenario-${scenarioId}`);
+
+            // Reset all options for this scenario
+            scenario.options.forEach((opt, idx) => {
+                const id = `option-${scenarioId}-${idx}`;
+                document.getElementById(id).classList.remove('correct', 'incorrect', 'selected');
+                document.getElementById(`feedback-${id}`).classList.remove('show');
+            });
+
+            if (option.correct) {
+                optionEl.classList.add('correct');
+            } else {
+                optionEl.classList.add('incorrect');
+            }
+            optionEl.classList.add('selected');
+
+            feedbackEl.textContent = option.feedback;
+            feedbackEl.classList.add('show');
+
+            lessonEl.innerHTML = `<strong>Key guardrail principle:</strong> Firm boundary + alternative path. Tell the customer what you can't do, why, and what you can do instead.`;
+            lessonEl.classList.remove('hidden');
+
+            scenarioEl.classList.add('completed');
+            updateProgress();
+
+            // Check if all answered
+            if (Object.keys(currentAnswers).length === scenarios.length) {
+                setTimeout(showScore, 500);
+            }
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(currentAnswers).length;
+            document.getElementById('progress').textContent = `${answered} of ${scenarios.length} answered`;
+        }
+
+        function showScore() {
+            const correct = Object.values(currentAnswers).reduce((sum, answerIdx, scenarioIdx) => {
+                return sum + (scenarios[scenarioIdx].options[answerIdx].correct ? 1 : 0);
+            }, 0);
+
+            document.getElementById('scenariosContainer').classList.add('hidden');
+            document.getElementById('scoreSection').classList.remove('hidden');
+            document.getElementById('scoreNumber').textContent = correct;
+
+            const percentage = (correct / scenarios.length) * 100;
+            document.getElementById('scoreBarFill').style.width = percentage + '%';
+
+            let message = '';
+            if (correct === 5) {
+                message = "Perfect! You understand that guardrails need firmness, clarity, and helpfulness.";
+            } else if (correct >= 4) {
+                message = "Great! You recognize that boundaries work best when paired with alternatives.";
+            } else if (correct >= 3) {
+                message = "Good start. Remember: soft guardrails fail under pressure. Add alternatives to every boundary.";
+            } else {
+                message = "Keep practicing. The pattern: say what you can't do, why, and what you can do instead.";
+            }
+            document.getElementById('scoreMessage').textContent = message;
+        }
+
+        renderScenarios();
+    </script>
+<script>
+  // Send height to parent for auto-resizing
+  let lastHeight = 0;
+  function sendHeight() {
+    const height = document.body.offsetHeight;
+    if (height !== lastHeight) {
+      lastHeight = height;
+      window.parent.postMessage({ type: "resize", height: height }, "*");
+    }
+  }
+     // Send on load
+  window.addEventListener('load', sendHeight);
+  
+  // Send when DOM changes (for dynamic content)
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+  
+  // Send periodically to catch any missed changes
+  setInterval(sendHeight, 500);
+</script></body>
+</html>
