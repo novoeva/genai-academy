@@ -6,42 +6,21 @@
   <title>Prompt Anatomy</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     html { overflow: hidden; }
-
 
     body {
       font-family: "Plus Jakarta Sans", sans-serif;
       background: #f7f9fb;
       color: #2c3437;
       padding: 40px 20px;
-      
     }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
+    .container { max-width: 900px; margin: 0 auto; }
 
-    header {
-      margin-bottom: 40px;
-    }
-
-    h1 {
-      font-size: 32px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      font-size: 16px;
-      color: #596064;
-      font-weight: 400;
-    }
+    header { margin-bottom: 28px; }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+    .subtitle { font-size: 15px; color: #596064; }
 
     .card {
       background: white;
@@ -52,235 +31,211 @@
       margin-bottom: 24px;
     }
 
+    /* ── Prompt display ── */
     .prompt-display {
       background: #f0f4f8;
       border-radius: 12px;
-      padding: 24px;
+      padding: 20px;
       margin-bottom: 32px;
       font-family: "Courier New", monospace;
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.6;
       color: #2c3437;
     }
 
     .highlight-section {
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 8px;
-      margin: 8px 0;
+      margin: 6px 0;
       font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
     }
 
-    .section-instruction {
-      background: rgba(79, 70, 229, 0.1);
-      border-left: 4px solid #4f46e5;
+    .section-instruction { background: rgba(79, 70, 229, 0.12); border-left: 4px solid #4f46e5; }
+    .section-context     { background: rgba(59, 130, 246, 0.12); border-left: 4px solid #3b82f6; }
+    .section-example     { background: rgba(34, 197, 94, 0.12);  border-left: 4px solid #22c55e; }
+    .section-format      { background: rgba(251, 146, 60, 0.12); border-left: 4px solid #fb923c; }
+
+    /* ── Step labels ── */
+    .step-label {
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #4f46e5;
+      margin-bottom: 10px;
     }
 
-    .section-context {
-      background: rgba(59, 130, 246, 0.1);
-      border-left: 4px solid #3b82f6;
-    }
-
-    .section-example {
-      background: rgba(34, 197, 94, 0.1);
-      border-left: 4px solid #22c55e;
-    }
-
-    .section-format {
-      background: rgba(251, 146, 60, 0.1);
-      border-left: 4px solid #fb923c;
-    }
-
-    .labels-section {
-      margin-top: 32px;
+    /* ── Draggable labels ── */
+    .labels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
       margin-bottom: 32px;
     }
 
-    .labels-title {
-      font-weight: 600;
-      font-size: 16px;
-      margin-bottom: 16px;
-      color: #2c3437;
-    }
-
-    .labels-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
     .label {
-      padding: 12px 16px;
+      padding: 14px 16px;
       border-radius: 12px;
       border: 2px solid #e5e7eb;
       background: white;
       cursor: grab;
       user-select: none;
-      transition: all 0.2s ease;
-      font-weight: 500;
+      transition: all 0.15s ease;
+      font-weight: 600;
       font-size: 14px;
+      text-align: center;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .label::before {
+      content: "⠿";
+      font-size: 16px;
+      color: #9ca3af;
+      flex-shrink: 0;
+    }
+
+    .label:hover { border-color: #4f46e5; background: #eef2ff; color: #4f46e5; }
+    .label:hover::before { color: #4f46e5; }
+
+    .label.dragging { opacity: 0.4; cursor: grabbing; }
+
+    .label.used {
+      opacity: 0.3;
+      cursor: default;
+      border-style: dashed;
+    }
+
+    /* ── Match rows ── */
+    .matches { display: grid; gap: 12px; }
+
+    .match-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 16px;
+      background: #f9fafb;
+      border-radius: 14px;
+      padding: 16px 20px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .match-info .match-label { font-weight: 700; font-size: 14px; }
+    .match-info .match-desc  { font-size: 12px; color: #596064; margin-top: 3px; }
+
+    .drop-zone {
+      min-height: 52px;
+      border-radius: 10px;
+      border: 2px dashed #d1d5db;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      font-size: 13px;
+      color: #9ca3af;
+      font-weight: 500;
+      padding: 10px 14px;
       text-align: center;
     }
 
-    .label:hover {
+    .drop-zone.drag-over {
       border-color: #4f46e5;
       background: #eef2ff;
-    }
-
-    .label.dragging {
-      opacity: 0.5;
-      cursor: grabbing;
-    }
-
-    .matches {
-      display: grid;
-      gap: 16px;
-      margin-top: 24px;
-    }
-
-    .match-item {
-      background: #f9fafb;
-      border-radius: 12px;
-      padding: 16px;
-      border: 1px solid #e5e7eb;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .match-label {
-      font-weight: 600;
-      font-size: 14px;
-      min-width: 120px;
-    }
-
-    .match-result {
-      text-align: right;
-    }
-
-    .match-text {
-      font-size: 13px;
-      color: #596064;
-      margin-top: 4px;
-    }
-
-    .matched {
-      color: #10b981;
-      font-weight: 600;
-    }
-
-    .not-matched {
-      color: #ef4444;
-      font-weight: 600;
-    }
-
-    .explanation-panel {
-      background: #eef2ff;
-      border-radius: 12px;
-      padding: 24px;
-      margin-top: 32px;
-      border-left: 4px solid #4f46e5;
-      display: none;
-    }
-
-    .explanation-panel.visible {
-      display: block;
-    }
-
-    .explanation-panel h3 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: #2c3437;
-    }
-
-    .explanation-item {
-      margin-bottom: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(79, 70, 229, 0.2);
-    }
-
-    .explanation-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .explanation-label {
-      font-weight: 600;
-      font-size: 14px;
       color: #4f46e5;
-      margin-bottom: 4px;
+      border-style: solid;
     }
 
-    .explanation-text {
-      font-size: 14px;
-      color: #596064;
-      line-height: 1.5;
+    .drop-zone.has-label {
+      border-style: solid;
+      border-color: #c7d2fe;
+      background: #f5f3ff;
+      color: #374151;
+      font-weight: 600;
+      cursor: pointer;
     }
+
+    .drop-zone.has-label:hover {
+      border-color: #ef4444;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .drop-zone.correct { border-color: #10b981; background: #f0fdf4; color: #065f46; }
+    .drop-zone.wrong   { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+
+    /* ── Buttons ── */
+    .buttons { margin-top: 28px; display: flex; gap: 12px; }
 
     .button {
       background: linear-gradient(135deg, #4f46e5, #6f68f7);
       color: white;
       border: none;
-      padding: 12px 24px;
+      padding: 11px 22px;
       border-radius: 12px;
       font-family: "Plus Jakarta Sans", sans-serif;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 14px;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      margin-right: 12px;
-      margin-top: 24px;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
 
-    .button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
-    }
-
-    .button:active {
-      transform: translateY(0);
-    }
+    .button:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(79, 70, 229, 0.3); }
+    .button:active { transform: translateY(0); }
 
     .button.secondary {
       background: white;
       color: #4f46e5;
       border: 2px solid #4f46e5;
+      box-shadow: none;
     }
 
-    .button.secondary:hover {
-      background: #eef2ff;
-    }
+    .button.secondary:hover { background: #eef2ff; box-shadow: none; }
 
-    .progress {
-      margin-top: 24px;
-      padding-top: 24px;
-      border-top: 1px solid #e5e7eb;
-    }
-
-    .progress-text {
+    /* ── Result banner ── */
+    .result-banner {
+      display: none;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-weight: 600;
       font-size: 14px;
-      color: #596064;
-      font-weight: 500;
+      margin-top: 16px;
     }
 
-    .progress-bar {
-      height: 8px;
-      background: #e5e7eb;
-      border-radius: 4px;
-      margin-top: 12px;
-      overflow: hidden;
+    .result-banner.success { display: block; background: #f0fdf4; border: 1px solid #a7f3d0; color: #065f46; }
+    .result-banner.error   { display: block; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    /* ── Explanation panel ── */
+    .explanation-panel {
+      background: #eef2ff;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 24px;
+      border-left: 4px solid #4f46e5;
+      display: none;
     }
 
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #4f46e5, #6f68f7);
-      transition: width 0.3s ease;
+    .explanation-panel.visible { display: block; }
+    .explanation-panel h3 { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+
+    .explanation-item {
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(79, 70, 229, 0.2);
     }
+
+    .explanation-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .explanation-label { font-weight: 700; font-size: 13px; color: #4f46e5; margin-bottom: 4px; }
+    .explanation-text  { font-size: 13px; color: #596064; line-height: 1.55; }
+
+    /* ── Progress ── */
+    .progress { margin-top: 24px; padding-top: 20px; border-top: 1px solid #e5e7eb; }
+    .progress-text { font-size: 14px; color: #596064; font-weight: 500; margin-bottom: 10px; }
+    .progress-bar  { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #4f46e5, #6f68f7); transition: width 0.3s; }
   </style>
 </head>
 <body>
@@ -291,237 +246,268 @@
     </header>
 
     <div class="card">
-      <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 20px;">Karel's System Prompt</h2>
+      <h2 style="font-size: 17px; font-weight: 700; margin-bottom: 18px;">Karel's System Prompt</h2>
 
       <div class="prompt-display">
-        <div class="highlight-section section-instruction" onclick="highlightSection(0)">
+        <div class="highlight-section section-instruction">
           You are Karel, a fraud reporting assistant for Komercni Banka.
         </div>
         <br>
-        <div class="highlight-section section-context" onclick="highlightSection(1)">
+        <div class="highlight-section section-context">
           The customer has been verified and their account number is KB-447821. Their last 3 transactions are available in the tool response above.
         </div>
         <br>
-        <div class="highlight-section section-example" onclick="highlightSection(2)">
+        <div class="highlight-section section-example">
           Example: If a customer says "there's a weird charge," respond with: "I can see [transaction]. Would you like me to flag this for review?"
         </div>
         <br>
-        <div class="highlight-section section-format" onclick="highlightSection(3)">
+        <div class="highlight-section section-format">
           Always respond in 2-3 sentences. End with a clear next step the customer can take.
         </div>
       </div>
 
-      <div class="labels-section">
-        <div class="labels-title">Match these labels to the sections above:</div>
-        <div class="labels-grid">
-          <div class="label" draggable="true" data-label="What Karel should do">What Karel should do</div>
-          <div class="label" draggable="true" data-label="Background information">Background information</div>
-          <div class="label" draggable="true" data-label="How to respond">How to respond</div>
-          <div class="label" draggable="true" data-label="What the output looks like">What the output looks like</div>
-        </div>
+      <div class="step-label">Step 1 — Drag each label to its matching section below</div>
+      <div class="labels-grid">
+        <div class="label" draggable="true" data-label="What Karel should do">What Karel should do</div>
+        <div class="label" draggable="true" data-label="Background information">Background information</div>
+        <div class="label" draggable="true" data-label="How to respond">How to respond</div>
+        <div class="label" draggable="true" data-label="What the output looks like">What the output looks like</div>
       </div>
 
+      <div class="step-label">Step 2 — Drop each label into the matching slot</div>
       <div class="matches">
-        <div class="match-item">
-          <div>
-            <div class="match-label" style="color: #4f46e5;">Instruction Section</div>
-            <div class="match-text">Define who Karel is and what he does</div>
+        <div class="match-row">
+          <div class="match-info">
+            <div class="match-label" style="color:#4f46e5;">Instruction Section</div>
+            <div class="match-desc">Define who Karel is and what he does</div>
           </div>
-          <div class="match-result" id="match-0"></div>
+          <div class="drop-zone" id="slot-0" data-slot="0">Drop here</div>
         </div>
 
-        <div class="match-item">
-          <div>
-            <div class="match-label" style="color: #3b82f6;">Context Section</div>
-            <div class="match-text">Provide specific information for this conversation</div>
+        <div class="match-row">
+          <div class="match-info">
+            <div class="match-label" style="color:#3b82f6;">Context Section</div>
+            <div class="match-desc">Provide specific information for this conversation</div>
           </div>
-          <div class="match-result" id="match-1"></div>
+          <div class="drop-zone" id="slot-1" data-slot="1">Drop here</div>
         </div>
 
-        <div class="match-item">
-          <div>
-            <div class="match-label" style="color: #22c55e;">Example Section</div>
-            <div class="match-text">Show how Karel should respond to similar inputs</div>
+        <div class="match-row">
+          <div class="match-info">
+            <div class="match-label" style="color:#22c55e;">Example Section</div>
+            <div class="match-desc">Show how Karel should respond to similar inputs</div>
           </div>
-          <div class="match-result" id="match-2"></div>
+          <div class="drop-zone" id="slot-2" data-slot="2">Drop here</div>
         </div>
 
-        <div class="match-item">
-          <div>
-            <div class="match-label" style="color: #fb923c;">Output Format Section</div>
-            <div class="match-text">Specify constraints on response style and length</div>
+        <div class="match-row">
+          <div class="match-info">
+            <div class="match-label" style="color:#fb923c;">Output Format Section</div>
+            <div class="match-desc">Specify constraints on response style and length</div>
           </div>
-          <div class="match-result" id="match-3"></div>
+          <div class="drop-zone" id="slot-3" data-slot="3">Drop here</div>
         </div>
       </div>
 
-      <button class="button" onclick="checkMatches()">Check Matches</button>
-      <button class="button secondary" onclick="resetMatches()">Reset</button>
+      <div class="buttons">
+        <button class="button" onclick="checkMatches()">Check Matches</button>
+        <button class="button secondary" onclick="resetAll()">Reset</button>
+      </div>
+
+      <div class="result-banner" id="resultBanner"></div>
 
       <div class="explanation-panel" id="explanationPanel">
         <h3>Why Each Part Matters</h3>
-
         <div class="explanation-item">
-          <div class="explanation-label">Instruction Section (Who is Karel?)</div>
-          <div class="explanation-text">
-            This is your agent's core identity. It answers "What role does this AI play?" Without this, Karel doesn't know if he's a customer service helper, a fraud investigator, or a general assistant. The instruction sets the entire tone.
-          </div>
+          <div class="explanation-label">Instruction Section — Who is Karel?</div>
+          <div class="explanation-text">This is your agent's core identity. It answers "What role does this AI play?" Without this, Karel doesn't know if he's a customer service helper, a fraud investigator, or a general assistant. The instruction sets the entire tone.</div>
         </div>
-
         <div class="explanation-item">
-          <div class="explanation-label">Context Section (What's the current situation?)</div>
-          <div class="explanation-text">
-            Real conversations have details. This section feeds Karel the specific facts: which customer, which account, which transactions. Context prevents Karel from operating blind.
-          </div>
+          <div class="explanation-label">Context Section — What's the current situation?</div>
+          <div class="explanation-text">Real conversations have details. This section feeds Karel the specific facts: which customer, which account, which transactions. Context prevents Karel from operating blind.</div>
         </div>
-
         <div class="explanation-item">
-          <div class="explanation-label">Example Section (How should Karel respond?)</div>
-          <div class="explanation-text">
-            Examples teach by showing, not telling. Instead of saying "be helpful," you show what helpful looks like. This is one of the most powerful parts of prompt engineering.
-          </div>
+          <div class="explanation-label">Example Section — How should Karel respond?</div>
+          <div class="explanation-text">Examples teach by showing, not telling. Instead of saying "be helpful," you show what helpful looks like. This is one of the most powerful parts of prompt engineering.</div>
         </div>
-
         <div class="explanation-item">
-          <div class="explanation-label">Output Format Section (What constraints apply?)</div>
-          <div class="explanation-text">
-            Length limits, tone, structure, these constraints make Karel's responses predictable and consistent. "2-3 sentences" is measurable. "Be concise" is not.
-          </div>
+          <div class="explanation-label">Output Format Section — What constraints apply?</div>
+          <div class="explanation-text">Length limits, tone, structure — these constraints make Karel's responses predictable and consistent. "2-3 sentences" is measurable. "Be concise" is not.</div>
         </div>
       </div>
 
       <div class="progress">
         <div class="progress-text">Progress: <span id="progressCount">0</span>/4 matched</div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
-        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
       </div>
     </div>
   </div>
 
   <script>
-    const correctMatches = {
-      "What Karel should do": "match-0",
-      "Background information": "match-1",
-      "How to respond": "match-2",
-      "What the output looks like": "match-3"
-    };
+    const CORRECT = [
+      "What Karel should do",
+      "Background information",
+      "How to respond",
+      "What the output looks like"
+    ];
 
-    const userMatches = {};
+    const slotContents = [null, null, null, null];
     let draggedLabel = null;
 
+    // ── Drag sources ──
     document.querySelectorAll('.label').forEach(label => {
-      label.addEventListener('dragstart', (e) => {
-        draggedLabel = e.target;
-        e.target.classList.add('dragging');
+      label.addEventListener('dragstart', e => {
+        draggedLabel = label;
+        label.classList.add('dragging');
         e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', label.dataset.label);
       });
-
       label.addEventListener('dragend', () => {
-        draggedLabel.classList.remove('dragging');
+        if (draggedLabel) draggedLabel.classList.remove('dragging');
       });
     });
 
-    document.querySelectorAll('.match-result').forEach((result, index) => {
-      result.addEventListener('dragover', (e) => {
+    // ── Drop zones ──
+    document.querySelectorAll('.drop-zone').forEach(zone => {
+      zone.addEventListener('dragover', e => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
-        result.style.background = '#eef2ff';
+        if (!zone.classList.contains('correct')) zone.classList.add('drag-over');
       });
 
-      result.addEventListener('dragleave', () => {
-        result.style.background = '';
+      zone.addEventListener('dragleave', e => {
+        if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
       });
 
-      result.addEventListener('drop', (e) => {
+      zone.addEventListener('drop', e => {
         e.preventDefault();
-        result.style.background = '';
+        zone.classList.remove('drag-over');
+        if (!draggedLabel) return;
 
-        if (draggedLabel) {
-          const labelText = draggedLabel.textContent.trim();
-          const matchId = result.id;
+        const slotIndex = parseInt(zone.dataset.slot);
+        const labelText = draggedLabel.dataset.label;
 
-          userMatches[labelText] = matchId;
+        // If slot already has something, return it to the pool
+        if (slotContents[slotIndex] !== null) returnLabel(slotContents[slotIndex]);
 
-          result.innerHTML = `<div class="match-text">${labelText}</div>`;
-          result.style.background = '#f0fdf4';
-          result.style.borderColor = '#d1fae5';
-
-          updateProgress();
+        // If this label was already placed elsewhere, clear that slot
+        const prevSlot = slotContents.indexOf(labelText);
+        if (prevSlot !== -1 && prevSlot !== slotIndex) {
+          slotContents[prevSlot] = null;
+          const prevZone = document.getElementById('slot-' + prevSlot);
+          prevZone.textContent = 'Drop here';
+          prevZone.className = 'drop-zone';
+          prevZone.onclick = null;
         }
+
+        // Place
+        slotContents[slotIndex] = labelText;
+        zone.textContent = labelText;
+        zone.className = 'drop-zone has-label';
+        zone.onclick = () => removeFromSlot(slotIndex);
+
+        draggedLabel.classList.add('used');
+        draggedLabel.setAttribute('draggable', 'false');
+
+        clearResult();
+        updateProgress();
+        draggedLabel = null;
       });
     });
 
-    function updateProgress() {
-      const matched = Object.keys(userMatches).length;
-      document.getElementById('progressCount').textContent = matched;
-      document.getElementById('progressFill').style.width = (matched / 4) * 100 + '%';
+    function returnLabel(labelText) {
+      const el = document.querySelector(`.label[data-label="${CSS.escape(labelText)}"]`);
+      if (el) { el.classList.remove('used'); el.setAttribute('draggable', 'true'); }
     }
 
-    function checkMatches() {
-      let allCorrect = true;
-
-      for (const [label, matchId] of Object.entries(userMatches)) {
-        if (correctMatches[label] !== matchId) {
-          allCorrect = false;
-        }
-      }
-
-      if (Object.keys(userMatches).length !== 4) {
-        alert('Complete all 4 matches first!');
-        return;
-      }
-
-      if (allCorrect) {
-        document.getElementById('explanationPanel').classList.add('visible');
-        alert('Perfect! You matched all sections correctly. Scroll down to see why each part matters.');
-      } else {
-        alert('Some matches aren\'t quite right. Check them and try again!');
-      }
-    }
-
-    function resetMatches() {
-      document.querySelectorAll('.match-result').forEach(result => {
-        result.innerHTML = '';
-        result.style.background = '';
-        result.style.borderColor = '';
-      });
-
-      Object.keys(userMatches).forEach(key => delete userMatches[key]);
+    function removeFromSlot(slotIndex) {
+      const labelText = slotContents[slotIndex];
+      if (!labelText) return;
+      slotContents[slotIndex] = null;
+      returnLabel(labelText);
+      const zone = document.getElementById('slot-' + slotIndex);
+      zone.textContent = 'Drop here';
+      zone.className = 'drop-zone';
+      zone.onclick = null;
+      clearResult();
       updateProgress();
+    }
+
+    function updateProgress() {
+      const count = slotContents.filter(v => v !== null).length;
+      document.getElementById('progressCount').textContent = count;
+      document.getElementById('progressFill').style.width = (count / 4 * 100) + '%';
+    }
+
+    function clearResult() {
+      const b = document.getElementById('resultBanner');
+      b.className = 'result-banner';
+      b.textContent = '';
       document.getElementById('explanationPanel').classList.remove('visible');
     }
 
-    function highlightSection(index) {
-      const sections = document.querySelectorAll('.highlight-section');
-      sections.forEach(s => s.style.background = '');
+    function checkMatches() {
+      if (slotContents.some(v => v === null)) {
+        showBanner('error', 'Fill all 4 slots before checking!');
+        return;
+      }
 
-      const colors = ['rgba(79, 70, 229, 0.2)', 'rgba(59, 130, 246, 0.2)', 'rgba(34, 197, 94, 0.2)', 'rgba(251, 146, 60, 0.2)'];
-      sections[index].style.background = colors[index];
+      let allCorrect = true;
+      slotContents.forEach((text, i) => {
+        const zone = document.getElementById('slot-' + i);
+        zone.classList.remove('correct', 'wrong');
+        if (text === CORRECT[i]) {
+          zone.classList.add('correct');
+        } else {
+          zone.classList.add('wrong');
+          allCorrect = false;
+        }
+      });
 
-      setTimeout(() => {
-        sections[index].style.background = '';
-      }, 800);
+      if (allCorrect) {
+        showBanner('success', '✓ Perfect! All sections matched correctly. See below for why each part matters.');
+        document.getElementById('explanationPanel').classList.add('visible');
+      } else {
+        showBanner('error', 'Some slots are wrong (shown in red). Click a red slot to remove it and try again.');
+      }
+    }
+
+    function showBanner(type, text) {
+      const b = document.getElementById('resultBanner');
+      b.className = 'result-banner ' + type;
+      b.textContent = text;
+    }
+
+    function resetAll() {
+      slotContents.fill(null);
+      document.querySelectorAll('.drop-zone').forEach(z => {
+        z.textContent = 'Drop here';
+        z.className = 'drop-zone';
+        z.onclick = null;
+      });
+      document.querySelectorAll('.label').forEach(l => {
+        l.className = 'label';
+        l.setAttribute('draggable', 'true');
+      });
+      clearResult();
+      updateProgress();
+      draggedLabel = null;
     }
   </script>
-<script>
-  // Send height to parent for auto-resizing
-  let lastHeight = 0;
-  function sendHeight() {
-    const height = document.body.offsetHeight;
-    if (height !== lastHeight) {
-      lastHeight = height;
-      window.parent.postMessage({ type: "resize", height: height }, "*");
+
+  <script>
+    let lastHeight = 0;
+    function sendHeight() {
+      const height = document.body.offsetHeight;
+      if (height !== lastHeight) {
+        lastHeight = height;
+        window.parent.postMessage({ type: "resize", height: height }, "*");
+      }
     }
-  }
-     // Send on load
-  window.addEventListener('load', sendHeight);
-  
-  // Send when DOM changes (for dynamic content)
-  const observer = new MutationObserver(sendHeight);
-  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-  
-  // Send periodically to catch any missed changes
-  setInterval(sendHeight, 500);
-</script></body>
+    window.addEventListener('load', sendHeight);
+    const observer = new MutationObserver(sendHeight);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    setInterval(sendHeight, 500);
+  </script>
+</body>
 </html>
