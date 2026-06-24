@@ -437,7 +437,6 @@
         window.addEventListener('load', sendHeight);
         const observer = new MutationObserver(sendHeight);
         observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-        setInterval(sendHeight, 500);
     </script>
 </body>
 </html>
