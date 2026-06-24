@@ -8,6 +8,10 @@ Every capability an agent gains comes with a corresponding failure mode. A model
 
 Understanding these failure modes before you ship is not pessimism, it's the design work.
 
+:::analogy Power tools, not hand tools
+A hand saw can only do so much damage if misused. A circular saw is faster and far more powerful — and the same qualities that make it more capable make a mistake more serious. Giving an AI model tools works the same way: the capability to act is also the capability to act incorrectly, irreversibly, and at scale. The failure modes don't disappear. They upgrade.
+:::
+
 ## Failure mode 1: Acting on bad information
 
 The agent loop depends on each stage feeding accurate information into the next. If the information at any point is wrong, whether because of hallucination, a bad tool result, or misunderstood customer input, every subsequent action is built on that error.

@@ -6,6 +6,10 @@ order: 3
 
 Knowing what "working" means is the first step. The second is building the machinery to measure it. Two tools matter most: evals and tracing.
 
+:::analogy The preflight checklist and the flight recorder
+The preflight checklist tells you whether the right conditions were met before takeoff. The flight recorder tells you exactly what happened during the flight. Evals are the checklist — they verify the agent does the right thing systematically. Tracing is the flight recorder — it shows exactly what happened inside the agent loop when something went wrong. You need both: evals without tracing leave you unable to debug failures, tracing without evals leaves you without a standard for "correct."
+:::
+
 ## Evals: structured testing for agent behavior
 
 An eval, short for evaluation, is a structured test that checks whether an agent behaves as expected on a defined set of inputs. Evals are to agents what unit tests are to code: a repeatable, systematic way to verify that the system does what you designed it to do.

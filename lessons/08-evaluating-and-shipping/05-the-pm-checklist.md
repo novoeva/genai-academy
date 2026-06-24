@@ -10,6 +10,10 @@ When you're standing at the go/no-ship decision for an AI agent, whether you bui
 
 Work through it in order. A "no" to any item in the must-have sections means the agent isn't ready. Not "isn't ready to be perfect", isn't ready to be in front of real users in a way you'd be comfortable defending.
 
+:::analogy The preflight check
+Pilots don't decide whether to run the preflight check based on how confident they feel. They run it every time, in the same order, and they don't take off until it's complete. The checklist exists because the cost of missing an item in the air is far higher than the two minutes it takes on the ground. This checklist works the same way.
+:::
+
 ## Section 1: Scope and design
 
 **Is the scope explicitly documented?**

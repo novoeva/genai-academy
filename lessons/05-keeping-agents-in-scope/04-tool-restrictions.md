@@ -8,6 +8,10 @@ System prompt guardrails tell the model what it should and shouldn't do. Tool re
 
 This is an important distinction. Instructions can be ignored, misinterpreted, or overridden under pressure. Tools that don't exist can't be called. Tools that reject unauthorized requests can't be misused. Architecture enforces what prompts can only suggest.
 
+:::analogy The key you don't have
+You can tell someone not to go into a room all you like. Taking the key away is more reliable. Giving an agent a system prompt instruction not to use a tool it has is a directive — effective until it isn't. Removing the tool from the toolkit is architecture. The agent can't call what doesn't exist, regardless of what the prompt says or what the user asks.
+:::
+
 ## The principle: don't trust the model to enforce its own constraints
 
 An agent's system prompt says Karel cannot reverse transactions. Karel cannot reverse transactions because there is no `reverse_transaction` tool in his toolkit. Both are true, but only one of them is reliable.
@@ -34,13 +38,13 @@ For the highest-stakes actions, the tool can accept a request from the model but
 
 ## Designing tools for safety, not just functionality
 
-Every tool in an agentic system should have:
-
+:::safety-checklist Every tool in an agentic system should have:
 **Scope validation:** does this call fall within what this agent is authorized to do?
 **Parameter validation:** are the inputs well-formed and within expected ranges?
 **Identity validation:** is this agent authorized to act on behalf of this user?
 **Rate limiting:** is this agent trying to call this tool an unusual number of times? (Catches infinite loops and injection attempts.)
 **Audit logging:** every tool call should be logged with: which agent called it, with what arguments, at what time, and what the result was.
+:::
 
 :::deep-dive The full defense-in-depth model
 ## The defense-in-depth model

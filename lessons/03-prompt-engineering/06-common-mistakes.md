@@ -6,6 +6,10 @@ order: 6
 
 Most prompt engineering failures come from a small set of recurring mistakes. Recognizing them is faster than learning through trial and error. Here are the most common ones, what they look like, and how to fix them.
 
+:::analogy The handoff memo with shared assumptions
+A good out-of-office handoff is explicit, not implied — written so that a colleague can follow it without asking any questions. A bad one assumes the colleague already knows the context. Prompt engineering mistakes mostly come from the same place: treating the model like a colleague who already understands what you mean, rather than a capable system with no memory of yesterday.
+:::
+
 ## Mistake 1: Writing instructions you'd give a person, not a model
 
 People write prompts the way they'd brief a new employee: using shared assumptions, implied context, and shorthand.

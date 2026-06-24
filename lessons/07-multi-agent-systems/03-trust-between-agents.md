@@ -10,6 +10,10 @@ When you deploy multiple agents, something more complex emerges. Agents send mes
 
 Trust between agents is one of the hardest problems in multi-agent system design, and it's the one most often underestimated.
 
+:::analogy Telephone in a high-stakes environment
+The children's game of telephone is harmless because it doesn't matter if the message arrives intact. In a multi-agent system, each agent's output becomes the next agent's input — and if you play telephone with customer account data or fraud reports, the drift accumulates into decisions that affect real people. Agents shouldn't trust each other's outputs for the same reason you shouldn't play telephone with anything that matters.
+:::
+
 ## The fundamental problem: agents are not inherently trustworthy
 
 An LLM-based agent is a probabilistic system. It can hallucinate. It can be manipulated through its inputs. Its behavior can drift. When one agent's output becomes another agent's input, errors and manipulations can propagate, amplified by each step in the chain.

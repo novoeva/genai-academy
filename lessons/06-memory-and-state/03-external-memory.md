@@ -8,6 +8,10 @@ In-context memory is temporary and limited. External memory is the solution for 
 
 External memory is any system that stores information outside the model and retrieves it when needed. Two main forms matter for agent design: databases and vector stores. Understanding the difference between them is what lets you choose the right one.
 
+:::analogy The filing cabinet and the experienced colleague
+A filing cabinet is for records you can name: account number, date, case ID. An experienced colleague who's read everything is for questions you can only describe: "find me anything relevant to the Johnson situation." Databases are filing cabinets — exact lookups, guaranteed accuracy. Vector stores are the experienced colleague — they understand meaning and surface what's relevant, even when you don't know exactly what to ask for.
+:::
+
 :::concept-cards
 ### Databases: exact retrieval
 A database stores structured data, records with defined fields and relationships, and retrieves it by exact match. The right tool when you know exactly what you're looking for (an account ID, a transaction ID, a date range), when the data is structured, and when you need guaranteed accuracy. For Karel, all data retrieval is database-backed: transaction history, account information, prior fraud reports, structured records that need to be retrieved exactly, not approximately.

@@ -8,6 +8,10 @@ The core pattern of most multi-agent systems is simple: one agent that directs, 
 
 Understanding how these roles work, and how work flows between them, is the foundation for understanding any multi-agent design.
 
+:::analogy The project manager and the contractors
+A project manager doesn't lay the brickwork themselves. They coordinate specialists — electrician, plumber, framer — each excellent at a specific trade. The PM's job is to know what each contractor needs to do and in what order, not to do each trade themselves. The orchestrator is the PM. The subagents are the specialists. The project holds together because the work was clearly specified, not because everyone improvised.
+:::
+
 :::concept-cards
 ### The orchestrator's job
 The orchestrator receives a high-level goal and is responsible for figuring out how to achieve it. It decomposes the goal into subtasks, decides which subagent (or tool) handles each subtask, delegates those subtasks and collects results, and synthesizes results into a coherent final output. The orchestrator typically doesn't do the detailed work itself, it directs, plans, and synthesizes. Think of it as the project manager of the agent system.

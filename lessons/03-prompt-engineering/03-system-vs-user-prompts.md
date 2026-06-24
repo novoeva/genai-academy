@@ -8,6 +8,10 @@ We've talked about prompts as one unified token stream, which is true from the m
 
 These serve different purposes, and understanding the distinction is critical for building reliable agents.
 
+:::analogy The employee handbook and the walk-in customer
+The system prompt is the employee handbook: written before anyone shows up, stable, covering every situation the job might produce. The user message is the customer who just walked in. The handbook exists because you can't know what the customer will say — but you can decide in advance how a well-trained employee should respond to almost anything.
+:::
+
 :::concept-cards
 ### System prompt
 The part you write as the developer, invisible to the end user. It defines who the agent is, what it can do, what it cannot do, how to behave, and how to handle edge cases. It's stable. It rarely changes. It's the contract between you (the developer) and the model (the agent).

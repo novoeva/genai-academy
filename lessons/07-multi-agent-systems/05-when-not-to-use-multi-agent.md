@@ -8,6 +8,10 @@ Multi-agent systems are powerful. They're also complex, expensive to build, expe
 
 Most agent problems don't need multi-agent. This lesson is about recognizing when you're reaching for a sledgehammer when a hammer would do.
 
+:::analogy Don't hire a team to do one person's job
+Hiring four people to do work one person could handle doesn't make the work faster — it adds coordination overhead, communication gaps, and more ways for the handoff to go wrong. Multi-agent systems carry the same cost. The added complexity has to be justified by something you genuinely gain: real parallelism, meaningful specialization, or scale a single agent can't reach.
+:::
+
 ## Signs you probably don't need multi-agent
 
 :::concept-cards

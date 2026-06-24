@@ -8,6 +8,10 @@ Most people think of a prompt as just the message they type. "What's the capital
 
 But in the context of building AI agents, a prompt is everything the model sees before it generates a response. All of it. In one continuous stream of tokens.
 
+:::analogy The briefing packet
+Imagine handing a contractor everything they need before they take a customer call: a role description, the customer's file, the full conversation history, and the customer's latest message — all in one stack. That's a prompt. The model sees every piece of it at once and predicts the most reasonable continuation. Understanding this changes how you think about what to include, what to leave out, and why every piece matters.
+:::
+
 ## The full picture
 
 When you send something to an LLM, here's what actually goes into the model:

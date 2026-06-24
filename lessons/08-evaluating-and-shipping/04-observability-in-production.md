@@ -8,6 +8,10 @@ Passing pre-launch evals means Karel was ready at the moment of launch. It doesn
 
 Observability in production is the practice of watching what's actually happening, not what you assumed would happen, so that you know when something changes and can respond before it becomes a serious problem.
 
+:::analogy The vital signs monitor
+A checkup tells you you were healthy on the day you came in. Continuous monitoring is how doctors catch what changes between visits. Evals tell you the agent was ready at launch. Observability tells you whether it stays that way — catching drift in output quality, escalation rates, and tool behavior before the problem becomes visible to customers.
+:::
+
 ## What to monitor
 
 :::concept-cards

@@ -8,6 +8,10 @@ Scope is much easier to enforce when it was decided before the agent was built. 
 
 The discipline of defining scope upfront isn't just a design principle. It's the difference between an agent that holds its boundaries and one that drifts.
 
+:::analogy The architect's brief
+An architect who starts drawing before understanding what the building needs will spend most of their time redesigning. The brief comes first: who will use this, what must it do, what must it never do. Scope definition for an agent is that brief — written before any tool or prompt exists, so everything built afterward implements a decision rather than guessing at one.
+:::
+
 ## The three scope questions
 
 Before building any agent, answer these three questions explicitly. Not approximately, explicitly.

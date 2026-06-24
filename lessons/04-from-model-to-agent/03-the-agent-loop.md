@@ -8,6 +8,10 @@ At the core of every agent is a loop. The agent doesn't just receive one message
 
 The loop has four stages: **perceive, plan, act, observe**. Understanding this loop is the clearest way to understand how agents work, where they can go wrong, and how to design them to be reliable.
 
+:::analogy The detective's next step
+A detective doesn't solve a case in a single flash of insight. They gather evidence, form a hypothesis, take an action — question a witness, follow a lead — observe what comes back, and revise. An agent works exactly this way: each pass through the loop refines the picture and shapes the next move. And like detective work, an early error quietly poisons everything that follows.
+:::
+
 :::concept-cards
 ### Stage 1: Perceive
 The agent receives input. This might be a message from the user, the result of a previous tool call, data retrieved from a database, or a system notification. Perception fills the agent's context window, this is everything the agent "knows" at this point in the loop.

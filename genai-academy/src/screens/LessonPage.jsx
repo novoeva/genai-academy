@@ -361,6 +361,51 @@ function FigureAside({ src, paragraphs }) {
   );
 }
 
+const SAFETY_ITEM_CONFIG = {
+  "Scope validation":     { emoji: "🎯", bg: "#eef2ff", color: "#4f46e5" },
+  "Parameter validation": { emoji: "⚙️", bg: "#ecfdf5", color: "#059669" },
+  "Identity validation":  { emoji: "🔐", bg: "#fdf4ff", color: "#9333ea" },
+  "Rate limiting":        { emoji: "⏱️", bg: "#fffbeb", color: "#d97706" },
+  "Audit logging":        { emoji: "📋", bg: "#eff6ff", color: "#2563eb" },
+};
+
+function SafetyChecklist({ title, items }) {
+  return (
+    <div className="bg-white border border-[rgba(172,179,183,0.15)] rounded-2xl overflow-hidden shadow-[0_12px_20px_0_rgba(44,52,55,0.06)]">
+      {title && (
+        <div className="border-b border-[#f1f5f9] px-6 py-4 flex items-center gap-3">
+          <div className="w-5 h-5 rounded-full bg-[#382ac0] flex items-center justify-center flex-shrink-0">
+            <span className="text-white text-[10px] font-bold">{items.length}</span>
+          </div>
+          <p className="text-sm font-semibold text-[#464554]">{title}</p>
+        </div>
+      )}
+      <div className="divide-y divide-[#f8f9fa]">
+        {items.map((item, i) => {
+          const cfg = SAFETY_ITEM_CONFIG[item.label] || { emoji: "✓", bg: "#f1f5f9", color: "#64748b" };
+          return (
+            <div key={i} className="flex items-start gap-4 px-6 py-4 hover:bg-[#fafbff] transition-colors">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: cfg.bg }}>
+                <span className="text-base leading-none">{cfg.emoji}</span>
+              </div>
+              <div className="flex-1 min-w-0 pt-1">
+                <span className="font-bold text-[#191c1e] text-sm">{item.label}</span>
+                <span className="text-[#464554] text-sm leading-[22px]"> {item.desc}</span>
+              </div>
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-1 border-2"
+                style={{ background: cfg.bg, borderColor: cfg.color }}
+              >
+                <span className="text-[11px] font-bold" style={{ color: cfg.color }}>✓</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function WhatWeWontDoBlock({ paragraphs, analogy }) {
   return (
     <div className="flex flex-col gap-4">
@@ -682,6 +727,13 @@ function parseLessonBlocks(text) {
           }
         }
         blocks.push({ type: "likelihood-factors", moreLikely, lessLikely });
+      } else if (type === "safety-checklist") {
+        const items = [];
+        for (const l of blockLines) {
+          const match = l.match(/^\*\*([^*]+):\*\*\s*(.+)$/);
+          if (match) items.push({ label: match[1].trim(), desc: match[2].trim() });
+        }
+        blocks.push({ type: "safety-checklist", title, items });
       }
     } else {
       blocks.push({ type: "text", content: line });
@@ -719,6 +771,7 @@ function renderBlock(block, key, simHtml) {
   if (block.type === "definition") return <DefinitionBlock key={key} term={block.term} content={block.content} />;
   if (block.type === "likelihood-factors") return <LikelihoodFactors key={key} moreLikely={block.moreLikely} lessLikely={block.lessLikely} />;
   if (block.type === "figure-aside") return <FigureAside key={key} src={block.src} paragraphs={block.paragraphs} />;
+  if (block.type === "safety-checklist") return <SafetyChecklist key={key} title={block.title} items={block.items} />;
   return null;
 }
 

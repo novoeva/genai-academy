@@ -8,6 +8,10 @@ Before you can evaluate an agent, you need to agree on what "working" means. Thi
 
 "Working" for an agent is not binary. It's a distribution of outcomes across a range of inputs. The goal of evaluation is to characterize that distribution: where the agent succeeds, where it fails, how badly it fails, and how often.
 
+:::analogy The stress test, not the demo
+A bridge doesn't "work" because it held during the opening ceremony. It works because it was tested to hold under load, in bad weather, over years of use. Evaluating an agent from a demo is evaluating the bridge by looking at it. "Working" means holding up across the full distribution of real inputs — including the ones no one expected.
+:::
+
 ## The three dimensions of "working"
 
 :::concept-cards

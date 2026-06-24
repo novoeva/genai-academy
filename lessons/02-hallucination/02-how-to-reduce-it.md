@@ -8,6 +8,10 @@ You can't fully eliminate hallucination from an LLM, but you can design systems 
 
 There are three main levers: grounding the model in real sources, constraining what it's allowed to say, and validating its output before it reaches the user.
 
+:::analogy The editorial fact-checker
+A reporter can write confidently about things they're not certain of. The editorial layer — a fact-checker who verifies claims against sources before publication — is what makes the work reliable. Reducing hallucination is about building that editorial layer into an AI system: RAG supplies the sources, constraints shape what the model is allowed to say, and output validation is the fact-checker that runs before any response reaches the reader.
+:::
+
 ## Lever 1: Grounding with RAG (Retrieval-Augmented Generation)
 
 **The problem:** The model's knowledge is frozen at training time. If you ask it a question about your company's policies, last month's earnings, or anything specific to your product, it doesn't know, and may hallucinate an answer.

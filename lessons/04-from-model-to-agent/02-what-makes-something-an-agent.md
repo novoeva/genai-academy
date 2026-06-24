@@ -10,6 +10,10 @@ Here's a working one: **an agent is an AI system that perceives its environment,
 
 The key word is actions. A model that responds to messages and does nothing else is not an agent. A model that can read a database, send an email, or call an API, and then decides what to do next based on what those actions returned, is an agent.
 
+:::analogy The intern who actually does things
+A helpful chatbot answers your question. An agent is the intern who goes and does the thing — books the meeting, updates the spreadsheet, sends the confirmation — then reports back on what happened. The difference isn't intelligence. It's whether the system takes real actions in the world and uses the results to decide what to do next.
+:::
+
 ## The three requirements
 
 :::concept-cards

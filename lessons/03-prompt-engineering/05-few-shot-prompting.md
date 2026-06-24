@@ -8,6 +8,10 @@ There's a limit to what you can achieve by telling an LLM what to do. Descriptio
 
 It's one of the most effective and underused tools in prompt engineering.
 
+:::analogy The onboarding example vs. the style guide
+Every company has a style guide. Few employees actually write the way the style guide describes. But show a new hire five examples of emails the team actually sends, and they'll match the style within a week. The model responds to examples for the same reason: concrete demonstrations teach what abstract descriptions can only approximate.
+:::
+
 ## What "few-shot" means
 
 :::concept-cards

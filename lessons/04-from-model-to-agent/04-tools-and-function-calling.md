@@ -6,6 +6,10 @@ order: 4
 
 The thing that turns a model into an agent is the ability to call tools. Understanding how this works, mechanically, not just conceptually, gives you the mental model to reason about what agents can and can't do, and where things break.
 
+:::analogy The dispatcher and the field crew
+A dispatcher doesn't fix the road themselves. They radio a crew with specific instructions — location, problem, what to do. The crew carries out the work and reports back. The model is the dispatcher: it generates precise, structured requests for actions. Your application code is the crew that actually executes them. If the instructions are vague or wrong, the crew does something — just not necessarily what was needed.
+:::
+
 ## What a tool is
 
 A tool is a function the model can request to be executed. It's not the model itself running code, the model can't do that. Instead, the model generates a structured request that says "please run this function with these arguments," and the surrounding system (your application code) actually executes it and returns the result.

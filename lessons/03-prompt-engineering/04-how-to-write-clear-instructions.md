@@ -8,6 +8,10 @@ A system prompt is only as good as the instructions inside it. Most agent failur
 
 Here's how to write instructions that actually work.
 
+:::analogy The recipe that says 'cook until done'
+"Cook until done" is technically an instruction. So is "bake at 180°C for 25 minutes, until the top is golden and a skewer comes out clean." Only one of them reliably produces the same result twice. Prompt instructions work the same way: the model will always do something with what you give it — the question is whether what it does is what you intended.
+:::
+
 ## The core rule: specific beats general
 
 The most common mistake in prompt engineering is writing instructions at a level of abstraction that sounds reasonable but doesn't tell the model anything useful.

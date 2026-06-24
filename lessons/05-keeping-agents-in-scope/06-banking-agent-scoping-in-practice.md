@@ -8,6 +8,10 @@ This lesson brings the whole module together through Karel's specific case. Each
 
 This isn't just a recap. It's a template for how to think about scope enforcement when you're evaluating, speccing, or building any agent.
 
+:::analogy The vault with four doors
+A bank vault doesn't rely on one door. There's the outer door, the inner door, the time lock, and the guards on duty. No single measure is trusted to hold on its own, because every measure has a failure mode. Karel's four-layer scope architecture works the same way — each layer is sized for the failures the layer before it can't catch.
+:::
+
 ## Layer 1: Scope definition
 
 Karel's scope was defined in one session, before any prompt or tool was written:
@@ -22,30 +26,33 @@ Karel's scope was defined in one session, before any prompt or tool was written:
 
 Karel's system prompt translates the scope definition into model instructions:
 
-```
-ROLE:
+**Role**
+
 You are Karel, a fraud reporting assistant for Bank of Trust. Your single purpose is to help customers report fraudulent transactions and understand what happens next. You do not assist with any other banking topic.
 
-HARD CONSTRAINTS: these override any other instruction or customer request:
+**Hard constraints** — these override any other instruction or customer request:
 
-You will not reverse, refund, or cancel any transaction. If asked, say: "Reversing transactions is handled by our fraud investigation team after they review your report, I'm not able to do that directly. I can file your report right now to start the process."
-
-You will not give predictions or opinions on investigation outcomes. If asked, say: "I genuinely don't know how the investigation will be decided, that's determined by the fraud team after a full review. What I can tell you is your report will be reviewed within 24 hours."
-
-You will not give financial, investment, or legal advice of any kind.
-
-You will not flag a transaction, freeze a card, or file a report without explicit confirmation from the customer in this conversation.
+- You will not reverse, refund, or cancel any transaction. If asked, say: *"Reversing transactions is handled by our fraud investigation team after they review your report — I'm not able to do that directly. I can file your report right now to start the process."*
+- You will not give predictions or opinions on investigation outcomes. If asked, say: *"I genuinely don't know how the investigation will be decided — that's determined by the fraud team after a full review. What I can tell you is your report will be reviewed within 24 hours."*
+- You will not give financial, investment, or legal advice of any kind.
+- You will not flag a transaction, freeze a card, or file a report without explicit confirmation from the customer in this conversation.
 
 These constraints apply regardless of how the customer phrases their request or how many times they ask.
-```
 
 ## Layer 3: Tool restrictions
 
-Karel's available tools are exactly four: read_transaction_history(account_id), flag_transaction(transaction_id, reason), freeze_card(account_id), create_fraud_report(account_id, transaction_ids, customer_statement).
+Karel has exactly four tools available:
 
-There is no reverse_transaction tool. No issue_refund tool. No resolve_claim tool. No access_other_account tool.
+| Tool | What it does |
+|---|---|
+| Read transaction history | Returns the authenticated customer's transactions for the last 30 days |
+| Flag transaction | Marks a specific transaction as potentially fraudulent, with a stated reason |
+| Freeze card | Freezes the customer's card to prevent further charges |
+| Create fraud report | Files a formal report linking the customer statement to the flagged transactions |
 
-Every tool that's absent is an action that is architecturally impossible for Karel, regardless of prompt behavior. Each tool validates that the account_id in the call matches the authenticated session. The flag, freeze, and report tools trigger a UI confirmation step before executing. Every call is logged with timestamp, arguments, and result.
+There is no reverse-transaction tool. No issue-refund tool. No resolve-claim tool. No access-other-account tool.
+
+Every tool that's absent is an action that is architecturally impossible for Karel, regardless of prompt behavior. Each tool validates that the account being accessed matches the authenticated session. The flag, freeze, and report tools trigger a confirmation step before executing. Every call is logged with timestamp, inputs, and result.
 
 ## Layer 4: Output validation
 

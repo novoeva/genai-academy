@@ -8,6 +8,10 @@ The system prompt is your first line of defense for scope. It's where you transl
 
 When it's done badly, no amount of downstream protection can reliably compensate.
 
+:::analogy The contract vs. the handshake
+"Let's just stay professional" is a handshake — easy to interpret however circumstances require. "You will not discuss pricing with customers; if asked, direct them to sales@company.com and offer to note their interest" is a contract. The model won't try to wriggle out of either. But only one holds up when a persistent customer pushes against the edges.
+:::
+
 ## What makes a guardrail strong vs. weak
 
 Not all system prompt instructions are equally effective at enforcing scope. The difference between a strong guardrail and a weak one comes down to specificity, unambiguity, and resistance to pressure.

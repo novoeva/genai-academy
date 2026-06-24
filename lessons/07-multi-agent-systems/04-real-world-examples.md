@@ -8,6 +8,10 @@ Multi-agent systems are most clearly understood through concrete examples. Abstr
 
 Here are four real-world multi-agent patterns, with the key design insight each one illustrates.
 
+:::analogy The hospital with specialists
+A hospital with only general practitioners would be overwhelmed and under-qualified. So it routes patients to specialists — cardiologist, radiologist, surgeon — each excellent at a narrow domain, with a triage system to decide who sees whom. Multi-agent systems apply the same logic: specialized agents handle what they're best at, an orchestrator routes between them, and the outcome is better than any single generalist could produce.
+:::
+
 ## Example 1: Customer support triage
 
 A large e-commerce company receives thousands of customer messages daily. Inquiries cover orders, returns, product questions, billing disputes, fraud, and technical issues.

@@ -8,6 +8,10 @@ The three memory types, in-context, external, and fine-tuning, aren't competing 
 
 This lesson is about how to make those design decisions, starting not from technology, but from questions about the agent's actual needs.
 
+:::analogy The architect asks who lives here first
+A good architect asks who will live in a house before deciding how many bedrooms to add or where to put the storage. Memory design works the same way: understand what the agent needs to know, how often, for how long, and what it must never retain — then choose the architecture. Starting with technology choices instead of needs questions is the design equivalent of building rooms and then wondering who'll use them.
+:::
+
 ## The five memory design questions
 
 :::concept-cards
