@@ -111,6 +111,37 @@ function AnalogyBlock({ title, content }) {
   );
 }
 
+function ComparisonBlock({ pairs, leftLabel = "Too vague", rightLabel = "Specific" }) {
+  return (
+    <div className="rounded-2xl overflow-hidden border border-[rgba(172,179,183,0.15)] shadow-[0_12px_20px_0_rgba(44,52,55,0.06)]">
+      <div className="grid grid-cols-2">
+        <div className="flex items-center gap-2 px-6 py-3 bg-red-50 border-b border-red-100">
+          <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+            <span className="text-red-500 text-[10px] font-bold">✕</span>
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-red-500">{leftLabel}</span>
+        </div>
+        <div className="flex items-center gap-2 px-6 py-3 bg-emerald-50 border-b border-emerald-100 border-l border-white">
+          <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+            <span className="text-emerald-600 text-[10px] font-bold">✓</span>
+          </div>
+          <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">{rightLabel}</span>
+        </div>
+      </div>
+      {pairs.map((pair, i) => (
+        <div key={i} className={`grid grid-cols-2${i < pairs.length - 1 ? " border-b border-[#f0f0f0]" : ""}`}>
+          <div className="px-6 py-5 bg-[#fff5f5] border-r border-[#fecaca]/50">
+            <p className="text-sm text-[#7a3a3a] leading-[22px] italic">"{pair.vague}"</p>
+          </div>
+          <div className="px-6 py-5 bg-[#f0fdf4]">
+            <p className="text-sm text-[#2d5a3d] leading-[22px]">"{pair.specific}"</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function KarelBlock({ title, body, prompt, footnote }) {
   // Parse labeled sections: **Label:** content
   const sectionPattern = /\*\*([^*]+):\*\*\s*([\s\S]*?)(?=\n\n\*\*[^*]+:\*\*|$)/g;
@@ -123,7 +154,9 @@ function KarelBlock({ title, body, prompt, footnote }) {
   const storyConfig = {
     "Scene":            { bg: "#f8f9fa", border: "#e5e7eb", labelColor: "#777586" },
     "Karel says":       { bg: "#eef2ff", border: "#c7d2fe", labelColor: "#382ac0" },
+    "Karel acts":       { bg: "#eef2ff", border: "#c7d2fe", labelColor: "#382ac0" },
     "But — this is the hallucination": { bg: "#fff7ed", border: "#fed7aa", labelColor: "#c2410c" },
+    "But — this is the key risk":      { bg: "#fff7ed", border: "#fed7aa", labelColor: "#c2410c" },
     "Result":           { bg: "#fef2f2", border: "#fecaca", labelColor: "#dc2626" },
     "Why this matters": { bg: "#191c1e", border: "#191c1e", labelColor: "#9cf5c8" },
   };
@@ -371,15 +404,11 @@ const SAFETY_ITEM_CONFIG = {
 
 function SafetyChecklist({ title, items }) {
   return (
-    <div className="bg-white border border-[rgba(172,179,183,0.15)] rounded-2xl overflow-hidden shadow-[0_12px_20px_0_rgba(44,52,55,0.06)]">
+    <div className="flex flex-col gap-3">
       {title && (
-        <div className="border-b border-[#f1f5f9] px-6 py-4 flex items-center gap-3">
-          <div className="w-5 h-5 rounded-full bg-[#382ac0] flex items-center justify-center flex-shrink-0">
-            <span className="text-white text-[10px] font-bold">{items.length}</span>
-          </div>
-          <p className="text-sm font-semibold text-[#464554]">{title}</p>
-        </div>
+        <p className="text-base text-[#464554] leading-[27px]">{title}</p>
       )}
+    <div className="bg-white border border-[rgba(172,179,183,0.15)] rounded-2xl overflow-hidden shadow-[0_12px_20px_0_rgba(44,52,55,0.06)]">
       <div className="divide-y divide-[#f8f9fa]">
         {items.map((item, i) => {
           const cfg = SAFETY_ITEM_CONFIG[item.label] || { emoji: "✓", bg: "#f1f5f9", color: "#64748b" };
@@ -402,6 +431,7 @@ function SafetyChecklist({ title, items }) {
           );
         })}
       </div>
+    </div>
     </div>
   );
 }
@@ -627,20 +657,26 @@ function parseLessonBlocks(text) {
         const innerBlocks = [];
         const innerLines = blockLines;
         let j = 0;
+        let textBuffer = [];
+        const flushText = () => {
+          if (textBuffer.length) {
+            innerBlocks.push({ type: "text-chunk", lines: textBuffer });
+            textBuffer = [];
+          }
+        };
         while (j < innerLines.length) {
           const innerLine = innerLines[j];
           if (innerLine.startsWith(":::")) {
+            flushText();
             const innerHeader = innerLine.slice(3).trim();
             const innerSpaceIdx = innerHeader.indexOf(" ");
             const innerType = innerSpaceIdx === -1 ? innerHeader : innerHeader.slice(0, innerSpaceIdx);
-            const innerTitle = innerSpaceIdx === -1 ? "" : innerHeader.slice(innerSpaceIdx + 1);
             const innerBlockLines = [];
             j++;
             while (j < innerLines.length && innerLines[j] !== ":::") {
               innerBlockLines.push(innerLines[j]);
               j++;
             }
-            const innerText = innerBlockLines.join("\n").trim();
             if (innerType === "likelihood-factors") {
               const moreLikely = [], lessLikely = [];
               let currentSection = null;
@@ -655,9 +691,12 @@ function parseLessonBlocks(text) {
               }
               innerBlocks.push({ type: "likelihood-factors", moreLikely, lessLikely });
             }
+          } else {
+            textBuffer.push(innerLine);
           }
           j++;
         }
+        flushText();
         blocks.push({ type: "deep-dive", title, innerBlocks });
       } else if (type === "takeaway") {
         takeaway = { title, content: blockText };
@@ -734,6 +773,26 @@ function parseLessonBlocks(text) {
           if (match) items.push({ label: match[1].trim(), desc: match[2].trim() });
         }
         blocks.push({ type: "safety-checklist", title, items });
+      } else if (type === "comparison") {
+        let leftLabel = "Too vague";
+        let rightLabel = "Specific";
+        if (title && title.includes("|")) {
+          const [l, r] = title.split("|").map(s => s.trim());
+          leftLabel = l;
+          rightLabel = r;
+        }
+        const pairs = [];
+        let current = {};
+        for (const l of blockLines) {
+          if (l.startsWith("**Too vague:**") || l.startsWith("**Left:**")) {
+            current.vague = l.replace(/^\*\*(Too vague|Left):\*\*\s*/, "").replace(/^"|"$/g, "").trim();
+          } else if (l.startsWith("**Specific:**") || l.startsWith("**Right:**")) {
+            current.specific = l.replace(/^\*\*(Specific|Right):\*\*\s*/, "").replace(/^"|"$/g, "").trim();
+            if (current.vague && current.specific) pairs.push({ ...current });
+            current = {};
+          }
+        }
+        blocks.push({ type: "comparison", pairs, leftLabel, rightLabel });
       }
     } else {
       blocks.push({ type: "text", content: line });
@@ -753,6 +812,7 @@ function DeepDiveSection({ title, innerBlocks }) {
       </div>
       {innerBlocks.map((b, i) => {
         if (b.type === "likelihood-factors") return <LikelihoodFactors key={i} moreLikely={b.moreLikely} lessLikely={b.lessLikely} />;
+        if (b.type === "text-chunk") return <PlainContent key={i} lines={b.lines} />;
         return null;
       })}
     </div>
@@ -772,6 +832,7 @@ function renderBlock(block, key, simHtml) {
   if (block.type === "likelihood-factors") return <LikelihoodFactors key={key} moreLikely={block.moreLikely} lessLikely={block.lessLikely} />;
   if (block.type === "figure-aside") return <FigureAside key={key} src={block.src} paragraphs={block.paragraphs} />;
   if (block.type === "safety-checklist") return <SafetyChecklist key={key} title={block.title} items={block.items} />;
+  if (block.type === "comparison") return <ComparisonBlock key={key} pairs={block.pairs} leftLabel={block.leftLabel} rightLabel={block.rightLabel} />;
   return null;
 }
 
@@ -780,7 +841,7 @@ function LessonContentBlocks({ blocks, simHtml, howItWorks }) {
   const hookBlocks = [];
   const conceptBlocks = [];
   const karelBlocks = [];
-
+  const postKarelBlocks = [];
   const deepDiveBlocks = [];
   let phase = "concept";
   for (const block of blocks) {
@@ -792,7 +853,9 @@ function LessonContentBlocks({ blocks, simHtml, howItWorks }) {
       phase = "post-karel";
     } else if (block.type === "deep-dive") {
       deepDiveBlocks.push(block);
-    } else if (phase !== "post-karel") {
+    } else if (phase === "post-karel") {
+      postKarelBlocks.push(block);
+    } else {
       conceptBlocks.push(block);
     }
   }
@@ -823,10 +886,12 @@ function LessonContentBlocks({ blocks, simHtml, howItWorks }) {
         </div>
       )}
 
-      <div id="section-concept" className="flex flex-col gap-3">
-        <SectionLabel label="The concept" />
-        {renderSection(conceptBlocks, null)}
-      </div>
+      {conceptBlocks.length > 0 && (
+        <div id="section-concept" className="flex flex-col gap-3">
+          <SectionLabel label="The concept" />
+          {renderSection(conceptBlocks, null)}
+        </div>
+      )}
 
       {howItWorks && (
         <div id="section-how" className="flex flex-col gap-3">
@@ -839,6 +904,7 @@ function LessonContentBlocks({ blocks, simHtml, howItWorks }) {
         <div id="section-karel" className="flex flex-col gap-3">
           <SectionLabel label="Karel in practice" />
           {renderSection(karelBlocks, null)}
+          {postKarelBlocks.length > 0 && renderSection(postKarelBlocks, null)}
         </div>
       )}
 
@@ -1009,14 +1075,14 @@ export default function LessonPage() {
                 <p className="text-[10px] font-bold tracking-[1.2px] uppercase text-[#777586] mb-4">In this lesson</p>
                 <div className="flex flex-col gap-1">
                   {[
-                    { id: "hook", label: "TL;DR" },
+                    blocks.some(b => b.type === "analogy") && { id: "hook", label: "TL;DR" },
                     { id: "concept", label: "The concept" },
-                    { id: "how", label: "How it works" },
-                    { id: "karel", label: "Karel in practice" },
-                    { id: "sim", label: "Try it yourself" },
-                    ...(blocks.some(b => b.type === "deep-dive") ? [{ id: "deepdive", label: "Deep dive" }] : []),
-                    { id: "takeaway", label: "Key takeaway" },
-                  ].map(({ id, label }) => (
+                    lesson.howItWorks && { id: "how", label: "How it works" },
+                    blocks.some(b => b.type === "karel") && { id: "karel", label: "Karel in practice" },
+                    simHtml && { id: "sim", label: "Try it yourself" },
+                    blocks.some(b => b.type === "deep-dive") && { id: "deepdive", label: "Deep dive" },
+                    takeaway && { id: "takeaway", label: "Key takeaway" },
+                  ].filter(Boolean).map(({ id, label }) => (
                     <a
                       key={id}
                       href={`#section-${id}`}
