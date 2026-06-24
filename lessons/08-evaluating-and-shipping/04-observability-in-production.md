@@ -30,17 +30,19 @@ Refusal rate measures how often the agent declines a request. False positive rat
 Post-conversation surveys or implicit signals (did the customer return with the same issue? did they file a complaint?) provide the human perspective. Technical metrics can look healthy while customer experience degrades, and vice versa.
 :::
 
+:::deep-dive Understanding and catching agent drift
 ## Monitoring for drift
 
 Agent drift is when an agent's behavior gradually shifts from its intended behavior over time. It can happen through:
 
-**Model drift:** AI providers occasionally update underlying models, and even small updates can shift output distribution at the margins. A refusal that was reliable becomes occasional. A tone that was consistent becomes variable. This is model drift. It is different from prompt drift, where a system prompt edit caused the shift, and different from distribution shift, where real user behavior diverged from test behavior. Comparing your key metrics before and after any provider model update is the standard way to catch it early.
+**Model drift:** One day Karel's tone sounds slightly different and nothing in your system changed. Your AI provider quietly pushed a model update. A refusal that was reliable becomes occasional. A tone that was consistent becomes variable. Comparing your key metrics before and after any provider model update is the standard way to catch it early.
 
-**Prompt drift:** small changes to the system prompt accumulate and interact with each other in ways that weren't anticipated. Something that looked like a minor fix created an unintended effect downstream.
+**Prompt drift:** A developer fixed a bug six weeks ago and added two sentences to the system prompt. Those sentences now conflict with an earlier instruction in ways nobody noticed at the time. Small changes accumulate and interact in ways that weren't anticipated.
 
-**Distribution shift:** real customer inputs are different from test inputs. As more real customers interact with Karel, patterns that weren't in the eval set emerge.
+**Distribution shift:** Your test conversations were all from internal testers who knew how the product works. Real customers phrase things very differently, and some of those phrasings trip the agent up in ways testing never caught.
 
 The way to catch drift is to run a sample of production conversations through the eval suite periodically, weekly, or continuously if volume allows. If eval pass rates are declining without any system change, drift is the likely cause.
+:::
 
 ## Feedback loops
 
@@ -55,15 +57,15 @@ Observability isn't just about detecting problems, it's about feeding observatio
 The teams that maintain high-quality agents over time are not the ones who got the system perfect at launch. They're the ones who built feedback loops that continuously surface gaps and close them.
 
 :::karel Karel in practice
-Karel's production observability stack monitors five key metrics in a dashboard refreshed every hour: output validation block rate (target: <2%), escalation rate (target: 10-15%), conversation completion rate (target: >80%), tool call anomaly rate (target: <1%), and 7-day rolling customer satisfaction (target: >85%).
+**Scene:** Three weeks after launch, Karel's output validation block rate creeps from 1.2% to 2.8% over two weeks. No system prompt changes were made. No obvious incident triggered it.
 
-Weekly: a random sample of 50 conversations is reviewed by a human analyst against Karel's quality criteria. Results are compared to the previous week's sample to detect gradual drift.
+**Karel acts:** A team member reviews the dashboard (refreshed hourly, reviewed each morning). The block rate crossed its threshold — and the defined response protocol kicks in: trace a sample of blocked conversations, identify the pattern, determine root cause, fix (usually a prompt change), run the eval suite on the fix, and deploy.
 
-Monthly: Karel's full eval suite is run against a sample of production conversations (anonymized). Any eval that fails on production data at a higher rate than in pre-launch testing triggers a prompt review.
+**But — this is the key risk:** The creep would be invisible without daily monitoring. Customer satisfaction metrics hadn't dropped yet. No complaints had come in. The observability layer caught it before it became a visible problem.
 
-A team member owns the Karel observability dashboard and reviews it each morning. When a metric crosses a threshold, there's a defined response protocol: trace a sample of the affected conversations, identify the pattern, determine root cause, fix (usually a prompt change), run the eval suite on the fix, and deploy.
+**Result:** The pattern is identified — model drift after a provider update shifted Karel's output distribution slightly. A targeted prompt adjustment brings the block rate back below 2%. Weekly human review of 50 conversations and monthly eval suite runs against production data are what make these patterns visible before they compound.
 
-Shipping an agent without observability is shipping without knowing what you shipped. The difference between a reliably high-quality agent and one that degrades unpredictably is almost always the quality of the feedback loop.
+**Why this matters:** Shipping an agent without observability is shipping without knowing what you shipped. The difference between a reliably high-quality agent and one that degrades unpredictably is almost always the quality of the feedback loop — and that feedback loop has to be built from day one, not added after the first incident.
 :::
 
 :::takeaway Key takeaway

@@ -13,7 +13,7 @@ This module is about that problem. What kinds of memory an agent can have, how e
 :::learning-outcomes
 - Why doesn't an AI remember you between conversations — and what can be done about it?
 - What's the difference between an agent that forgets and one that remembers across sessions?
-- How do vector stores work, and when do you actually need one?
+- How do AI-powered search stores (vector stores) work, and when do you actually need one?
 - What does fine-tuning actually do to a model's "memory"?
 - How do you decide which type of memory is right for the agent you're building?
 ---
@@ -27,7 +27,7 @@ We won't go deep into the database engineering or machine learning required to i
 
 The goal is the intuition to evaluate tradeoffs and ask the right questions of the team building the system.
 
-> Think of it like understanding the difference between RAM and a hard drive — you don't need to know how NAND flash works to make smart decisions about storage.
+> Think of it like understanding the difference between your desk (what you can work with right now) and a filing cabinet (everything you could pull out if you needed it) — you don't need to know how either one is built to make smart decisions about which to use.
 :::
 
 ## Why memory matters for agents

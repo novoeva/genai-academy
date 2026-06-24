@@ -4,12 +4,10 @@ module: 6
 order: 4
 ---
 
-In-context memory is temporary. External memory requires retrieval. Fine-tuning is different: it bakes knowledge or behavior directly into the model's weights, the parameters that determine how the model responds.
-
-When a model is fine-tuned, it's trained further on a specific dataset. The result is a model that has internalized patterns from that dataset, not just as text it can retrieve, but as part of how it generates responses.
+In-context memory is temporary. External memory requires retrieval. Fine-tuning is different: it bakes knowledge or behavior directly into the model itself by training it further on a specific dataset. The result is a model that has internalized patterns from that dataset — not just as text it can retrieve, but as part of how it generates responses by default, without any extra instructions needed.
 
 :::analogy Reference manual vs. experience
-Think of it as the difference between giving someone a reference manual (external memory) vs. having them spend two years working in a field until the knowledge becomes second nature (fine-tuning). The manual is easier to update. The experience is more deeply embedded.
+Think of it as the difference between writing something on a whiteboard (external memory, easy to erase and rewrite) vs. having it tattooed (fine-tuning, permanent, expensive to change, and you really need to be sure before you commit).
 :::
 
 ## What fine-tuning actually changes
@@ -46,6 +44,7 @@ If Karel's task has a very specific format, a structured fraud summary that need
 If Karel needs to reliably refuse certain requests, fine-tuning on examples of well-handled refusals can strengthen that refusal behavior, making it more consistent under adversarial pressure than a system prompt instruction alone.
 :::
 
+:::deep-dive Fine-tuning vs. the alternatives: decision framework
 ## Fine-tuning vs. the alternatives: a decision framework
 
 Before choosing fine-tuning, consider what else could solve the problem:
@@ -58,15 +57,18 @@ Before choosing fine-tuning, consider what else could solve the problem:
 | Model formats output incorrectly | Output formatting instructions | Format is complex and still unreliable after extensive prompting |
 
 Fine-tuning is generally the last resort, not the first. Start with prompt engineering and retrieval. Graduate to fine-tuning when those approaches are exhausted or insufficient.
+:::
 
 :::karel Karel in practice
-Karel is not fine-tuned in his current version, and intentionally so. His behavior is controlled through a well-crafted system prompt, few-shot examples, tool restrictions, and output validation. These can all be updated quickly as the product evolves.
+**Scene:** Production data shows Karel sometimes responds to frustrated customers defensively — over-explaining his constraints instead of acknowledging the person — even after multiple system prompt iterations trying to fix it.
 
-However, there is a case for fine-tuning Karel in the future: if production data shows that Karel's tone remains inconsistent despite multiple system prompt iterations (that he sometimes responds to frustrated customers defensively regardless of how the prompt instructs him), fine-tuning on verified examples of high-quality Karel interactions could embed the desired tone more deeply than a prompt can.
+**Karel acts:** The team considers fine-tuning. The proposal: train on verified examples of Karel at his best — empathetic, direct, non-defensive — to embed that tone more deeply than a prompt can.
 
-The key distinction: fine-tuning Karel's *tone and response style* is a valid use case. Fine-tuning Karel's *knowledge of bank policies* is not, those policies change, and fine-tuned knowledge can't be quickly updated.
+**But — this is the key risk:** The same team also suggests fine-tuning Karel's knowledge of bank fraud policies so he "just knows them." This is the wrong use of fine-tuning. Policies change. Fine-tuned knowledge can't be quickly updated — unlike a vector store, which can be updated in minutes.
 
-Fine-tuning is often proposed as the solution to agent reliability problems before simpler solutions have been exhausted. Before committing to the cost and time of a fine-tuning run, the question to ask is: "have we maxed out what better prompting, retrieval, and tool restrictions can do?" In most cases at product maturity, the answer is no, and the cheaper fix should come first.
+**Result:** Karel is not fine-tuned in his current version, and intentionally so. His behavior is controlled through a well-crafted system prompt, few-shot examples, tool restrictions, and output validation — all of which can be updated quickly as the product evolves. Fine-tuning remains on the roadmap only for the tone consistency problem, and only if prompt-based approaches are exhausted first.
+
+**Why this matters:** Fine-tuning is often proposed as the solution to agent reliability problems before simpler solutions have been exhausted. The question to ask first is: "have we maxed out what better prompting, retrieval, and tool restrictions can do?" In most cases, the answer is no — and the cheaper fix should come first.
 :::
 
 :::takeaway Key takeaway

@@ -40,21 +40,15 @@ There are two specific ways reactive scope definition goes wrong:
 The system prompt that results from reactive scope definition is usually longer than a well-planned one, less organized, and more prone to conflicts.
 
 :::karel Karel in practice
-Karel's scope was defined in a single pre-build session before any prompting or tool development started. The output was a simple list:
+**Scene:** Before any prompt or tool was written, Karel's team held a single pre-build session to define scope. Legal, compliance, operations, and customer service were all in the room.
 
-**Can do:** read transaction history, flag transactions, freeze card, file fraud report, explain the fraud process and investigation timeline in general terms, express empathy and acknowledge customer frustration.
+**Karel acts:** The output was a simple list — can do, cannot do, and edge cases with explicit decisions. Not "help with fraud." Four specific actions. Not implied constraints. An explicit list of what's off-limits and exactly what to do when a customer lands in an edge case.
 
-**Cannot do:** reverse or refund transactions, resolve or approve claims, give legal or financial advice, access accounts other than the current customer's, predict investigation outcomes, take action without explicit customer confirmation.
+**But — this is the key risk:** Teams that skip this step write scope into the system prompt reactively — adding constraints each time the agent does something wrong in testing. Reactive scope is patchy: it covers the specific bugs that were caught, but leaves gaps for everything that wasn't.
 
-**Edge cases (with decisions):**
-- Dispute of legitimate charge → redirect to dispute resolution, do not initiate fraud process
-- Question about general account features → redirect to main banking support, do not answer
-- Request to set up fraud alerts → explain this is outside the fraud reporting feature, direct to account settings
-- Customer in clear distress (not just about fraud) → acknowledge, offer to connect with a human
+**Result:** Every one of Karel's system prompt instructions traces back to this pre-build list. When a new edge case surfaces in QA, the team asks "is this in scope?" and refers back to the document — not the prompt — to decide. The prompt implements the decision; the document is the decision.
 
-Every one of Karel's system prompt instructions traces back to this list. The list came first. The prompt came second. This order matters.
-
-Scope definition is a product decision, not a prompt engineering decision. It requires input from legal, compliance, operations, and customer service, not just the team building the agent. The earlier in the process those stakeholders are involved, the less expensive it is to get the scope right.
+**Why this matters:** Scope definition is a product decision, not a prompt engineering decision. It requires input from legal, compliance, operations, and customer service — not just the team building the agent. The earlier in the process those stakeholders are involved, the less expensive it is to get the scope right. The list came first. The prompt came second. That order matters.
 :::
 
 :::takeaway Key takeaway

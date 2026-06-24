@@ -16,6 +16,7 @@ An LLM-based agent is a probabilistic system. It can hallucinate. It can be mani
 
 A single agent making a mistake affects one interaction. In a multi-agent system, a mistake from a subagent becomes part of the orchestrator's context, which can then affect every subsequent decision the orchestrator makes.
 
+:::deep-dive How trust between agents breaks down
 ## How trust between agents breaks down
 
 :::concept-cards
@@ -31,6 +32,7 @@ A subagent operates slightly outside its intended scope and returns a result tha
 ### Trust asymmetry
 An orchestrator might be designed with the assumption that all subagent outputs are trustworthy. In practice, a subagent can be compromised, misconfigured, or simply wrong. An orchestrator that validates subagent outputs is more resilient than one that trusts them unconditionally.
 :::
+:::
 
 ## Designing for trust
 
@@ -40,22 +42,20 @@ An orchestrator might be designed with the assumption that all subagent outputs 
 
 **Design subagents to fail gracefully.** A subagent that can't complete its task should return a clear error state, not a partial result that looks like success. "I was unable to file the report because the transaction ID was not found" is more useful than a success response with nothing filed.
 
-**Separate privilege levels.** Not all agents need the same access. An orchestrator that routes cases doesn't need to read customer PII. A subagent that reads transaction data doesn't need to file compliance reports. Least-privilege design limits the blast radius when any single agent behaves unexpectedly.
+**Separate privilege levels.** Not all agents need the same access. An orchestrator that routes cases doesn't need to read customer PII. A subagent that reads transaction data doesn't need to file compliance reports. Give each agent only the access it needs. That way, if one agent goes wrong, the damage stays contained.
 
 **Audit everything across the full chain.** In a multi-agent system, you need to be able to reconstruct the full sequence of agent interactions for any given outcome, which agent sent what to which other agent, in what order, with what results. Without this, debugging and accountability are nearly impossible.
 
 :::karel Karel in practice
-When Karel operates as a subagent in the banking fraud pipeline, the Case Management Orchestrator applies the following trust rules:
+**Scene:** Karel files a fraud report and returns to the Case Management Orchestrator with a report ID. But the filing silently failed — the report ID doesn't exist.
 
-**Output validation:** the orchestrator never assumes Karel's status report is accurate. It independently verifies that the report ID Karel returned exists in the case management system before marking the case as "report filed."
+**Karel acts:** The orchestrator receives Karel's status report. It doesn't trust it. Before marking the case as "report filed," it independently verifies that the report ID Karel returned actually exists in the case management system.
 
-**Structured output only:** Karel is required to return a structured JSON object with specific fields (session_status, actions_taken, report_id, escalation_flags). Free-text responses from Karel are not accepted, they must be parsed from the structured output.
+**But — this is the key risk:** If the orchestrator trusted Karel's status report unconditionally, a hallucinated or silently-failed report ID would route the case to "pending investigation" status — and no human would follow up, because the system believes a report is already being reviewed.
 
-**Escalation flags:** Karel's output includes a field for escalation_flags, observations that should be reviewed by a human (customer expressed extreme distress, Karel encountered an unexpected tool failure). The orchestrator doesn't attempt to handle these automatically; it routes them to a human reviewer.
+**Result:** Four trust rules prevent this: output validation (independent verification of Karel's report ID), structured output only (Karel returns a JSON object, not free text), escalation flags (Karel signals observations a human should review, routed automatically), and privilege separation (Karel can only act on the delegated case ID).
 
-**Privilege separation:** Karel can only act on the specific case ID he was delegated. He cannot browse other cases, access other accounts, or modify the orchestrator's case routing logic.
-
-When evaluating a multi-agent system, ask: "what happens if one agent returns a wrong answer?" If the answer is "everything downstream breaks and we won't know until a customer complains," the trust architecture needs work.
+**Why this matters:** When evaluating a multi-agent system, ask: "what happens if one agent returns a wrong answer?" If the answer is "everything downstream breaks and we won't know until a customer complains," the trust architecture needs work. Agents in a multi-agent system should not trust each other by default — each must validate its own inputs, regardless of who sent them.
 :::
 
 :::takeaway Key takeaway

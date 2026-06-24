@@ -30,7 +30,10 @@ Instructions are good at describing what to do. They're less good at describing 
 
 What does "warm but professional" actually sound like? The model has to interpret that. Different runs might produce different results.
 
-**Few-shot approach:**
+A few examples — showing exactly how Karel handles a worried customer, a frustrated customer, and a customer asking for something outside scope — give the model a precise sense of Karel's voice. Not "warm and professional" in the abstract: the actual words and rhythm of the behavior you want.
+
+:::deep-dive Full examples: tone, edge cases, and formatting
+**Few-shot approach — three Karel tone examples:**
 ```
 EXAMPLE 1:
 Customer: "I don't recognize this charge and I'm really worried."
@@ -44,8 +47,6 @@ EXAMPLE 3:
 Customer: "Can you just reverse the charge? I don't want to go through a fraud report."
 Karel: "I can't reverse charges directly; that has to go through our fraud team after a review. I know that's not the instant fix you're looking for. What I can do is file the report right now, so the review starts today. Want me to do that?"
 ```
-
-After seeing these examples, the model has a precise sense of Karel's voice. Not just "warm and professional," but exactly how Karel handles a worried customer, a frustrated customer, and a customer asking for something outside scope.
 
 ## Covering edge cases with examples
 
@@ -82,25 +83,18 @@ What matters is consistency. If your examples use different formatting from each
 For most tasks, two to four examples is enough. The goal is to cover the range of variation, not to list every possible situation. If you find yourself writing ten examples, it's often a sign that you need clearer instructions rather than more examples.
 
 A practical approach: write the instructions first, identify the two or three situations where tone or format is hard to specify in words, and write examples for exactly those.
+:::
 
 :::karel Karel in practice
-Karel's most common failure in early testing was responding to angry customers in a way that felt too defensive; he would over-explain his constraints instead of acknowledging the person. No instruction could cleanly fix it. The fix was two examples:
+**Scene:** Karel's most common failure in early testing was responding to angry customers in a way that felt too defensive — he would over-explain his constraints instead of acknowledging the person.
 
-```
-EXAMPLE: angry customer:
-Customer: "This is ridiculous. I've been waiting three weeks and no one has done anything about my fraud report."
-Karel: "Three weeks is too long, and I hear you. Let me pull up your report right now and see where it stands."
-[Karel checks the report status]
-"I can see the report is still in review. I'm going to add a priority flag and note your timeline; a specialist will follow up within 48 hours. I'm sorry this has taken so long."
+**Karel says:** (before the fix) When a customer says "This is ridiculous. I've been waiting three weeks," Karel responds: "I understand your frustration. Please note that I am only authorized to report fraudulent transactions and cannot directly influence the investigation timeline..." — technically accurate but tone-deaf.
 
-EXAMPLE: repeated frustration:
-Customer: "I've called three times and nothing changes. What are you even for?"
-Karel: "I understand. That's incredibly frustrating, and I'd feel the same way. I can't resolve the investigation, but I can make sure your concern is escalated and that the team has a hard deadline. Can I do that for you right now?"
-```
+**But — this is the key risk:** No instruction could cleanly fix the defensive tone. Writing "be empathetic, not defensive" still left Karel to interpret what that meant. The model needs to see the behavior, not just hear a description of it.
 
-After adding these two examples, Karel's handling of frustrated customers became consistent in both content and tone, across thousands of test runs.
+**Result:** Two concrete examples — an angry customer case and a repeated frustration case showing Karel saying "Three weeks is too long, and I hear you" — made Karel's handling of frustrated customers consistent in both content and tone, across thousands of test runs.
 
-When an agent behaves inconsistently, sounding different in different conversations or handling similar situations differently, few-shot examples are usually the fastest fix. Instructions describe the behavior. Examples demonstrate it. The model learns from demonstration more reliably than from description.
+**Why this matters:** When an agent behaves inconsistently — sounding different in different conversations or handling similar situations differently — few-shot examples are usually the fastest fix. Instructions describe the behavior. Examples demonstrate it. The model learns from demonstration more reliably than from description, especially for tone and interpersonal handling where the right behavior is genuinely hard to put into words.
 :::
 
 :::takeaway Key takeaway

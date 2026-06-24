@@ -27,6 +27,7 @@ If the answer is "nothing" or "not much," you don't need fine-tuning. If the ans
 Privacy and compliance have the final word on memory design. Customer PII should not persist beyond what's legally permitted. Session logs need defined expiry. Memory architecture has a deletion and expiry design as much as a storage design.
 :::
 
+:::deep-dive Memory design template and common pitfalls
 ## A memory design template
 
 For most customer-facing agents, a practical memory architecture looks like this:
@@ -60,19 +61,18 @@ For most customer-facing agents, a practical memory architecture looks like this
 **Retrieval without validation:** adding a retrieval layer doesn't add reliability unless the retrieval is reliable. Monitor retrieval failures as a specific class of bug.
 
 **Memory without deletion:** every memory system needs a deletion and expiry policy. What happens to session data after 90 days? What happens to fraud case summaries when a customer's account is closed? These are product decisions, not technical afterthoughts.
+:::
 
 :::karel Karel in practice
-**In-context (every session):** system prompt (~600 tokens) with Karel's role, tools, hard constraints, and tone instructions; customer context retrieved from the bank's identity system; case summary if the customer has prior fraud activity (a structured 3-5 sentence summary injected at session open); selective transaction data injected when the customer identifies the fraudulent charge; full current session conversation history.
+**Scene:** Karel's memory architecture needs to be designed before any code is written. The team starts with the five memory design questions, not with technology choices.
 
-**External, database:** bank's transactional database for all transaction data lookups; case management system for all fraud reports, their statuses, Karel's actions, and outcomes; session audit log (every tool call, timestamp, argument, result, retained for compliance).
+**Karel acts:** The answers drive specific design decisions. What he needs right now → system prompt, authenticated customer context, and selective transaction data in-context each session. What he needs across sessions → case management database persisting fraud reports, statuses, and outcomes. What he needs to look up → vector store of fraud policies and FAQ docs. What behavior he needs that prompts can't fully specify → under evaluation, not yet deployed.
 
-**External, vector store:** bank fraud policy documents retrieved when customers ask about the investigation process, coverage decisions, or timelines; FAQ and process documentation for common procedural questions.
+**But — this is the key risk:** Memory without deletion is a compliance and privacy risk. What happens to session data after 90 days? What happens to fraud case summaries when a customer's account is closed? Every memory system needs a deletion and expiry policy — these are product decisions, not technical afterthoughts.
 
-**Fine-tuning:** not currently deployed. Under evaluation for tone consistency if prompt-based approaches prove insufficient at scale.
+**Result:** Karel knows what he needs to know, when he needs to know it, without holding onto data he shouldn't keep, and without asking customers to repeat themselves.
 
-This architecture means Karel knows what he needs to know, when he needs to know it, without holding onto data he shouldn't keep, and without asking customers to repeat themselves.
-
-Memory design is one of the most consequential early-stage decisions in building an agent. The five questions at the start of this lesson are the fastest path to getting the design right, start there, not with technology choices.
+**Why this matters:** Memory design is one of the most consequential early-stage decisions in building an agent. The five questions at the start of this lesson are the fastest path to getting the design right — start there, not with technology choices.
 :::
 
 :::takeaway Key takeaway

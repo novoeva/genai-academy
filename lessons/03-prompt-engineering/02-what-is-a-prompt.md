@@ -27,6 +27,7 @@ The model is not reading your prompt and executing it like code. The model is lo
 
 ## A concrete example: Karel's full prompt
 
+:::deep-dive Full example: what Karel's complete prompt looks like
 When a customer opens the fraud reporting feature and says "I don't recognize this charge from yesterday," here's what Karel actually receives (simplified):
 
 ```
@@ -62,6 +63,7 @@ I don't recognize this $850 charge from yesterday. It says Electronics Plus but 
 All of that is the "prompt" from the model's perspective. The model now predicts the next token. It might say "I understand, that must be concerning. Let me help you..." because that pattern is consistent with everything it just received.
 
 This is why precision matters. The injected data (the transaction list), the system instructions (the tools and constraints), and the message (the customer's words) all shape the response together.
+:::
 
 ## What you control
 
@@ -71,14 +73,18 @@ When you engineer a prompt, you're controlling:
 - **Conversation structure**: How many turns of history to include
 - **The message format**: Whether to use numbered lists, bullet points, or prose
 
-What you cannot control: the model's internal reasoning or its probability distribution. You can only shape the input and hope for reasonable output.
+What you cannot control: the model's internal reasoning or its probability distribution. You can only shape the input — but done well, that's enough to make behavior highly predictable.
 
 :::karel Karel in practice
-When a customer messages Karel about fraud, the system prompt tells Karel exactly what he can and cannot do. The injected data gives him the real transactions to analyze. The conversation history (if any) reminds him of what was discussed before. The customer's message gives him the specific request.
+**Scene:** A customer messages Karel about a suspicious transaction. Karel needs to analyze it accurately and respond within his constraints.
 
-If the system prompt says "you can reverse transactions" but you know the bank's system doesn't allow that, the model will confidently tell customers something false. If you forget to include the customer's transaction history in the injected data, Karel will make up numbers or transactions that don't exist. If you make the instructions too vague, Karel might freeze a card when the customer only wanted to dispute a charge.
+**Karel acts:** He receives everything at once — the system prompt defining his role and constraints, the injected transaction data from the database, the conversation history, and the customer's message — and predicts a response from all of it.
 
-The prompt is not decoration. It's the specification.
+**But — this is the key risk:** Every component of the prompt shapes the output. If the system prompt says "you can reverse transactions" but the bank's system doesn't allow that, Karel will confidently tell customers something false. If you forget to include the customer's transaction history in the injected data, Karel will make up numbers or transactions that don't exist. If the instructions are too vague, Karel might freeze a card when the customer only wanted to dispute a charge.
+
+**Result:** A poorly constructed prompt produces a Karel who sounds confident while doing the wrong thing — making false promises, acting on invented data, or taking unauthorized actions.
+
+**Why this matters:** The prompt is not decoration. It's the specification. Every piece of it — system instructions, injected data, conversation structure — is part of what the model sees and acts on. Treating prompt construction with the same rigor as code prevents the most common and dangerous agent failures.
 :::
 
 :::takeaway Key takeaway

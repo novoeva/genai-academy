@@ -23,19 +23,18 @@ The results of the action come back into the agent's context. If the agent calle
 :::
 
 :::karel Karel in practice
-Here's what the agent loop looks like for a typical Karel interaction:
+**Scene:** A customer says "I don't recognize a charge for €47 from yesterday." Karel needs to handle this from initial report through to confirmed action.
 
-**Turn 1:** Perceive, Customer says "I don't recognize a charge for €47 from yesterday." Plan, look at their transaction history. Act, call read_transaction_history(). Observe, returns a list including a €47 charge from an unrecognized merchant.
+**Karel acts:** The loop runs four times. Turn 1: perceive the report, call read_transaction_history(), observe the €47 charge from "GlobalMerch Ltd." Turn 2: present the match, ask for confirmation, observe "Yes, and please freeze my card." Turn 3: call flag_transaction() and freeze_card() in sequence, observe both return success. Turn 4: confirm what happened and close. Each iteration shaped by what came before.
 
-**Turn 2:** Perceive, Transaction data now in context. Plan, show the customer the matching transaction and ask how to proceed. Act, "I found a €47 charge from 'GlobalMerch Ltd' on April 21st. Is this the transaction you're concerned about? I can flag it for review and/or freeze your card right now." Observe, Customer replies "Yes, and please freeze my card."
+**But — this is the key risk:** A wrong decision in Turn 1 propagates through every subsequent turn. If Karel incorrectly identifies the transaction in Turn 1, everything that follows — flagging, freezing, reporting — happens on the wrong transaction. The customer may even confirm it (not reading the details carefully), and Karel proceeds with confidence.
 
-**Turn 3:** Perceive, Customer confirmed the transaction and requested a freeze. Plan, flag the transaction and freeze the card. Act, call flag_transaction(id) and freeze_card() in sequence. Observe, Both tools return success responses.
+**Result:** Four loops complete the task correctly. But compounding errors across loops are one of the most dangerous failure modes in agentic systems — a small mistake early becomes an irreversible action later.
 
-**Turn 4:** Perceive, Both actions completed successfully. Plan, confirm what happened, explain next steps, close the conversation. Act, "Done. I've flagged that transaction and frozen your card. I'll file a formal fraud report now, a specialist will review it within 24 hours."
-
-The loop ran four times to complete this task. Each iteration was shaped by what came before it.
+**Why this matters:** Karel's loop is intentionally short and includes an explicit customer confirmation step before any write action. That confirmation isn't just UX — it's a human checkpoint inside the agent loop. Every additional loop turn is another opportunity for an error to compound.
 :::
 
+:::deep-dive Loop failure modes and product implications
 ## What happens when the loop goes wrong
 
 The agent loop creates failure modes that don't exist in single-turn models:
@@ -57,6 +56,7 @@ The agent loop creates failure modes that don't exist in single-turn models:
 **Reliability:** More loops means more chances for something to go wrong. Designing agents to accomplish tasks in the fewest reasonable loops improves reliability.
 
 Karel's loop is intentionally designed to be short: read transactions, confirm with the customer, take actions, confirm completion. The actions that could cause harm (flagging, freezing, filing) all require explicit customer confirmation before they execute. The loop's design isn't just for efficiency, it's a safety mechanism. Each confirmation step is a human checkpoint inside the agent loop.
+:::
 
 :::takeaway Key takeaway
 Every agent operates through a repeating perceive-plan-act-observe loop. Understanding this cycle explains where agents can go wrong, how errors compound across steps, and why design choices like confirmation steps function as safety mechanisms, not just UX niceties.

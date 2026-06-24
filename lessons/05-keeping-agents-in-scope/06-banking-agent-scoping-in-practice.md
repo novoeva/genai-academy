@@ -59,6 +59,7 @@ Before any Karel response reaches the customer:
 
 **Uncertainty trigger:** any response where Karel expresses uncertainty about his own role → hold for human review.
 
+:::deep-dive Which layer catches which failure, and what no layer prevents
 ## What each layer catches
 
 | Failure scenario | Caught by |
@@ -84,6 +85,7 @@ Even with all four layers, Karel isn't perfect. There are categories of failure 
 **Systemic miscommunication:** if Karel's output validation passes a response, but the customer still misunderstands what Karel said, that's a UX and communication problem, not a scope enforcement problem.
 
 The goal of scope enforcement isn't perfection. It's reducing the frequency and severity of scope violations to a level that's manageable, auditable, and improvable over time.
+:::
 
 ## Applying this to any agent
 

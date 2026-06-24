@@ -27,6 +27,7 @@ Multi-agent systems have higher operational overhead: more prompts to maintain, 
 If all the subtasks depend on each other and must run in order, a multi-agent system doesn't reduce latency, it may actually increase it through coordination overhead. The benefit of multi-agent (parallel execution, specialization) only materializes when tasks can run independently.
 :::
 
+:::deep-dive Anti-patterns and the cost of unnecessary complexity
 ## The anti-patterns: what multi-agent doesn't fix
 
 **"The single agent is unreliable, let's add more agents to check each other."**
@@ -49,6 +50,7 @@ Multi-agent systems have specific costs that single-agent systems don't:
 - **Harder to debug.** You reconstruct the full chain of agent interactions across multiple services, not just one set of logs.
 - **Harder to test.** You have to test each agent in isolation and the full system together.
 - **More expensive.** More agents mean more model calls, more tokens, more infrastructure.
+:::
 
 ## The decision framework
 
@@ -62,13 +64,15 @@ Before proposing a multi-agent architecture, answer these questions honestly:
 If the honest answer to most of these is "no", a single agent with good prompt engineering, memory design, and tool configuration is probably the right choice.
 
 :::karel Karel in practice
-Karel, in his basic form, is the right architecture for Karel's task, and it's not multi-agent. He's a single, well-scoped agent with clear tools, a clear system prompt, and clear memory design.
+**Scene:** An engineering team proposes splitting Karel into three agents — one for intake, one for flagging, one for reporting — arguing it will be "more scalable."
 
-He becomes a subagent when placed inside a larger banking fraud pipeline, but that's because the broader system (fraud detection, compliance routing, case management) benefits from specialization and the separation of concerns. The decision to make Karel part of a multi-agent system comes from the surrounding system's needs, not from Karel's individual task.
+**Karel acts:** The product lead asks the decision framework questions. Does the task naturally decompose into distinct subtasks with well-defined interfaces? Not really — the steps are sequential and each depends on the prior one. Are any subtasks independent enough to run in parallel? No. Would specialized agents be meaningfully better at their subtask? Unlikely — the system prompt for each would look nearly identical.
 
-The question that led to the multi-agent design wasn't "how do we make Karel into a multi-agent system?" It was "what does the bank's overall fraud management workflow look like, and where does Karel fit within it?"
+**But — this is the key risk:** Karel in his basic form is already the right architecture for his task — a single, well-scoped agent with clear tools, a clear system prompt, and clear memory design. Adding agents doesn't improve quality here; it adds three interfaces to maintain, three sets of logs to trace, and three points of failure instead of one.
 
-When an engineering team proposes a multi-agent architecture, the right product question is: "what specific capability or quality improvement does this architecture provide that a well-designed single agent doesn't?" If the answer is clear and compelling, genuine parallelism, meaningful specialization, the architecture is justified. If the answer is vague or defaults to "it's more scalable" without a concrete example, push back.
+**Result:** Karel stays a single agent. He becomes a subagent only when placed inside the larger banking fraud pipeline — because that decision came from the surrounding system's needs, not from Karel's individual task. The question that led to the multi-agent design was "what does the bank's overall fraud management workflow look like, and where does Karel fit?" Not "how do we make Karel multi-agent?"
+
+**Why this matters:** When an engineering team proposes a multi-agent architecture, the right product question is: "what specific capability or quality improvement does this architecture provide that a well-designed single agent doesn't?" A clear, compelling answer justifies the complexity. "It's more scalable" without a concrete example is not a compelling answer.
 :::
 
 :::takeaway Key takeaway

@@ -22,6 +22,7 @@ The scroll has three important properties: everything on it is equally "readable
 
 **Context fills up with content, not just conversation.** Every tool call result, every retrieved document, every injected data record takes up tokens. An agent that retrieves large amounts of data, Karel reading 30 days of transaction history, fills a significant portion of the context window with that data, leaving less room for conversation history.
 
+:::deep-dive Techniques for managing context window limits
 ## Designing for context limits
 
 :::concept-cards
@@ -34,6 +35,7 @@ Instead of putting all retrieved data into context, be selective. If Karel is lo
 ### Structured context management
 Maintain a structured representation of the agent's state, key facts, decisions made, current step in the task, that's compact but complete. Refresh this structure at the start of each new session rather than injecting the full conversation history.
 :::
+:::
 
 ## What stays, what goes
 
@@ -42,13 +44,15 @@ Think of in-context memory as working memory. It's what the agent has available 
 Anything the agent needs to know across sessions, or anything too large to fit in the context, needs a different kind of memory. That's where external memory comes in.
 
 :::karel Karel in practice
-In Karel's current session, his context window contains: his system prompt (about 600 tokens), the customer's authentication context (account ID, current session info), the conversation history for this session, and any transaction data he has retrieved and injected.
+**Scene:** A customer who called about fraud three times this week opens a new session with Karel. This is their fourth call — the investigation is still ongoing, their card is frozen, and they're frustrated.
 
-When a customer opens a new fraud session, Karel's context is reset. He doesn't know whether this customer has reported fraud before, whether their card was frozen in a previous session, or whether this is the third time this week they've called about the same issue.
+**Karel says:** "Hi! How can I help you today?" — starting completely fresh, with no awareness of the three prior sessions.
 
-All of that is in the bank's database, but Karel has to retrieve it explicitly and add it to his context. Without retrieval, he starts fresh every time.
+**But — this is the key risk:** All the relevant information is in the bank's database, but Karel has to retrieve it explicitly and add it to his context. Without retrieval, he starts fresh every time. The customer has to explain everything again — the original fraud, what actions were taken, what they're calling about now.
 
-Every time you see an AI system ask a customer to "re-explain their situation" at the start of a session, you're seeing in-context memory limits in action. Whether that's acceptable depends on the use case; for a simple FAQ bot, it doesn't matter. For a fraud reporting agent that builds context over time, it's a gap worth closing with external memory.
+**Result:** Karel's context window contains only what's in this session: his system prompt (~600 tokens), the customer's authentication context, and this conversation's history. Last week's fraud report, the frozen card, the prior interactions — none of it is visible unless explicitly retrieved.
+
+**Why this matters:** Every time you see an AI system ask a customer to "re-explain their situation" at the start of a session, you're seeing in-context memory limits in action. For a simple FAQ bot, it doesn't matter. For a fraud reporting agent that builds context over time, it's a gap worth closing with external memory — and closing it is a product decision, not a model limitation that can be waited out.
 :::
 
 :::takeaway Key takeaway

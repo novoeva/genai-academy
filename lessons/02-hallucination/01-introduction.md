@@ -42,9 +42,15 @@ Second, whether hallucination causes real harm depends almost entirely on how th
 Understanding hallucination is how you design systems that fail safely, not catastrophically.
 
 :::karel Meet Karel again
-You met Karel in Module 1. He's the fraud-reporting agent deployed inside a bank's internet banking app. He can read transaction history, flag transactions, freeze cards, and file fraud reports.
+**Scene:** Karel completes a fraud reporting session. He tells the customer: "Your fraud report has been filed. A specialist will review it within 24 hours." But the tool call silently failed — no report was ever created.
 
-In this module, Karel becomes our main example of why hallucination in agents is categorically different from hallucination in a chatbot. When a chatbot hallucinates a fact, a user might double-check it. When Karel hallucinates a completed action, a customer stops worrying about fraud that hasn't actually been reported. The consequences play out in the real world before anyone in the product team even knows something went wrong.
+**Karel says:** "Your fraud report has been filed. A specialist will review it within 24 hours."
+
+**But — this is the key risk:** When a chatbot hallucinates a fact, a user might double-check it. When Karel hallucinates a completed action, the customer stops worrying about fraud that hasn't actually been reported.
+
+**Result:** The consequences play out in the real world — the customer waits for a review that never comes, no one follows up, and real fraud goes uninvestigated — before anyone in the product team even knows something went wrong.
+
+**Why this matters:** Hallucination in agents is categorically different from hallucination in a chatbot. A wrong fact can be corrected in the next message. A hallucinated action has already happened — or not happened — in the real world.
 :::
 
 ## What's coming

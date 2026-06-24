@@ -51,15 +51,15 @@ A prompt that passes basic testing isn't finished. It's a starting point. Real u
 **Fix:** Red-team your own prompt. Try to make the agent fail. Ask it to do things it shouldn't do. See if it holds its constraints. Then fix what broke. Repeat before launch, and keep iterating post-launch as real user behavior surfaces new edge cases.
 
 :::karel Karel in practice
-Most of Karel's early failures came from exactly these mistakes:
+**Scene:** Karel's early deployments in QA showed repeated failures — customers getting wrong information, Karel promising things he couldn't deliver, and strange behavior on edge cases no one had anticipated.
 
-**Persona vs. capability:** The first version of Karel's system prompt said he was "a specialist in banking fraud with full knowledge of the bank's systems." He was given no such access. When customers asked questions about their account history, he invented plausible-sounding answers because the prompt implied he should know. Fixing this required explicitly listing what Karel could and couldn't see.
+**Karel acts:** In three different ways that all trace back to prompt engineering oversights: inventing account history he couldn't access, declining requests without giving customers a next step, and trying to handle legitimate disputes as if they were fraud.
 
-**Missing positive alternatives:** When Karel was told "don't promise refunds," he would sometimes respond with nothing, just declining, without offering the customer a next step. Adding "instead, offer to file the fraud report immediately so the investigation can start today" gave him a path forward that kept the customer engaged without false promises.
+**But — this is the key risk:** Each failure felt like a model problem in the moment. "Karel made something up." "Karel was unhelpful." "Karel flagged the wrong thing." But every one of them was a prompt specification gap — something that was never written down because it seemed obvious, or an edge case that wasn't considered.
 
-**Underspecified edge case:** Nothing in the original system prompt addressed customers who were confused about what Karel was for (thinking they could use him to dispute a legitimate charge, not a fraudulent one). Karel would try to help anyway, sometimes flagging non-fraudulent transactions. Adding one explicit instruction, "if the customer is asking about a legitimate charge they want to dispute rather than a fraudulent one, tell them this is the wrong service and direct them to dispute resolution", fixed it entirely.
+**Result:** Three targeted fixes — explicitly listing Karel's actual capabilities instead of implying expertise, adding "instead, offer to file the fraud report" after every "don't promise refunds," and adding one line about legitimate disputes — fixed all three failure modes entirely.
 
-The mistakes that sink agent deployments are rarely technical. They're prompt engineering oversights, things that were never written down because they felt obvious, or edge cases that weren't considered. Treating the system prompt as a living specification, one that gets reviewed and hardened before launch and after every incident, is the difference between an agent that holds up and one that quietly fails.
+**Why this matters:** The mistakes that sink agent deployments are rarely technical. They're prompt engineering oversights. Treating the system prompt as a living specification — one that gets reviewed and hardened before launch and after every incident — is the difference between an agent that holds up and one that quietly fails.
 :::
 
 :::takeaway Key takeaway

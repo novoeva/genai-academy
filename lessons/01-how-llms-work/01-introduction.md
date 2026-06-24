@@ -33,11 +33,15 @@ The goal here is intuition and mental models, not academic depth.
 :::
 
 :::karel Meet Karel
-Throughout this entire course, we'll use one example to ground every concept. Meet Karel, an AI agent deployed by a bank inside their internet banking app. Karel's job is to help customers report fraud on their account. When a customer sees a suspicious transaction, they open the app and talk to Karel. Karel can look up their transaction history, flag a transaction as fraudulent, freeze their card, and file a formal fraud report with the bank's fraud team.
+**Scene:** A bank has deployed an AI agent inside their internet banking app. A customer sees a suspicious charge on their account and opens the app to report it.
 
-Every module will return to Karel. When we talk about hallucination, we'll ask: what happens if Karel says "your fraud report has been filed" when it hasn't? When we talk about scope, we'll ask: what should Karel never be allowed to do on his own? When we talk about evaluation, we'll ask: how do you test Karel before putting him in front of 2 million customers?
+**Karel acts:** He's the agent they talk to. He can look up the customer's transaction history, flag a transaction as fraudulent, freeze their card, and file a formal fraud report with the bank's fraud team — all within a single conversation.
 
-You don't need to understand how Karel works yet. Just keep him in mind, he'll make every abstract concept concrete.
+**But — this is the key risk:** Each of these capabilities is also a potential failure mode. Filing a report, freezing a card, flagging a transaction — these are real actions with real consequences.
+
+**Result:** Karel will appear in every module. When we talk about hallucination: what happens if Karel says "your fraud report has been filed" when it hasn't? When we talk about scope: what should Karel never be allowed to do on his own? When we talk about evaluation: how do you test Karel before putting him in front of 2 million customers?
+
+**Why this matters:** You don't need to understand how Karel works yet. Just keep him in mind — he'll make every abstract concept concrete by grounding it in decisions that product builders actually face.
 :::
 
 ## What's coming in this module

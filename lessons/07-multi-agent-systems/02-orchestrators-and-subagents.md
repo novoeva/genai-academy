@@ -54,15 +54,15 @@ Imagine the bank expanding Karel's role as part of a larger fraud detection syst
 In this system, Karel is a subagent. He does his job (customer-facing fraud reporting) and returns a result to the orchestrator (case opened, report filed, card frozen). The orchestrator decides what to do next.
 
 :::karel Karel in practice
-In the banking fraud pipeline, Karel's interface with the Case Management Orchestrator is designed precisely:
+**Scene:** The Case Management Orchestrator receives a fraud alert and needs to route it to Karel for the customer-facing workflow.
 
-**Input from orchestrator:** case ID, customer account ID, pre-confirmed suspicious transaction(s), any prior screening already done, and what the orchestrator expects back (status, actions taken, report ID).
+**Karel acts:** He receives a structured input from the orchestrator — case ID, customer account ID, pre-confirmed suspicious transaction(s), prior screening done, and what the orchestrator expects back. He does his job and returns a structured output: session status (completed, escalated, or abandoned), actions taken (flagged: yes/no, frozen: yes/no, report filed: yes/no), report ID if filed, and any escalation flags the orchestrator should know about.
 
-**Output from Karel to orchestrator:** session status (completed, escalated, abandoned), actions taken (flagged: yes/no, frozen: yes/no, report filed: yes/no), report ID (if filed), and any flags for the orchestrator's attention (customer expressed unusual distress, customer said something that contradicts the account data).
+**But — this is the key risk:** Karel doesn't need to know about the fraud detection agent or the compliance routing logic — and the orchestrator doesn't need to understand Karel's customer interaction logic. They just need a clear, structured interface. Vague interfaces between agents are where multi-agent systems break down.
 
-Karel doesn't need to know about the detection agent or the compliance routing logic. He just needs to do his job and report back. That's the right scope for a well-designed subagent.
+**Result:** The interface works because it was explicitly designed: what Karel receives, what he returns, in what format, with what fields. If the team can't clearly specify that interface, the architecture isn't ready to build. The customer on the other end gets a consistent answer, regardless of which part of the system handled their case.
 
-When a multi-agent architecture is proposed, the most important design review question isn't "which agents do we need?", it's "what does the interface between agents look like?" Vague interfaces between agents are where multi-agent systems break down. If the team can't clearly specify what each agent receives and returns, the architecture isn't ready to build.
+**Why this matters:** When a multi-agent architecture is proposed, the most important design review question isn't "which agents do we need?" — it's "what does the interface between agents look like?" That question, answered clearly, is what makes the difference between a multi-agent system that works and one that degrades unpredictably.
 :::
 
 :::takeaway Key takeaway

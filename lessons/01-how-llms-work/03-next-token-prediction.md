@@ -6,7 +6,7 @@ order: 3
 
 Here is the single most important sentence in this entire course:
 
-**A language model is trained to predict the most likely next token given all the tokens that came before.**
+**A language model is trained to predict the most likely next word (or word-fragment) given everything that came before it.**
 
 Everything else, the apparent intelligence, the helpfulness, the creativity, and yes, the hallucinations, is a consequence of this one mechanism.
 
@@ -36,6 +36,7 @@ The difference is degree, not kind. Your phone suggests "the" after "I went to".
 
 Remember how the model "picks a token with some randomness"? That randomness is controlled by a setting called **temperature**.
 
+:::deep-dive How temperature works in detail
 :::concept-cards
 ### Low temperature (near 0)
 The model almost always picks the single most likely next token. Responses are predictable, consistent, a bit dry. Good for customer support bots where consistency matters.
@@ -44,7 +45,8 @@ The model almost always picks the single most likely next token. Responses are p
 The model samples more broadly from the probability distribution. Responses are more varied, creative, and more likely to go off the rails. Better suited to creative writing assistants.
 :::
 
-As a PM, temperature is a product decision. A customer support bot should have low temperature (consistent, safe). A creative writing assistant might have higher temperature (surprising, varied).
+As someone building with AI, temperature is a product decision. A customer support bot should have low temperature (consistent, safe). A creative writing assistant might have higher temperature (surprising, varied).
+:::
 
 ## Why this explains so much
 
@@ -54,9 +56,15 @@ As a PM, temperature is a product decision. A customer support bot should have l
 - **Why they can feel inconsistent?** Because the same prompt can produce different outputs depending on the sampling randomness.
 
 :::karel Karel in practice
-When a customer tells Karel "I'd like to report a fraudulent charge," Karel doesn't retrieve a script from a database. He generates his response token by token, "I" → "understand" → "that" → "must" → "be" → "stressful", each word influenced by the one before it, shaped by patterns from millions of customer service conversations in his training data.
+**Scene:** A customer tells Karel "I'd like to report a fraudulent charge."
 
-This also explains why Karel's temperature setting matters. A banking agent handling fraud reports should have low temperature; you want him to say the same careful, consistent things every time, not get creative. High temperature Karel might one day open with "Yikes, that sounds rough!" That's not the tone a fraud victim needs.
+**Karel says:** "I understand that must be stressful" — generated token by token: "I" → "understand" → "that" → "must" → "be" → "stressful", each word influenced by the one before it, shaped by patterns from millions of customer service conversations in his training data. He's not retrieving a script; he's predicting text.
+
+**But — this is the key risk:** Temperature is a product decision, and getting it wrong changes Karel's character. High temperature Karel might one day open with "Yikes, that sounds rough!" That's not the tone a fraud victim needs.
+
+**Result:** Karel's responses become inconsistent — sometimes careful and measured, other times unexpectedly casual or creative.
+
+**Why this matters:** A banking agent handling fraud reports should have low temperature. You want him to say the same careful, consistent things every time, not get creative. The temperature knob isn't a technical detail — it's a direct control on how much your agent's personality varies across thousands of conversations.
 :::
 
 :::takeaway Key takeaway

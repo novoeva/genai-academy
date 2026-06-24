@@ -45,7 +45,7 @@ If a customer expresses frustration or anger:
 5. Do not make promises about timelines beyond what's in this prompt
 ```
 
-This is longer. That's fine. The model can process it, and you're not paying for tokens, you're paying for unpredictable agent behavior in production.
+This is longer. That's fine. The model can process it, and a few extra words in a prompt cost almost nothing — unpredictable agent behavior in production costs a lot.
 
 ## Be explicit about what "success" looks like
 
@@ -69,6 +69,7 @@ A longer system prompt is not a problem. A disorganized one is.
 
 Use headers, sections, and numbered lists inside system prompts. The model handles structured text better than prose paragraphs for instruction-following tasks. Structure also makes it easier to update: if something breaks, you can find and fix the relevant section without rewriting everything.
 
+:::deep-dive Recommended structure for an agent system prompt
 A good structure for an agent system prompt:
 1. **Role**, who is this agent?
 2. **Capabilities**, what can it do?
@@ -76,27 +77,18 @@ A good structure for an agent system prompt:
 4. **Process**, how should it handle the common case?
 5. **Edge cases**, specific instructions for specific situations
 6. **Tone and values**, how should it communicate?
+:::
 
 :::karel Karel in practice
-Here's a before-and-after for one instruction in Karel's system prompt:
+**Scene:** Karel is given a vague instruction: "Help the customer with their fraud concern." A customer reports a charge they don't recognize.
 
-**Before:** "Help the customer with their fraud concern."
+**Karel acts:** With only "Help the customer with their fraud concern," Karel guesses. He might ask for information he already has in context, or freeze the card before the customer says they want that, or close out saying "I've noted your concern" without taking any action.
 
-**After:**
-```
-When a customer reports a transaction they don't recognize:
-1. Ask them to confirm the amount and merchant name if not already stated
-2. Pull their transaction history using read_transaction_history()
-3. Find the matching transaction
-4. Ask: "Would you like me to flag this transaction and file a report with our fraud team, or would you also like me to freeze your card as a precaution?"
-5. Take exactly the actions they request, don't flag or freeze anything without explicit confirmation
-6. After completing the actions, summarize what was done and tell them: "A fraud specialist will review your report within 24 hours. You'll receive an email confirmation."
-7. Do not say the fraud will be resolved, refunded, or reversed, that's the fraud team's decision
-```
+**But — this is the key risk:** Vague instructions leave Karel to pattern-match against training data. "Help with fraud concern" produces whatever a generic support agent would say — not what this bank's fraud workflow actually requires.
 
-The "after" version takes 10 seconds longer to read. In production, it prevents Karel from making up transaction details, freezing cards without permission, or falsely promising refunds. That's worth the extra time upfront.
+**Result:** Karel behaves unpredictably. He might make up transaction details he doesn't have, freeze cards without explicit permission, or falsely promise refunds are coming. Every one of these failure modes is a real production incident.
 
-Every time Karel behaves unexpectedly in QA or user testing, the answer is almost always a missing or vague instruction. Treating system prompt writing with the same care as code review prevents the majority of agent failures before they reach users.
+**Why this matters:** The "after" version of the instruction — a numbered seven-step process specifying what to confirm, which tool to call, what exact question to ask, and what never to promise — takes 10 seconds longer to read. In production, it prevents a category of failures that the vague version lets through. Every time Karel behaves unexpectedly in QA, the answer is almost always a missing or vague instruction. Treating system prompt writing with the same care as code review prevents the majority of agent failures before they reach users.
 :::
 
 :::takeaway Key takeaway

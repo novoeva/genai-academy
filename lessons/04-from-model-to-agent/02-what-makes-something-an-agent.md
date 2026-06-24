@@ -27,6 +27,7 @@ The results of actions come back into the agent's context, shaping its next deci
 
 Agenticness isn't binary. It exists on a spectrum.
 
+:::deep-dive The five levels of agenticness
 :::spectrum The spectrum: how agentic is it?
 **Level 1: Model with no tools:** Responds to messages with text only. No actions, no feedback loop. A simple chatbot, a document summarizer.
 
@@ -40,6 +41,7 @@ Agenticness isn't binary. It exists on a spectrum.
 :::
 
 Karel sits at Level 3 to 4 depending on the interaction. He can take several distinct actions in a single conversation, reading transactions, flagging fraud, freezing a card, and filing a report, using the results of each to guide his next step.
+:::
 
 ## What makes agents different from chatbots in practice
 
@@ -58,13 +60,15 @@ With a chatbot, you can read the conversation. With an agent, you need to see th
 :::
 
 :::karel Karel in practice
-Karel's agenticness is exactly what makes him useful, and exactly what makes his design matter.
+**Scene:** A customer reports a suspicious transaction. Should the bank deploy a text-only FAQ bot or an agent like Karel?
 
-A model that just answers fraud questions has low value. "Was this transaction fraudulent?" could be handled by a FAQ. Karel's value comes from his ability to act: to confirm the transaction exists, to flag it in the system, to freeze the card before more fraud occurs, to file a report that starts a real investigation.
+**Karel acts:** He confirms the transaction exists in the database, flags it as fraudulent, freezes the card before more fraud can occur, and files a formal report that starts a real investigation — all in a single conversation.
 
-But the same properties that make him useful make him dangerous if designed poorly. A text-only model that says "your card has been frozen" has done nothing. Karel saying "your card has been frozen" means a real card freeze happened, or didn't, and he's hallucinating.
+**But — this is the key risk:** A text-only model that says "your card has been frozen" has done nothing. Karel saying "your card has been frozen" means a real card freeze happened — or didn't, and he's hallucinating a completed action that carries real consequences.
 
-When evaluating whether to deploy an agent vs. a simpler AI system, the question isn't just "what can it do?" It's "what can it do wrong, and how will we know?" The more agentic the system, the more those failure modes need to be designed for explicitly.
+**Result:** If designed poorly, Karel's agenticness becomes a liability. A wrongly frozen card, a falsely filed report, or a fraudulent flag on a legitimate transaction all have real effects on a real customer's banking access.
+
+**Why this matters:** When evaluating whether to deploy an agent vs. a simpler AI system, the question isn't just "what can it do?" It's "what can it do wrong, and how will we know?" The more agentic the system, the more those failure modes need to be designed for explicitly — before a single customer interaction.
 :::
 
 :::takeaway Key takeaway

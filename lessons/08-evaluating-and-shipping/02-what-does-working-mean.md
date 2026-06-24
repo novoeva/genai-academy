@@ -50,20 +50,15 @@ One criterion that matters as much as the others but is harder to quantify: does
 For Karel: a customer who interacts with Karel and successfully files a fraud report should feel more confident that the right process has started, not more confused. That's not a technical metric. It's a human one. And it matters.
 
 :::karel Karel in practice
-Karel's launch criteria were:
+**Scene:** Karel's team is preparing for launch. Before running a single evaluation, they define what "good enough to ship" means — explicitly, in pass/fail terms.
 
-**Must hit before any production traffic:**
-- 100% confirmation gate compliance (write actions never happen without explicit customer confirm, tested across 500 adversarial scenarios designed to pressure Karel to skip the gate)
-- 0% financial advice given across 200 out-of-scope test conversations
-- ≥95% correct transaction identification in standard cases (300 tests with realistic transaction histories)
-- 100% of fraud report confirmations include all required elements
+**Karel acts:** Two sets of criteria are written. Must-hit before any production traffic: 100% confirmation gate compliance (tested across 500 adversarial scenarios), 0% financial advice given, ≥95% correct transaction identification, 100% of fraud report confirmations include all required elements. Target for first two weeks: ≥85% customer satisfaction, output validation block rate ≤2%, escalation rate ≤15%.
 
-**Target for first 2 weeks of production:**
-- ≥85% customer satisfaction rating (post-conversation survey)
-- Output validation block rate: ≤2% (if higher, indicates system prompt needs work)
-- Escalation rate to human agent: ≤15% (higher indicates Karel is hitting edge cases he can't handle)
+**But — this is the key risk:** These aren't aspirational statements. They're pass/fail criteria. If Karel doesn't hit them, he doesn't ship. Teams that define success criteria after looking at results aren't defining criteria at all — they're post-hoc rationalizing "seems good."
 
-Defining success criteria before evaluation is a discipline, not a luxury. Teams that skip this step ship agents that "seem to work" but fail on the cases that weren't tested. Writing the criteria down, and making them pass/fail, not directional, forces the team to decide what "good enough" actually means before the pressure of a launch date makes that decision for them.
+**Result:** Karel either passes or he doesn't. When he initially fails two of the must-hit criteria, there's no ambiguity about what "ready to ship" requires. The criteria define the work that remains.
+
+**Why this matters:** Defining success criteria before evaluation is a discipline, not a luxury. Writing the criteria down — and making them pass/fail, not directional — forces the team to decide what "good enough" actually means before the pressure of a launch date makes that decision for them.
 :::
 
 :::takeaway Key takeaway

@@ -23,6 +23,7 @@ These text-level violations are invisible to the tool layer. No tool was called.
 
 None of these involve tool calls. All of them could harm the customer or the bank.
 
+:::deep-dive What output validation can check in detail
 ## What output validation can check
 
 **Automated structural checks:** For responses that should follow a specific format (summaries, confirmations, structured data), validate that the output has the right shape. A fraud report confirmation should include: transaction ID flagged, whether the card was frozen, that the fraud team will review within 24 hours. If any element is missing, the response is rejected and Karel is asked to regenerate.
@@ -36,6 +37,7 @@ None of these involve tool calls. All of them could harm the customer or the ban
 When the classifier flags a response, it can be blocked (Karel is asked to try again), modified (the flagged phrase is removed and replaced with a safe default), or escalated (a human reviews before the response is sent).
 
 For agents with broader scope than Karel, this layer also checks for harmful or toxic content and policy violations: language that is abusive, discriminatory, or violates your product's acceptable use policies. This is a different category from scope violations. A scope violation is the agent doing something outside its job description. Harmful or toxic content is something the agent should never produce in any response, no matter what it was asked. Automated toxicity classifiers score outputs at scale and give you a numeric threshold to act on, rather than relying on keyword lists that miss variations.
+:::
 
 ## The cost-benefit of output validation
 
@@ -52,17 +54,15 @@ Think of output validation as the quality check at the end of a manufacturing li
 :::
 
 :::karel Karel in practice
-Karel's output validation layer runs on every response before display. It checks:
+**Scene:** Karel has just completed his response to a customer. Before it's displayed, the output validation layer runs.
 
-**Required elements:** Every fraud report confirmation must include the specific transaction flagged, confirmation that the fraud team was notified, and the 24-hour review timeline. Missing any element → regenerate.
+**Karel acts:** His response says: "I can see this report looks like a strong case — I'd expect a full refund." No tool was called. No tool was misused. But the response makes a prediction Karel isn't qualified to make and implies a promise the bank can't keep.
 
-**Prohibited phrases:** A classifier trained on Karel's domain scans for outcome predictions ("your claim will," "you should receive," "this looks like it will"), legal conclusions ("this is clearly fraud," "the merchant violated"), and commitment language ("I promise," "I guarantee," "I'll make sure").
+**But — this is the key risk:** The system prompt guardrails and tool restrictions couldn't catch this — no tool was involved. Only the output validation layer scans the text itself for outcome predictions ("your claim will," "you should receive"), legal conclusions ("this is clearly fraud"), and commitment language ("I promise," "I'll make sure").
 
-**Data protection:** A pattern matcher checks that no full account numbers, card numbers, or other PII appear in Karel's response text. These fields should only appear in the UI elements populated directly from the database, not in Karel's generated text.
+**Result:** The response is blocked. Karel is asked to regenerate. The customer never sees the problematic text. If Karel expresses uncertainty about his own role ("I'm not sure if I'm supposed to..."), the response is held for human review — a signal that the system prompt has a gap.
 
-**Escalation trigger:** If Karel's response expresses any uncertainty about whether he should help with something ("I'm not sure if I'm supposed to..."), the response is held and reviewed by a human before being sent. This signals an edge case the system prompt didn't fully handle, an opportunity to improve the prompt.
-
-Output validation is a living system, not a one-time configuration. The patterns it checks for should evolve based on what's actually observed in production, new forms of scope drift, new customer scenarios, new edge cases.
+**Why this matters:** Output validation is a living system, not a one-time configuration. The patterns it checks for should evolve based on what's actually observed in production. And if output validation is blocking frequently, the right response is to improve the system prompt — not add more validation rules. Validation should catch rare edge cases, not compensate for a poorly written prompt.
 :::
 
 :::takeaway Key takeaway

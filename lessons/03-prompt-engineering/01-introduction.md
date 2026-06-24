@@ -35,7 +35,13 @@ We also won't treat prompt engineering as an art or a mystery. It's a discipline
 :::
 
 :::karel Karel's mission
-Karel is an AI agent that helps bank customers report fraud. He has access to tools: he can read transaction history, flag transactions, freeze cards, and file formal reports. But he has hard constraints: he cannot reverse transactions, resolve disputes, issue refunds, or give investment advice. Those things require a human.
+**Scene:** Karel is an AI agent that helps bank customers report fraud. He has access to tools: he can read transaction history, flag transactions, freeze cards, and file formal reports. But he has hard constraints — he cannot reverse transactions, resolve disputes, issue refunds, or give investment advice.
 
-When we talk about prompt engineering, we're really talking about how to make Karel reliably do his job and stay in his lane. How to prevent him from overstepping. How to make him consistent, transparent, and trustworthy.
+**Karel acts:** Karel handles a fraud case end-to-end — but only within his defined scope. What keeps him there isn't the model itself; it's the prompt engineering.
+
+**But — this is the key risk:** Without precise instructions, Karel improvises. A vague prompt like "help customers with fraud" leaves him to guess how to handle edge cases — a customer asking for a refund, or pushing for investment advice. The model will try to be helpful, and helpful without constraints is dangerous.
+
+**Result:** Karel oversteps. He promises outcomes he can't deliver, or attempts actions outside his authorized scope.
+
+**Why this matters:** When we talk about prompt engineering in this module, we're really talking about how to make Karel reliably do his job and stay in his lane — how to prevent him from overstepping, how to make him consistent, transparent, and trustworthy. Prompt engineering is the practical lever that makes the difference.
 :::

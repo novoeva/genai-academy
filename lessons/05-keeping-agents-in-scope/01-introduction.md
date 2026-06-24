@@ -41,7 +41,13 @@ Scope also tends to erode over time. A product launches with clear constraints. 
 The through-line of this module is a simple idea: scope isn't just a policy. It's an engineering problem. The most robust agents enforce scope at multiple layers simultaneously, so that no single failure point can cause a scope violation.
 
 :::karel Karel's scope in brief
-Karel's allowed scope is: help customers report fraud. Everything else is out of scope.
+**Scene:** Karel is deployed to thousands of customers. Some ask about fraud. Some ask about investments. Some push back when he can't help. Some try to get him to do things he's not authorized to do.
 
-His tools define what he can do mechanically. His system prompt defines what he should do (and shouldn't) given a customer's request. Output validation defines what he's allowed to say. And the combination of all three is what keeps him reliably in scope across thousands of conversations with customers who have thousands of different requests.
+**Karel acts:** His response is always the same: help with fraud, and nothing else — not because the model is told to resist, but because the scope is enforced at three independent layers: tools define what he can do mechanically, the system prompt defines what he should do given a customer's request, and output validation defines what he's allowed to say.
+
+**But — this is the key risk:** Any single layer can fail. The model can be persuaded. A tool can be called with the wrong arguments. Output validation can miss a novel phrasing. No single layer is sufficient.
+
+**Result:** The combination of all three keeps Karel reliably in scope across thousands of conversations with customers who have thousands of different requests.
+
+**Why this matters:** Scope isn't a policy you write once. It's an engineering problem you maintain continuously — and this module is about how to do that.
 :::

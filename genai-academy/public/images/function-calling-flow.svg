@@ -1,0 +1,41 @@
+<svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <defs>
+    <marker id="fwd" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L8,3.5 z" fill="#382ac0"/>
+    </marker>
+    <marker id="ret" markerWidth="8" markerHeight="8" refX="1" refY="3.5" orient="auto">
+      <path d="M8,0 L8,7 L0,3.5 z" fill="#6366f1"/>
+    </marker>
+  </defs>
+
+  <!-- Node 1: Model -->
+  <rect x="20" y="30" width="150" height="80" rx="12" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.5"/>
+  <text x="95" y="62" text-anchor="middle" font-size="13" font-weight="600" fill="#382ac0">The Model</text>
+  <text x="95" y="82" text-anchor="middle" font-size="11" fill="#4748d4">Decides to call</text>
+  <text x="95" y="98" text-anchor="middle" font-size="11" fill="#4748d4">freeze_card</text>
+
+  <!-- Forward arrow 1 -->
+  <line x1="172" y1="62" x2="248" y2="62" stroke="#382ac0" stroke-width="1.5" marker-end="url(#fwd)"/>
+  <text x="210" y="52" text-anchor="middle" font-size="10" fill="#777586">"freeze card</text>
+  <text x="210" y="78" text-anchor="middle" font-size="10" fill="#777586">CUS-123"</text>
+
+  <!-- Node 2: Your App -->
+  <rect x="250" y="30" width="180" height="80" rx="12" fill="#f8f9fa" stroke="#e5e7eb" stroke-width="1.5"/>
+  <text x="340" y="62" text-anchor="middle" font-size="13" font-weight="600" fill="#191c1e">Your App</text>
+  <text x="340" y="82" text-anchor="middle" font-size="11" fill="#464554">Validates request,</text>
+  <text x="340" y="98" text-anchor="middle" font-size="11" fill="#464554">calls bank system</text>
+
+  <!-- Forward arrow 2 -->
+  <line x1="432" y1="62" x2="496" y2="62" stroke="#382ac0" stroke-width="1.5" marker-end="url(#fwd)"/>
+  <text x="464" y="52" text-anchor="middle" font-size="10" fill="#777586">runs action</text>
+
+  <!-- Node 3: Bank System -->
+  <rect x="498" y="30" width="162" height="80" rx="12" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/>
+  <text x="579" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#065f46">Bank System</text>
+  <text x="579" y="78" text-anchor="middle" font-size="11" fill="#047857">Freezes the card</text>
+  <text x="579" y="98" text-anchor="middle" font-size="11" fill="#059669">✓ Success</text>
+
+  <!-- Return path (dashed, bottom) -->
+  <path d="M579,112 Q579,160 340,160 Q170,160 95,160 L95,112" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#ret)"/>
+  <text x="340" y="153" text-anchor="middle" font-size="11" fill="#6366f1">"Done — card frozen at 2:32pm" returned to model</text>
+</svg>

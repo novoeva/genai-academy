@@ -14,14 +14,13 @@ There are three main levers: grounding the model in real sources, constraining w
 
 **The solution:** Before sending the user's question to the model, retrieve the relevant documents from a real source (a database, a knowledge base, a set of files), and include them in the prompt. The model then answers *based on those documents* rather than from memory.
 
-This is called **RAG, Retrieval-Augmented Generation**. Retrieval = go get the real information. Augmented = add it to the prompt. Generation = the model answers using it.
+This is called **RAG** (Retrieval-Augmented Generation — a fancy name for a simple idea: go get the real information, add it to the prompt, and let the model answer from it).
 
 Without RAG: the model invents a plausible-sounding answer from pattern-matching alone. With RAG: the model answers based on retrieved documents that are factually accurate.
 
 RAG is the single most impactful technique for reducing hallucination in production systems. Most serious AI products use some form of it.
 
-### How RAG Works
-
+:::deep-dive How RAG works step by step
 **Retrieval-Augmented Generation explained step by step**
 
 **Step 1: User asks a question**
@@ -49,6 +48,7 @@ RAG is the single most impactful technique for reducing hallucination in product
 - Grounded in factual sources
 - Works with your company's data
 - Responses are verifiable
+:::
 
 ## Lever 2: System prompt constraints
 
@@ -68,7 +68,7 @@ These don't eliminate hallucination entirely, but they meaningfully reduce it an
 A number (usually between 0 and 1) that controls how randomly an LLM picks its next token. At **temperature 0**, the model always chooses the highest-probability option — deterministic and consistent. At **higher temperatures**, it samples more broadly, producing more varied output. For factual tasks like customer support or data extraction, lower temperature means fewer surprises and fewer hallucinations.
 :::
 
-For factual use cases, customer support, documentation assistants, data extraction, lower temperature reduces sampling randomness and keeps the model closer to its most confident, stable responses. This reduces creative drift but also reduces hallucination.
+For any task where consistency matters more than creativity, like a customer support bot, set temperature low. This is usually a single configuration setting your engineering team controls, not something you write in a prompt.
 
 ## Lever 4: Output validation
 
@@ -95,14 +95,15 @@ For most production use cases, a combination of these levers is used:
 5. UI caveats that don't present model outputs as infallible facts
 
 :::karel Karel in practice
+**Scene:** Karel needs to respond to a customer about a suspicious transaction — reliably, without hallucinating transaction details or falsely confirming actions.
 
-**RAG:** Karel receives the customer's actual transaction records from the database at the start of every conversation — no guessing, no fabrication from training data.
+**Karel acts:** Karel's anti-hallucination stack kicks in across four layers: RAG feeds him the customer's real transaction records; the system prompt constrains what he can confirm; output validation checks his response before it goes out; and low temperature keeps him consistent.
 
-**System prompt constraints:** Karel's prompt says: "Never confirm an action unless you've received a success response from the tool. If a tool call fails, tell the customer a human will follow up." One instruction, closes the scariest gap.
+**But — this is the key risk:** Any one of these layers can have gaps. The system prompt says "never confirm an action unless you've received a success response from the tool" — but without output validation, a hallucinated confirmation could still slip through.
 
-**Output validation:** Before Karel tells a customer their fraud report has been filed, the system checks the tool returned a success code. If it didn't, the confirmation is blocked — the customer never sees a false response.
+**Result:** With all four layers in place, the hallucination scenario from the previous lesson becomes much less likely. If the tool call fails, the confirmation is blocked — the customer never sees a false response. Karel runs at low temperature, so distressed customers get consistent, reliable responses — not creative variation.
 
-**Low temperature:** Karel runs at low temperature. Distressed customers need consistent, reliable responses — not creative variation.
+**Why this matters:** Hallucination is reduced through system design, not just model choice. No single lever is sufficient. RAG, system prompt constraints, output validation, and low temperature each close a different gap — and the gaps they close are exactly where agentic hallucinations cause real harm.
 :::
 
 Together, these four decisions make the hallucination scenario from the previous lesson much less likely. Not impossible — but unlikely enough to ship.

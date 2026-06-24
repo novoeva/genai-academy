@@ -104,74 +104,66 @@ function ConceptCards({ cards }) {
 
 function AnalogyBlock({ title, content }) {
   return (
-    <div className="backdrop-blur-sm bg-[rgba(255,255,255,0.4)] border border-[rgba(255,255,255,0.6)] rounded-2xl p-8 shadow-[0_1px_1px_rgba(0,0,0,0.05)]">
-      <div className="flex gap-4 items-start">
-        <div className="w-12 h-12 rounded-full bg-[#e3dfff] flex items-center justify-center flex-shrink-0 text-xl">
-          📍
-        </div>
-        <div className="flex flex-col gap-4">
-          <h2 className="text-2xl text-[#191c1e] font-normal">{title}</h2>
-          <p className="italic text-[#464554] text-base leading-[26px]">{content}</p>
-        </div>
-      </div>
+    <div className="border-l-4 border-[#382ac0] bg-[#f5f4ff] rounded-r-2xl px-6 py-5 flex flex-col gap-2">
+      <p className="text-sm font-bold text-[#382ac0]">{title}</p>
+      <p className="italic text-[#464554] text-base leading-[26px]">{content}</p>
     </div>
   );
 }
 
 function KarelBlock({ title, body, prompt, footnote }) {
-  // Parse technique sections from body (format: **Label:** description)
-  const techniquePattern = /\*\*([^*]+):\*\*\s*([^]*?)(?=\*\*[^*]+:\*\*|$)/g;
-  const techniques = [];
+  // Parse labeled sections: **Label:** content
+  const sectionPattern = /\*\*([^*]+):\*\*\s*([\s\S]*?)(?=\n\n\*\*[^*]+:\*\*|$)/g;
+  const sections = [];
   let match;
-  let lastIndex = 0;
-
-  while ((match = techniquePattern.exec(body)) !== null) {
-    techniques.push({
-      label: match[1].trim(),
-      description: match[2].trim()
-    });
-    lastIndex = match.index + match[0].length;
+  while ((match = sectionPattern.exec(body)) !== null) {
+    sections.push({ label: match[1].trim(), text: match[2].trim() });
   }
 
-  // If we found techniques, render as cards; otherwise render as plain text
-  const hasTechniques = techniques.length >= 2;
-  const remainingText = hasTechniques ? body.slice(lastIndex).trim() : body;
+  const storyConfig = {
+    "Scene":            { bg: "#f8f9fa", border: "#e5e7eb", labelColor: "#777586" },
+    "Karel says":       { bg: "#eef2ff", border: "#c7d2fe", labelColor: "#382ac0" },
+    "But — this is the hallucination": { bg: "#fff7ed", border: "#fed7aa", labelColor: "#c2410c" },
+    "Result":           { bg: "#fef2f2", border: "#fecaca", labelColor: "#dc2626" },
+    "Why this matters": { bg: "#191c1e", border: "#191c1e", labelColor: "#9cf5c8" },
+  };
+
+  const isStory = sections.length >= 3;
 
   return (
-    <div className="bg-[rgba(81,72,216,0.05)] border-l-[6px] border-[#382ac0] border border-solid rounded-3xl pl-10 pr-8 py-8 relative overflow-hidden">
-      <div className="absolute right-[-10px] top-[-10px] text-[120px] opacity-[0.08] select-none pointer-events-none">🤖</div>
-      <div className="inline-flex items-center gap-2 bg-[#382ac0] rounded-full px-3 py-1 mb-4">
-        <span className="text-white text-[10px] font-bold tracking-[1px] uppercase">KAREL IN PRACTICE</span>
+    <div className="bg-[rgba(81,72,216,0.04)] border border-[rgba(56,42,192,0.15)] rounded-2xl p-6 relative overflow-hidden">
+      <div className="flex items-center gap-3 mb-4">
+        <span className="text-2xl">🤖</span>
+        <div className="inline-flex items-center gap-2 bg-[#382ac0] rounded-full px-3 py-1">
+          <span className="text-white text-[10px] font-bold tracking-[1px] uppercase">Karel in practice</span>
+        </div>
       </div>
-      <h3 className="text-[#382ac0] text-2xl font-bold mb-4">{title}</h3>
-      <div className="flex flex-col gap-4 relative">
-        {hasTechniques && (
-          <div className="grid grid-cols-2 gap-4 mb-2">
-            {techniques.map((tech, i) => (
-              <div key={i} className="bg-white/80 border border-[#382ac0]/20 rounded-xl p-4">
-                <h4 className="text-[#382ac0] text-sm font-bold mb-2">{tech.label}</h4>
-                <p className="text-[#464554] text-sm leading-5">{tech.description}</p>
+
+      {isStory ? (
+        <div className="flex flex-col gap-3">
+          {sections.map((s, i) => {
+            const cfg = storyConfig[s.label] || { bg: "#f8f9fa", border: "#e5e7eb", labelColor: "#777586" };
+            return (
+              <div key={i} className="rounded-xl px-4 py-3 border" style={{ background: cfg.bg, borderColor: cfg.border }}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.8px] mb-1" style={{ color: cfg.labelColor }}>{s.label}</p>
+                <p className="text-sm leading-[22px]" style={{ color: cfg.bg === "#191c1e" ? "#e2e8f0" : "#191c1e" }}><InlineMarkdown text={s.text} /></p>
               </div>
-            ))}
-          </div>
-        )}
-        {!hasTechniques && body && <p className="text-[#464554] text-base leading-6">{body}</p>}
-        {remainingText && hasTechniques && <p className="text-[#464554] text-base leading-6">{remainingText}</p>}
-        {remainingText && hasTechniques && (
-          <p className="text-[#464554] text-base leading-6 mt-2">{remainingText}</p>
-        )}
-        {prompt && (
-          <div className="bg-[rgba(255,255,255,0.8)] border-l-2 border-[#382ac0] border border-solid rounded-xl px-5 py-4">
-            <p className="font-mono text-[#777586] text-sm mb-1">PROMPT:</p>
-            <p className="font-mono text-[#191c1e] text-sm leading-5">{prompt}</p>
-          </div>
-        )}
-        {footnote && (
-          <p className="text-[#464554] text-base leading-6">
-            <InlineMarkdown text={footnote} />
-          </p>
-        )}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="text-[#464554] text-base leading-6">{body}</p>
+      )}
+
+      {prompt && (
+        <div className="mt-4 bg-white border border-[#382ac0]/20 rounded-xl px-5 py-4">
+          <p className="font-mono text-[#777586] text-xs mb-1">PROMPT:</p>
+          <p className="font-mono text-[#191c1e] text-sm leading-5">{prompt}</p>
+        </div>
+      )}
+      {footnote && (
+        <p className="text-[#464554] text-sm leading-6 mt-3"><InlineMarkdown text={footnote} /></p>
+      )}
     </div>
   );
 }
@@ -197,14 +189,14 @@ function NotGrid({ title, items }) {
 
 function TakeawayBlock({ title, content }) {
   return (
-    <div className="bg-[#2d3133] rounded-3xl p-10 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] relative overflow-hidden">
-      <div className="absolute w-64 h-64 rounded-full bg-[#382ac0] opacity-20 blur-[50px] bottom-[-40px] right-[-40px]" />
+    <div className="bg-[#382ac0] rounded-3xl p-10 relative overflow-hidden">
+      <div className="absolute w-64 h-64 rounded-full bg-white opacity-[0.06] rounded-full bottom-[-40px] right-[-40px]" />
       <div className="relative flex flex-col gap-4 max-w-2xl">
         <div className="flex items-center gap-3">
-          <span className="text-emerald-400 text-xl font-bold">✓</span>
-          <h2 className="text-2xl font-bold text-[#eff1f3]">{title}</h2>
+          <span className="text-[#9cf5c8] text-xl font-bold">✓</span>
+          <h2 className="text-2xl font-bold text-white">{title}</h2>
         </div>
-        <p className="text-[#eff1f3] text-lg leading-[29.25px] opacity-90">
+        <p className="text-white text-lg leading-[29.25px] opacity-90">
           <InlineMarkdownLight text={content} />
         </p>
       </div>
@@ -424,13 +416,13 @@ function PlainContent({ lines }) {
     const line = lines[i];
     if (line.startsWith("## ")) {
       elements.push(
-        <h2 key={eIdx++} className="text-xl font-bold text-ink-dark mt-6 mb-3 tracking-tight">
+        <h2 key={eIdx++} className="text-[13px] font-bold uppercase tracking-[0.8px] text-[#4748d4] mt-4 mb-1">
           {line.slice(3)}
         </h2>
       );
     } else if (line.startsWith("### ")) {
       elements.push(
-        <h3 key={eIdx++} className="text-lg font-bold text-ink-dark mt-5 mb-2">
+        <h3 key={eIdx++} className="text-base font-bold text-[#191c1e] mt-3 mb-1">
           {line.slice(4)}
         </h3>
       );
@@ -481,7 +473,7 @@ function PlainContent({ lines }) {
       }
     } else if (line.trim()) {
       elements.push(
-        <p key={eIdx++} className="text-base text-[#464554] leading-[31.5px] mb-3">
+        <p key={eIdx++} className="text-base text-[#464554] leading-[27px] mb-1">
           <InlineMarkdown text={line} />
         </p>
       );
@@ -489,6 +481,39 @@ function PlainContent({ lines }) {
     i++;
   }
   return <>{elements}</>;
+}
+
+function SectionLabel({ label }) {
+  return (
+    <div className="flex items-center gap-4 mt-4 mb-1">
+      <div className="bg-[#eef2ff] border border-[#c7d2fe] rounded-full px-3 py-1 flex-shrink-0">
+        <span className="text-[11px] font-bold tracking-[0.8px] uppercase text-[#382ac0]">{label}</span>
+      </div>
+      <div className="flex-1 h-px bg-[#e8eaf0]" />
+    </div>
+  );
+}
+
+function HowItWorksInline({ items }) {
+  const colors = ["#382ac0", "#4748d4", "#006d4a"];
+  return (
+    <div className="bg-white border border-[rgba(172,179,183,0.15)] rounded-2xl p-6 shadow-[0_12px_20px_0_rgba(44,52,55,0.06)]">
+      <div className="grid grid-cols-3 gap-6">
+        {items.map((item, i) => (
+          <div key={i} className="flex flex-col gap-2">
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+              style={{ background: colors[i % colors.length] }}
+            >
+              {i + 1}
+            </div>
+            <p className="text-sm font-bold text-[#191c1e]">{item.title}</p>
+            <p className="text-xs text-[#464554] leading-[18px]">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 // --- Block parser ---
@@ -552,6 +577,43 @@ function parseLessonBlocks(text) {
           }
         }
         blocks.push({ type: "karel", title, body, prompt, footnote });
+      } else if (type === "deep-dive") {
+        // Parse nested blocks inside deep-dive
+        const innerBlocks = [];
+        const innerLines = blockLines;
+        let j = 0;
+        while (j < innerLines.length) {
+          const innerLine = innerLines[j];
+          if (innerLine.startsWith(":::")) {
+            const innerHeader = innerLine.slice(3).trim();
+            const innerSpaceIdx = innerHeader.indexOf(" ");
+            const innerType = innerSpaceIdx === -1 ? innerHeader : innerHeader.slice(0, innerSpaceIdx);
+            const innerTitle = innerSpaceIdx === -1 ? "" : innerHeader.slice(innerSpaceIdx + 1);
+            const innerBlockLines = [];
+            j++;
+            while (j < innerLines.length && innerLines[j] !== ":::") {
+              innerBlockLines.push(innerLines[j]);
+              j++;
+            }
+            const innerText = innerBlockLines.join("\n").trim();
+            if (innerType === "likelihood-factors") {
+              const moreLikely = [], lessLikely = [];
+              let currentSection = null;
+              for (const l of innerBlockLines) {
+                if (l.trim().toLowerCase().startsWith("### more likely")) currentSection = "more";
+                else if (l.trim().toLowerCase().startsWith("### less likely")) currentSection = "less";
+                else if (l.trim().startsWith("- ") && currentSection) {
+                  const item = l.trim().slice(2).trim();
+                  if (currentSection === "more") moreLikely.push(item);
+                  else lessLikely.push(item);
+                }
+              }
+              innerBlocks.push({ type: "likelihood-factors", moreLikely, lessLikely });
+            }
+          }
+          j++;
+        }
+        blocks.push({ type: "deep-dive", title, innerBlocks });
       } else if (type === "takeaway") {
         takeaway = { title, content: blockText };
       } else if (type === "spectrum") {
@@ -630,62 +692,120 @@ function parseLessonBlocks(text) {
   return { blocks, takeaway };
 }
 
-function LessonContentBlocks({ blocks, simHtml }) {
-  const elements = [];
-  let textBuffer = [];
-  let keyIdx = 0;
+function DeepDiveSection({ title, innerBlocks }) {
+  return (
+    <div className="border border-dashed border-[#c7d2fe] rounded-2xl p-6 flex flex-col gap-4 bg-[rgba(238,242,255,0.3)]">
+      <div className="flex items-center gap-2">
+        <span className="text-[11px] font-bold tracking-[0.8px] uppercase text-[#4748d4]">Optional</span>
+        <p className="text-sm font-bold text-[#191c1e]">{title}</p>
+      </div>
+      {innerBlocks.map((b, i) => {
+        if (b.type === "likelihood-factors") return <LikelihoodFactors key={i} moreLikely={b.moreLikely} lessLikely={b.lessLikely} />;
+        return null;
+      })}
+    </div>
+  );
+}
 
-  const flushText = () => {
-    if (textBuffer.length === 0) return;
-    // Filter out empty lines
-    const nonEmptyLines = textBuffer.filter(line => line && line.trim());
-    if (nonEmptyLines.length > 0) {
-      elements.push(<PlainContent key={`text-${keyIdx++}`} lines={nonEmptyLines} />);
-    }
-    textBuffer = [];
-  };
+function renderBlock(block, key, simHtml) {
+  if (block.type === "concept-cards") return <ConceptCards key={key} cards={block.cards} />;
+  if (block.type === "analogy") return <AnalogyBlock key={key} title={block.title} content={block.content} />;
+  if (block.type === "simulation") return simHtml ? <LessonSimulation key={key} html={simHtml} /> : null;
+  if (block.type === "not-grid") return <NotGrid key={key} title={block.title} items={block.items} />;
+  if (block.type === "karel") return <KarelBlock key={key} title={block.title} body={block.body} prompt={block.prompt} footnote={block.footnote} />;
+  if (block.type === "learning-outcomes") return <LearningOutcomesBlock key={key} questions={block.questions} quote={block.quote} />;
+  if (block.type === "what-we-wont-do") return <WhatWeWontDoBlock key={key} paragraphs={block.paragraphs} analogy={block.analogy} />;
+  if (block.type === "spectrum") return <SpectrumBlock key={key} title={block.title} levels={block.levels} />;
+  if (block.type === "definition") return <DefinitionBlock key={key} term={block.term} content={block.content} />;
+  if (block.type === "likelihood-factors") return <LikelihoodFactors key={key} moreLikely={block.moreLikely} lessLikely={block.lessLikely} />;
+  if (block.type === "figure-aside") return <FigureAside key={key} src={block.src} paragraphs={block.paragraphs} />;
+  return null;
+}
 
+function LessonContentBlocks({ blocks, simHtml, howItWorks }) {
+  // Split blocks into named sections
+  const hookBlocks = [];
+  const conceptBlocks = [];
+  const karelBlocks = [];
+
+  const deepDiveBlocks = [];
+  let phase = "concept";
   for (const block of blocks) {
-    if (block.type === "text") {
-      textBuffer.push(block.content);
-    } else {
-      flushText();
-      const k = keyIdx++;
-      if (block.type === "concept-cards") {
-        elements.push(<ConceptCards key={k} cards={block.cards} />);
-      } else if (block.type === "analogy") {
-        elements.push(<AnalogyBlock key={k} title={block.title} content={block.content} />);
-      } else if (block.type === "simulation") {
-        if (simHtml) elements.push(<LessonSimulation key={k} html={simHtml} />);
-      } else if (block.type === "not-grid") {
-        elements.push(<NotGrid key={k} title={block.title} items={block.items} />);
-      } else if (block.type === "karel") {
-        elements.push(
-          <KarelBlock
-            key={k}
-            title={block.title}
-            body={block.body}
-            prompt={block.prompt}
-            footnote={block.footnote}
-          />
-        );
-      } else if (block.type === "learning-outcomes") {
-        elements.push(<LearningOutcomesBlock key={k} questions={block.questions} quote={block.quote} />);
-      } else if (block.type === "what-we-wont-do") {
-        elements.push(<WhatWeWontDoBlock key={k} paragraphs={block.paragraphs} analogy={block.analogy} />);
-      } else if (block.type === "spectrum") {
-        elements.push(<SpectrumBlock key={k} title={block.title} levels={block.levels} />);
-      } else if (block.type === "definition") {
-        elements.push(<DefinitionBlock key={k} term={block.term} content={block.content} />);
-      } else if (block.type === "likelihood-factors") {
-        elements.push(<LikelihoodFactors key={k} moreLikely={block.moreLikely} lessLikely={block.lessLikely} />);
-      } else if (block.type === "figure-aside") {
-        elements.push(<FigureAside key={k} src={block.src} paragraphs={block.paragraphs} />);
-      }
+    if (block.type === "analogy") {
+      hookBlocks.push(block);
+      phase = "concept";
+    } else if (block.type === "karel") {
+      karelBlocks.push(block);
+      phase = "post-karel";
+    } else if (block.type === "deep-dive") {
+      deepDiveBlocks.push(block);
+    } else if (phase !== "post-karel") {
+      conceptBlocks.push(block);
     }
   }
-  flushText();
-  return <div className="flex flex-col gap-5">{elements}</div>;
+
+  const renderSection = (sectionBlocks, simHtmlArg) => {
+    const elements = [];
+    let textBuffer = [];
+    let keyIdx = 0;
+    const flush = () => {
+      const lines = textBuffer.filter(l => l && l.trim());
+      if (lines.length) elements.push(<PlainContent key={`t-${keyIdx++}`} lines={lines} />);
+      textBuffer = [];
+    };
+    for (const block of sectionBlocks) {
+      if (block.type === "text") { textBuffer.push(block.content); }
+      else { flush(); elements.push(renderBlock(block, keyIdx++, simHtmlArg)); }
+    }
+    flush();
+    return elements;
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      {hookBlocks.length > 0 && (
+        <div id="section-hook" className="flex flex-col gap-3">
+          <SectionLabel label="TL;DR" />
+          {renderSection(hookBlocks, null)}
+        </div>
+      )}
+
+      <div id="section-concept" className="flex flex-col gap-3">
+        <SectionLabel label="The concept" />
+        {renderSection(conceptBlocks, null)}
+      </div>
+
+      {howItWorks && (
+        <div id="section-how" className="flex flex-col gap-3">
+          <SectionLabel label="How it works" />
+          <HowItWorksInline items={howItWorks} />
+        </div>
+      )}
+
+      {karelBlocks.length > 0 && (
+        <div id="section-karel" className="flex flex-col gap-3">
+          <SectionLabel label="Karel in practice" />
+          {renderSection(karelBlocks, null)}
+        </div>
+      )}
+
+      {simHtml && (
+        <div id="section-sim" className="flex flex-col gap-3">
+          <SectionLabel label="Try it yourself" />
+          <LessonSimulation html={simHtml} />
+        </div>
+      )}
+
+      {deepDiveBlocks.length > 0 && (
+        <div id="section-deepdive" className="flex flex-col gap-3">
+          <SectionLabel label="Deep dive" />
+          {deepDiveBlocks.map((b, i) => (
+            <DeepDiveSection key={i} title={b.title} innerBlocks={b.innerBlocks} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 // --- Sidebar data keyed by module id ---
@@ -789,8 +909,6 @@ export default function LessonPage() {
   const prevLesson = currentIdx > 0 ? lessons[currentIdx - 1] : null;
   const nextLesson = currentIdx < lessons.length - 1 ? lessons[currentIdx + 1] : null;
 
-  const dotColors = ["#382ac0", "#4748d4", "#006d4a"];
-
   return (
     <div className="min-h-screen bg-surface font-sans">
       <TopNav currentScreen="lesson" />
@@ -823,49 +941,51 @@ export default function LessonPage() {
 
             {/* Left column: lesson content */}
             <div className="col-span-8 flex flex-col gap-5">
-              <LessonContentBlocks blocks={blocks} simHtml={null} />
-              {simHtml && <LessonSimulation html={simHtml} />}
-              {takeaway && <TakeawayBlock title={takeaway.title} content={takeaway.content} />}
-            </div>
-
-            {/* Right column: sidebar cards */}
-            <div className="col-span-4 flex flex-col gap-8">
-              {lesson.howItWorks && (
-                <div className="bg-white border border-[rgba(172,179,183,0.15)] rounded-2xl p-6 shadow-[0_12px_20px_0_rgba(44,52,55,0.06)]">
-                  <p className="text-[#777586] text-base uppercase mb-5">HOW IT WORKS</p>
-
-                  {/* Vertical timeline */}
-                  <div className="flex flex-col">
-                    {lesson.howItWorks.map((item, i) => {
-                      const color = dotColors[i] || "#382ac0";
-                      const isLast = i === lesson.howItWorks.length - 1;
-                      return (
-                        <div key={item.step} className={`relative pl-8 ${!isLast ? "pb-6 border-l-2 border-[#f1f5f9]" : ""}`}>
-                          <div
-                            className="absolute left-[-9px] top-0 w-4 h-4 rounded-full border-4 border-white shadow-sm"
-                            style={{ background: color }}
-                          />
-                          <p className="text-xs font-bold mb-1" style={{ color }}>{item.title}</p>
-                          <p className="text-xs text-[#464554] leading-4">{item.desc}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Did You Know */}
-                  {lesson.didYouKnow && (
-                    <div className="border-t border-[#f1f5f9] mt-6 pt-6">
-                      <div className="bg-[rgba(255,251,235,0.5)] border border-[#fef3c7] rounded-xl p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-lg">✨</span>
-                          <span className="text-[10px] font-bold text-[#78350f] tracking-[0.5px] uppercase">DID YOU KNOW?</span>
-                        </div>
-                        <p className="text-xs text-[#92400e] leading-[19.5px]">{lesson.didYouKnow}</p>
-                      </div>
-                    </div>
-                  )}
+              <LessonContentBlocks blocks={blocks} simHtml={simHtml} howItWorks={lesson.howItWorks} />
+              {takeaway && (
+                <div id="section-takeaway" className="flex flex-col gap-4">
+                  <SectionLabel label="Key takeaway" />
+                  <TakeawayBlock title={takeaway.title} content={takeaway.content} />
                 </div>
               )}
+            </div>
+
+            {/* Right column: jump nav */}
+            <div className="col-span-4 flex flex-col gap-8">
+              <div className="bg-white border border-[rgba(172,179,183,0.15)] rounded-2xl p-6 shadow-[0_12px_20px_0_rgba(44,52,55,0.06)] sticky top-24">
+                <p className="text-[10px] font-bold tracking-[1.2px] uppercase text-[#777586] mb-4">In this lesson</p>
+                <div className="flex flex-col gap-1">
+                  {[
+                    { id: "hook", label: "TL;DR" },
+                    { id: "concept", label: "The concept" },
+                    { id: "how", label: "How it works" },
+                    { id: "karel", label: "Karel in practice" },
+                    { id: "sim", label: "Try it yourself" },
+                    ...(blocks.some(b => b.type === "deep-dive") ? [{ id: "deepdive", label: "Deep dive" }] : []),
+                    { id: "takeaway", label: "Key takeaway" },
+                  ].map(({ id, label }) => (
+                    <a
+                      key={id}
+                      href={`#section-${id}`}
+                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-[#464554] hover:bg-[#f5f4ff] hover:text-[#382ac0] transition-colors no-underline"
+                    >
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#c7c4d7] flex-shrink-0" />
+                      {label}
+                    </a>
+                  ))}
+                </div>
+                {lesson.didYouKnow && (
+                  <div className="border-t border-[#f1f5f9] mt-5 pt-5">
+                    <div className="bg-[rgba(255,251,235,0.5)] border border-[#fef3c7] rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-base">✨</span>
+                        <span className="text-[10px] font-bold text-[#78350f] tracking-[0.5px] uppercase">Did you know?</span>
+                      </div>
+                      <p className="text-xs text-[#92400e] leading-[19.5px]">{lesson.didYouKnow}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

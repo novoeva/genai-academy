@@ -44,17 +44,25 @@ Think of it like working with a consultant who has a photographic memory during 
 
 ## Why this matters for product design
 
+:::deep-dive Product design implications of training and memory
 | Concept | Product implication |
 |---|---|
 | Knowledge cutoff | For anything time-sensitive, you must provide current information in the prompt |
-| Frozen parameters | You cannot "teach" the model by chatting with it, you need RAG, fine-tuning, or prompt engineering |
+| Frozen parameters | You cannot "teach" the model by chatting with it — you need to either give it the information in the prompt every time (prompt engineering), retrieve it from a database (RAG), or bake new behaviour in through a retraining process (fine-tuning) |
 | No cross-session memory | If you want the app to remember users, you need to build that memory layer yourself |
 | Context window limit | Very long conversations or documents can exceed what the model can "see" at once |
+:::
 
 :::karel Karel in practice
-Karel was trained on general text, customer service transcripts, banking documentation, fraud guidelines. But he wasn't trained on your bank's specific policies, and his training data has a cutoff. If a new type of fraud scheme emerged last month, Karel doesn't know about it.
+**Scene:** A customer who reported fraud with Karel on Monday comes back on Wednesday to follow up. They expect Karel to remember the case.
 
-More importantly: Karel has no memory between sessions. A customer who reported fraud with Karel on Monday and comes back on Wednesday to follow up will have to explain everything again from scratch, unless the bank builds a system that loads the previous case into Karel's context window at the start of each new conversation. That memory layer doesn't come built-in. It's a product decision the team has to deliberately design and build.
+**Karel says:** "I'd be happy to help — could you tell me about the transaction you're concerned about?" Karel has no memory of Monday's conversation.
+
+**But — this is the key risk:** Karel was trained on general text, customer service transcripts, and banking documentation, but with a cutoff date. If a new type of fraud scheme emerged last month, Karel doesn't know about it. And he has no memory between sessions.
+
+**Result:** The customer has to explain everything again from scratch — the fraudulent transaction, what they already reported, what actions were taken. This is frustrating and erodes trust.
+
+**Why this matters:** That memory layer doesn't come built-in. The bank must build a system that loads the previous case into Karel's context window at the start of each new conversation. Memory is a product decision the team has to deliberately design and build — it's not something the model provides for free.
 :::
 
 :::takeaway Key takeaway

@@ -16,7 +16,7 @@ Work through it in order. A "no" to any item in the must-have sections means the
 Not implied, written down. Three columns: allowed, not allowed, edge cases with decisions. If it doesn't exist as a document, the agent's scope is defined by whatever the prompt engineer happened to write.
 
 **Were legal, compliance, and operations involved in scope decisions?**
-For any customer-facing agent in a regulated domain, scope without stakeholder input is scope that will surprise you later. If you're operating in the EU, the EU AI Act classifies certain applications as high-risk and imposes hard requirements around transparency, human oversight, and documentation. Building to those requirements from the start is substantially cheaper than retrofitting after launch.
+For any customer-facing agent in a regulated domain, scope without stakeholder input is scope that will surprise you later. If you're operating in the EU, the EU AI Act classifies certain applications (including some banking and financial services tools) as high-risk and imposes hard requirements around transparency, human oversight, and documentation. Building to those requirements from the start is substantially cheaper than retrofitting after launch.
 
 **Do the tools the agent has match its intended scope, and nothing more?**
 If a capability the agent shouldn't have corresponds to a tool that exists in its toolkit, fix that before launch. Tool absence is scope enforcement. Tool presence is scope risk.
@@ -61,7 +61,7 @@ If the answer is no, you can't reconstruct what happened when something goes wro
 For every tool the agent has, someone should be able to answer: worst case if called incorrectly, whether it's reversible, and what safeguards exist.
 
 **Is AI safety ownership clearly assigned?**
-Safety review needs named owners, not assumed ones. A RACI model lays out who is Responsible, Accountable, Consulted, and Informed for each category of safety decision. Without it, everyone assumes someone else is reviewing. Name an owner for the system prompt, someone who runs evals, and someone who checks the production dashboard daily. Those three things unowned is how agents degrade quietly.
+Safety review needs named owners, not assumed ones. Without it, everyone assumes someone else is reviewing. Name an owner for the system prompt, someone who runs evals, and someone who checks the production dashboard daily. Those three things unowned is how agents degrade quietly.
 
 ## Section 5: Observability
 
@@ -86,11 +86,15 @@ An agent that's 95% good and escalates the 5% it can't handle is ready to ship. 
 If the answer is no, the agent isn't ready. If the answer is yes, ship it.
 
 :::karel Karel in practice
-Karel passed all six sections before launch. He wasn't perfect, his communication quality was at 87% against an 85% target, and his adversarial testing found two edge cases that required prompt fixes before he was cleared. But he met every must-have criterion.
+**Scene:** Karel is ready for go/no-ship review. The team works through all six checklist sections.
 
-The launch was not a bet that Karel would handle everything. It was a bet that he would handle the common cases reliably, fail gracefully on the uncommon ones, and get caught by the monitoring when something went wrong.
+**Karel acts:** He passes all six sections — but not without work. Communication quality came in at 87% against an 85% target. Adversarial testing found two edge cases that required prompt fixes before he was cleared. Every must-have criterion is met before launch.
 
-That bet paid off. Not because Karel was perfect at launch. Because the team built a system where imperfect was sustainable.
+**But — this is the key risk:** The launch was not a bet that Karel would handle everything. It was a bet that he would handle the common cases reliably, fail gracefully on the uncommon ones, and get caught by the monitoring when something went wrong. A team that shipped without that bet being clearly made would be surprised by the first serious failure.
+
+**Result:** The bet paid off. Not because Karel was perfect at launch — he wasn't. Because the team built a system where imperfect was sustainable: bounded failures, detectable problems, and a clear process to improve.
+
+**Why this matters:** The checklist isn't about perfection. It's about shipping with enough safeguards that failures are bounded, catchable, and correctable. A "no" to any must-have item means the agent isn't ready — not "isn't ready to be perfect," but "isn't ready to be in front of real users in a way you'd be comfortable defending."
 :::
 
 :::takeaway Key takeaway

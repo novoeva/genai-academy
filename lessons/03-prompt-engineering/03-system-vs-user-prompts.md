@@ -28,6 +28,7 @@ A well-written system prompt doesn't say "try to do X unless Y." It says "you wi
 
 ## A realistic Karel system prompt
 
+:::deep-dive Full example: a well-written system prompt for Karel
 Here's what a well-written system prompt for Karel might look like (simplified):
 
 ```
@@ -73,6 +74,7 @@ Notice what this does:
 - It handles edge cases explicitly ("if they ask you to do X, you will do Y")
 - It sets the tone and values clearly
 - It reminds the model about constraints every time it's loaded
+:::
 
 ## The danger of vague system prompts
 
@@ -86,11 +88,15 @@ With this, what happens when a customer says:
 The vague system prompt leaves the model to pattern-match, and pattern-matching on financial or support tasks is dangerous.
 
 :::karel Karel in practice
-When a customer opens the fraud reporting feature in the app, the system prompt sets Karel's entire operating context. It tells him what he is, what he's good at, what he absolutely cannot do, and what to do when the customer asks for something unexpected.
+**Scene:** A customer opens the fraud reporting feature and asks, "Can you just reverse this charge? I don't want to go through the whole report process."
 
-The user message is what the customer types. Karel's job is to take that message and respond in a way that's consistent with both the system prompt and the user's actual needs.
+**Karel says:** "I'm not able to reverse charges directly — that has to go through our fraud team after a review. I know that's not the instant fix you're looking for. What I can do is file the report right now, so the review starts today. Want me to do that?"
 
-If the system prompt is well-written, Karel will confidently handle edge cases because he knows exactly what to do. If it's vague, he'll improvise, and that's when mistakes happen.
+**But — this is the key risk:** This confident, scoped response only happens if the system prompt is well-written. With a vague prompt like "you are Karel, a helpful fraud assistant," Karel might try to be helpful and imply that reversal is possible, because the model has seen plenty of customer service responses where agents promise to "make it right."
+
+**Result:** If the system prompt is vague, Karel improvises — and improvisation on financial scope is dangerous. He might soften the refusal, hint at outcomes he can't control, or attempt to find a workaround that doesn't exist.
+
+**Why this matters:** The system prompt is your specification. The user message is the real world. A good system prompt anticipates edge cases and is specific enough that the model doesn't have to guess — because when it guesses, it guesses toward being helpful, not toward staying in scope.
 :::
 
 :::takeaway Key takeaway

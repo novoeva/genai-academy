@@ -1,0 +1,58 @@
+<svg viewBox="0 0 680 310" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">
+
+  <!-- Left card: Vague -->
+  <rect x="10" y="10" width="310" height="290" rx="12" fill="#fff5f5" stroke="#fca5a5" stroke-width="1.5"/>
+  <rect x="10" y="10" width="310" height="44" rx="12" fill="#fca5a5"/>
+  <rect x="10" y="42" width="310" height="12" fill="#fca5a5"/>
+  <text x="165" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="#7f1d1d">✕  Vague description</text>
+
+  <!-- Code block look -->
+  <rect x="28" y="68" width="274" height="40" rx="6" fill="#fee2e2" stroke="#fca5a5" stroke-width="1"/>
+  <text x="40" y="84" font-size="11" fill="#991b1b" font-family="monospace">freeze_card:</text>
+  <text x="40" y="100" font-size="11" fill="#991b1b" font-family="monospace">  Freezes the customer's card.</text>
+
+  <!-- What's missing -->
+  <text x="28" y="132" font-size="11" font-weight="600" fill="#b91c1c">What the model can't figure out:</text>
+  <text x="28" y="154" font-size="11" fill="#7f1d1d">✕  When should I call this?</text>
+  <text x="28" y="174" font-size="11" fill="#7f1d1d">✕  Which account?</text>
+  <text x="28" y="194" font-size="11" fill="#7f1d1d">✕  Is this reversible?</text>
+  <text x="28" y="214" font-size="11" fill="#7f1d1d">✕  Does the customer need to ask first?</text>
+  <text x="28" y="234" font-size="11" fill="#7f1d1d">✕  How do I know if it worked?</text>
+
+  <text x="165" y="276" text-anchor="middle" font-size="11" fill="#b91c1c" font-style="italic">Result: unpredictable behavior</text>
+
+  <!-- Right card: Good -->
+  <rect x="360" y="10" width="310" height="290" rx="12" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <rect x="360" y="10" width="310" height="44" rx="12" fill="#86efac"/>
+  <rect x="360" y="42" width="310" height="12" fill="#86efac"/>
+  <text x="515" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="#14532d">✓  Good description</text>
+
+  <!-- 5 components -->
+  <!-- What it does -->
+  <rect x="376" y="62" width="276" height="36" rx="6" fill="white" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="386" y="76" font-size="10" font-weight="600" fill="#15803d">WHAT IT DOES</text>
+  <text x="386" y="92" font-size="10" fill="#166534">Immediately disables all card transactions</text>
+
+  <!-- When to call -->
+  <rect x="376" y="104" width="276" height="36" rx="6" fill="white" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="386" y="118" font-size="10" font-weight="600" fill="#15803d">WHEN TO CALL IT</text>
+  <text x="386" y="134" font-size="10" fill="#166534">Only if the customer has explicitly asked to freeze</text>
+
+  <!-- Consequence -->
+  <rect x="376" y="146" width="276" height="36" rx="6" fill="white" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="386" y="160" font-size="10" font-weight="600" fill="#15803d">CONSEQUENCE</text>
+  <text x="386" y="176" font-size="10" fill="#166534">Cannot be reversed by this agent — customer must call</text>
+
+  <!-- Constraint -->
+  <rect x="376" y="188" width="276" height="36" rx="6" fill="white" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="386" y="202" font-size="10" font-weight="600" fill="#15803d">REQUIRED INPUT</text>
+  <text x="386" y="218" font-size="10" fill="#166534">account_id — links to the correct account</text>
+
+  <!-- Return value -->
+  <rect x="376" y="230" width="276" height="36" rx="6" fill="white" stroke="#bbf7d0" stroke-width="1"/>
+  <text x="386" y="244" font-size="10" font-weight="600" fill="#15803d">RETURN VALUE</text>
+  <text x="386" y="260" font-size="10" fill="#166534">status, card_id, frozen_at — so the model knows it worked</text>
+
+  <text x="515" y="284" text-anchor="middle" font-size="11" fill="#15803d" font-style="italic">Result: consistent, safe behavior</text>
+
+</svg>

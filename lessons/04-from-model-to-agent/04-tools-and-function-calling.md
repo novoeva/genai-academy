@@ -16,45 +16,21 @@ This distinction matters. The model is a text predictor. It doesn't connect to d
 
 When tools are made available to a model, they're described in the prompt, typically in the system prompt or alongside it. Each tool has a **name**, a **description** of what it does, and a list of **parameters** it accepts.
 
-The model reads these descriptions and decides, during the planning stage of the loop, whether to use a tool and which one. When it decides to call a tool, instead of generating a text response, it generates a structured output:
+The model reads these descriptions and decides, during the planning stage of the loop, whether to use a tool and which one. Here is what the full cycle looks like:
 
-```json
-{
-  "tool": "freeze_card",
-  "arguments": {
-    "account_id": "CUS-00841923"
-  }
-}
-```
+![How function calling works](/images/function-calling-flow.svg)
 
-Your application code receives this, executes `freeze_card("CUS-00841923")` against the real bank system, and returns the result to the model:
-
-```json
-{
-  "status": "success",
-  "card_id": "CARD-44821",
-  "frozen_at": "2026-04-22T14:32:00Z"
-}
-```
-
-That result gets added to the conversation context, the Observe stage, and the loop continues.
+The model never touches the bank system directly. It sends a request to your app, your app runs the real action, and the result comes back. The model then uses that result to decide what to say or do next.
 
 ## The tool description is a prompt
 
 Here's the insight most people miss: tool descriptions are part of the prompt. The model decides whether to use a tool, how to use it, and what arguments to pass based entirely on the description you wrote.
 
-**Vague tool description:**
-```
-freeze_card: Freezes the customer's card.
-```
+![Vague vs good tool description](/images/tool-description-comparison.svg)
 
-**Good tool description:**
-```
-freeze_card(account_id: string): Immediately disables all card transactions for the card linked to the given account ID. This action takes effect within seconds and cannot be reversed by this agent, the customer must call the bank to unfreeze. Only call this tool if the customer has explicitly asked to freeze their card. Returns: {status: "success" | "error", card_id: string, frozen_at: timestamp}.
-```
+Every attribute in the good description shapes how the model behaves. Leave any of them out and the model has to guess.
 
-The good description tells the model when to use the tool, what it does, what the consequence is (irreversible by this agent), the constraint (explicit customer request required), and what the return value means. All of that shapes the model's behavior.
-
+:::deep-dive Parallel vs. sequential calls and tool limitations
 ## Parallel vs. sequential tool calls
 
 In some interactions, an agent needs to call multiple tools. This can happen in two ways:
@@ -72,15 +48,18 @@ Designing tool call order matters for both efficiency (parallel where possible) 
 - **The model cannot decide to create new tools.** It can only call tools it's been told about. If it encounters a situation that requires a capability it doesn't have, it should tell the user, not improvise.
 - **The model cannot see the tool's implementation.** It only sees the description. This means if the tool does something different from what the description says, the model won't know.
 - **The model cannot verify tool results.** If `freeze_card()` returns `{"status": "success"}` but the card wasn't actually frozen (because of a downstream system error), the model has no way to know. It will proceed as if the freeze succeeded.
+:::
 
 :::karel Karel in practice
-Karel has four tools: read_transaction_history(account_id), flag_transaction(transaction_id, reason), freeze_card(account_id), and create_fraud_report(account_id, transaction_ids, customer_statement).
+**Scene:** Karel is about to call create_fraud_report(). The model generates a structured request with account ID, transaction IDs, and customer statement. The application code receives it.
 
-Each tool description in Karel's system prompt specifies what it does, when to use it, and what the return value means. Critically, each destructive action (flag, freeze, report) includes a constraint: only call this if the customer has explicitly consented.
+**Karel acts:** His application code validates the arguments before executing — confirming the transaction IDs actually exist on the account and that the customer statement field is populated. The model can only generate the request; the application decides whether to honor it.
 
-When Karel calls create_fraud_report, his application code validates the arguments before executing, ensuring the transaction IDs actually exist on the account, and that the customer statement field is populated. The model can only generate the request; the application decides whether to honor it.
+**But — this is the key risk:** If Karel's system prompt says "I can file a fraud report" but the create_fraud_report tool doesn't exist or is broken, Karel will still claim to have done it — because the model has no way to know whether the tool actually ran. Maintaining alignment between what the system prompt describes and what the tools actually do is an ongoing operational responsibility, not a one-time setup.
 
-From a product perspective, the tools an agent has are its actual capabilities, not what the system prompt says it can do. If Karel's system prompt says "I can file a fraud report" but the create_fraud_report tool doesn't exist or is broken, Karel will still claim to have done it. Maintaining alignment between what the system prompt describes and what the tools actually do is an ongoing operational responsibility, not a one-time setup.
+**Result:** Without application-level validation, Karel could call a tool with wrong transaction IDs, or claim success when the tool failed silently. With validation, the mismatch is caught before anything is committed.
+
+**Why this matters:** The tools an agent has are its actual capabilities — not what the system prompt says it can do. Every tool description in Karel's system prompt specifies what the tool does, when to use it, what the return value means, and — for destructive actions — that it can only be called with explicit customer consent. Vague tool descriptions produce vague behavior. Precise descriptions are part of the safety architecture.
 :::
 
 :::takeaway Key takeaway

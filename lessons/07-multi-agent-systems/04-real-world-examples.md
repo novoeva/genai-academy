@@ -51,11 +51,15 @@ A financial analyst needs to generate weekly reports on specific market sectors,
 - **Structured interfaces.** Agents communicate in structured formats, JSON, defined schemas, not free text.
 
 :::karel Karel in practice
-Karel's role in the banking fraud pipeline maps cleanly to Example 1. He's a specialist agent, narrow, well-scoped, excellent at his specific task. He doesn't route, classify, or synthesize across domains. He just handles fraud reporting, and does it well.
+**Scene:** The bank's full fraud management workflow needs to handle detection, customer-facing reporting, compliance review, and case management — all for thousands of transactions daily.
 
-The Case Management Orchestrator is the intelligence that decides when to route to Karel, what context to give him, and what to do with his results. Karel doesn't need to understand the orchestrator's logic. The orchestrator doesn't need to understand Karel's customer interaction logic. They just need a clear, structured interface between them.
+**Karel acts:** He plays the role of specialist. Like the customer support triage example, he's narrow, well-scoped, and excellent at his one domain: customer-facing fraud reporting. He doesn't route, classify, or synthesize across domains.
 
-When evaluating whether a complex workflow should become multi-agent, look for these patterns. If the task naturally decomposes into specialized subtasks, if some steps can run in parallel, if there's a clear decision point where a human should stay in the loop, multi-agent is probably the right direction.
+**But — this is the key risk:** The Case Management Orchestrator is the intelligence that decides when to route to Karel, what context to give him, and what to do with his results. If that interface is vague — if the orchestrator passes Karel unstructured context or expects free-text back — the specialization benefit disappears.
+
+**Result:** Karel handles fraud reporting well. The orchestrator handles routing, sequencing, and synthesis. They need only one thing to make this work: a clear, structured interface between them. Karel doesn't need to understand the orchestrator's logic, and vice versa.
+
+**Why this matters:** When evaluating whether a complex workflow should become multi-agent, look for the patterns from these four examples: natural decomposition into specialized subtasks, independent steps that can run in parallel, a clear decision point where a human should stay in the loop. If those patterns are present, multi-agent is probably the right direction.
 :::
 
 :::takeaway Key takeaway

@@ -52,6 +52,7 @@ Without a clear stopping condition, an agent can keep taking actions, spending b
 
 **The design response:** every agent task should have an explicit success definition and a maximum number of steps. "Complete when: the fraud report is filed and the customer has received a confirmation summary. Maximum actions: 8. If the task isn't complete in 8 actions, escalate to a human."
 
+:::deep-dive Risk surface exercise: three questions per tool
 ## Putting it together: the risk surface of an agent
 
 A useful exercise before shipping any agent: list every tool it has and ask three questions for each one.
@@ -61,18 +62,18 @@ A useful exercise before shipping any agent: list every tool it has and ask thre
 3. What safeguards exist between the model's decision and the tool's execution?
 
 If you can't answer all three for every tool, you're not ready to ship.
+:::
 
 :::karel Karel in practice
-Karel's design addresses most of these failure modes explicitly:
+**Scene:** Karel's product team reviews his design before launch against the six failure modes. They ask: "Which ones have we designed for, and which ones are still open risks?"
 
-- **Bad information:** he always reads transaction history from a real data source before acting, never relies on memory
-- **Irreversibility:** freeze and report actions require explicit customer confirmation
-- **Scope creep:** his system prompt has hard refusals with no softening language for out-of-scope requests
-- **Prompt injection:** customer input is passed as user messages, never inserted into the system prompt
-- **Cascading errors:** his loop is designed to be short (maximum four to five turns for a typical interaction)
-- **Stopping condition:** the interaction ends when the fraud report is filed and confirmation is given, and a maximum-turn guardrail escalates to a human if the loop runs unexpectedly long
+**Karel acts:** The design answers each: he reads from real data sources before acting (bad information), requires explicit confirmation before write actions (irreversibility), has hard refusals with no softening language (scope creep), passes customer input as user messages never into the system prompt (prompt injection), runs a maximum four-to-five turn loop (cascading errors), and escalates to a human if the loop runs unexpectedly long (stopping condition).
 
-Most teams think about agent failure modes after something goes wrong in production. The teams that ship reliable agents think about them before anything is built. The six failure modes above are not exotic edge cases, every production agent eventually encounters all of them. The question is whether you designed for them in advance.
+**But — this is the key risk:** Most teams think about agent failure modes after something goes wrong in production. The six failure modes above are not exotic edge cases — every production agent eventually encounters all of them.
+
+**Result:** Karel ships with explicit design decisions covering each failure mode. When something does go wrong, there's a clear place to look and a clear layer to improve.
+
+**Why this matters:** The question is never whether these failure modes will appear — it's whether you designed for them in advance. A team that lists every tool and asks three questions for each one — worst case if called incorrectly, is it reversible, what safeguards exist — will ship a safer agent than a team that discovers the answers from customer complaints.
 :::
 
 :::takeaway Key takeaway

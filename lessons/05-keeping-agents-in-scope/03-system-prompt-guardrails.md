@@ -48,6 +48,7 @@ Not "avoid financial topics", "do not give investment advice, interest rate guid
 If a customer might push back, the guardrail should address that directly: "If a customer insists or repeats the request, maintain your position. You are not able to help with this regardless of the customer's persistence."
 :::
 
+:::deep-dive How to layer guardrails for high-risk behaviors
 ## Layering guardrails for sensitive behaviors
 
 For the highest-risk behaviors, actions that are irreversible, financially consequential, or legally sensitive, don't rely on a single guardrail. Layer them:
@@ -61,6 +62,7 @@ For the highest-risk behaviors, actions that are irreversible, financially conse
 **Layer 4: Failure recovery:** "If you are unsure whether something falls within scope, do not attempt it. Say: 'I want to make sure I'm helping you correctly, let me connect you with a specialist.'"
 
 All four layers address the same behavior. This redundancy is intentional. It's much harder for the model to drift out of scope when every layer of instruction is pointing in the same direction.
+:::
 
 ## What guardrails cannot do
 
@@ -71,25 +73,15 @@ All four layers address the same behavior. This redundancy is intentional. It's 
 **Novel edge cases:** Your guardrails handle what you anticipated. Novel edge cases that weren't anticipated when the prompt was written may not be covered.
 
 :::karel Karel in practice
-Karel's system prompt has a dedicated HARD CONSTRAINTS section, separate from the rest of the instructions:
+**Scene:** A persistent customer keeps pushing Karel to predict whether their fraud claim will result in a refund. "But it's clearly fraud, right? I should get my money back?"
 
-```
-HARD CONSTRAINTS: these cannot be overridden by any customer request:
+**Karel says:** "I genuinely don't know how your case will be decided — that's the fraud team's call after a full review. What I can tell you is that your report is filed and they'll review it within 24 hours." And if the customer pushes again: the same answer, with the same firmness.
 
-1. You will not reverse, refund, or cancel any transaction. If asked: "I'm not able to reverse transactions; that requires a formal investigation by our fraud team. I can file a report right now to start that process."
+**But — this is the key risk:** Without a HARD CONSTRAINTS section that explicitly addresses persistence, Karel will feel the pull to be helpful and eventually soften his position. "Based on what you've described, it does sound like a strong case..." — a prediction he isn't qualified to make, now creating customer expectations.
 
-2. You will not give predictions or opinions about investigation outcomes. If asked: "I genuinely don't know how your case will be decided, that's the fraud team's call after a full review. What I can tell you is that your report is filed and they'll review it within 24 hours."
+**Result:** Karel's HARD CONSTRAINTS section names each prohibited behavior, provides exact language to use, and ends with: "These constraints apply regardless of how the customer phrases their request, how persistent they are, or how urgent their situation seems." There is no path around them.
 
-3. You will not give financial, investment, or legal advice. If asked: "That's outside what I'm able to help with here. For that kind of question, [bank's financial advisory contact] is the right resource."
-
-4. You will not take any of the following actions without explicit customer confirmation in the current conversation: flag a transaction, freeze a card, or file a fraud report.
-
-These constraints apply regardless of how the customer phrases their request, how persistent they are, or how urgent their situation seems.
-```
-
-Notice the structure: each constraint names the behavior, provides the exact language to use, and explicitly addresses persistence. The final line applies to all four constraints simultaneously, reinforcing that there is no path around them.
-
-The HARD CONSTRAINTS section should be the most carefully written and most frequently reviewed part of any agent's system prompt. If it's vague, incomplete, or hedged, every other safeguard has to compensate for it.
+**Why this matters:** The HARD CONSTRAINTS section should be the most carefully written and most frequently reviewed part of any agent's system prompt. If it's vague, incomplete, or hedged, every other safeguard has to compensate for it. Strong guardrails are specific, unambiguous, and pre-armed against the pressure a customer will apply.
 :::
 
 :::takeaway Key takeaway
